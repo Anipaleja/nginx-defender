@@ -1,8 +1,6 @@
 # NGINX-defender
 
-[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)](https://golang.org/)  
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
-[![Stars](https://img.shields.io/github/stars/yourusername/nginx-defender?style=social)](https://github.com/yourusername/nginx-defender/stargazers)
+[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)](https://golang.org/)  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  [![Stars](https://img.shields.io/github/stars/anipaleja/nginx-defender?style=social)](https://github.com/anipaleja/nginx-defender/stargazers)
 
 > A real-time Nginx log monitor that detects abusive IPs and blocks them with 'iptables'. Lightweight, fast, and perfect for self-hosters, Raspberry Pi users, and small servers.
 
