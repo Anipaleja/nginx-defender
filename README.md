@@ -28,3 +28,10 @@ git clone https://github.com/yourusername/nginx-defender.git
 cd nginx-defender
 go build -o nginx_defender ./cmd/nginx-defender
 ```
+
+**Or run directly:**
+
+```bash
+sudo go run ./cmd/nginx-defender/nginx_defender.go
+```
+**NOTE:** sudo is required because the tool interacts with iptables
