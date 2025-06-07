@@ -4,15 +4,12 @@
 
 > A real-time Nginx log monitor that detects abusive IPs and blocks them with 'iptables'. Lightweight, fast, and perfect for self-hosters, Raspberry Pi users, and small servers.
 
----
-
 ## Overview
 
 **nginx-defender** watches your Nginx access logs and protects your server from brute-force attacks, DDoS floods, and scrapers by automatically blocking IPs that exceed a customizable request threshold within a time window.
 
 No cloud dependencies. No bloated services. Just raw, efficient defense in pure Go.
 
----
 
 ## Features
 
@@ -23,7 +20,6 @@ No cloud dependencies. No bloated services. Just raw, efficient defense in pure 
 - Lightweight single-binary deployment  
 - Thread-safe & efficient using Go routines and locks
 
----
 
 ## Installation
 
