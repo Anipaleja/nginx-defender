@@ -1,2 +1,36 @@
-# nginx-defender
-A lightweight, real-time log monitoring tool designed to detect and block IP addresses exhibiting abusive behavior such as brute force attacks, excessive requests, or suspicious patterns. Automatically integrates with your server’s firewall (iptables or ufw) to block offenders and protect web services without relying on external services.
+# NGINX-defender
+
+[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)](https://golang.org/)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  
+[![Stars](https://img.shields.io/github/stars/yourusername/nginx-defender?style=social)](https://github.com/yourusername/nginx-defender/stargazers)
+
+> A real-time Nginx log monitor that detects abusive IPs and blocks them with 'iptables'. Lightweight, fast, and perfect for self-hosters, Raspberry Pi users, and small servers.
+
+---
+
+## Overview
+
+**nginx-defender** watches your Nginx access logs and protects your server from brute-force attacks, DDoS floods, and scrapers by automatically blocking IPs that exceed a customizable request threshold within a time window.
+
+No cloud dependencies. No bloated services. Just raw, efficient defense in pure Go.
+
+---
+
+## Features
+
+- Real-time Nginx access log monitoring  
+- Auto-blocks abusive IPs using `iptables`  
+- Time window + request threshold logic  
+- Unblocks IPs after timeout  
+- Lightweight single-binary deployment  
+- Thread-safe & efficient using Go routines and locks
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/yourusername/nginx-defender.git
+cd nginx-defender
+go build -o nginx_defender ./cmd/nginx-defender
+```
