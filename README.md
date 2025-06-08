@@ -1,4 +1,4 @@
-# NGINX-defender
+# nginx-defender
 
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)](https://golang.org/)  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  [![Stars](https://img.shields.io/github/stars/anipaleja/nginx-defender?style=social)](https://github.com/anipaleja/nginx-defender/stargazers)
 
@@ -19,6 +19,15 @@ No cloud dependencies. No bloated services. Just raw, efficient defense in pure 
 - Unblocks IPs after timeout  
 - Lightweight single-binary deployment  
 - Thread-safe & efficient using Go routines and locks
+
+## Example
+
+If a single IP makes more than 100 requests in 60 seconds, it will be blocked via iptables for 1 hour.
+
+This makes it ideal for:
+- Self-hosted apps (like Ghost, WordPress, etc.)
+- Raspberry Pi or home servers
+- Lightweight VPS security
 
 
 ## Installation
