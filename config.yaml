@@ -1,0 +1,150 @@
+# nginx-defender Advanced Configuration
+server:
+  bind_address: "0.0.0.0"
+  port: 8080
+  tls:
+    enabled: false
+    cert_file: ""
+    key_file: ""
+  
+logs:
+  level: "info" # debug, info, warn, error
+  format: "json" # json, text
+  output: "stdout" # stdout, file
+  file_path: "/var/log/nginx-defender.log"
+  max_size: 100 # MB
+  max_backups: 3
+  max_age: 30 # days
+
+monitoring:
+  nginx_logs:
+    - path: "/var/log/nginx/access.log"
+      format: "combined" # combined, common, custom
+      custom_regex: ""
+    - path: "/var/log/nginx/error.log" 
+      format: "error"
+  
+  apache_logs:
+    - path: "/var/log/apache2/access.log"
+      format: "combined"
+
+detection:
+  rate_limiting:
+    enabled: true
+    threshold: 100
+    window_seconds: 60
+    block_duration: 3600
+    
+  brute_force:
+    enabled: true
+    failed_attempts: 5
+    window_seconds: 300
+    block_duration: 1800
+    
+  ddos_protection:
+    enabled: true
+    requests_per_second: 10
+    burst_threshold: 50
+    block_duration: 7200
+    
+  geographic:
+    enabled: false
+    blocked_countries: ["CN", "RU"] # ISO country codes
+    allowed_countries: [] # if set, only these are allowed
+    
+  user_agent_blocking:
+    enabled: true
+    blocked_patterns:
+      - "(?i)bot"
+      - "(?i)crawler"
+      - "(?i)spider"
+      - "(?i)scanner"
+    allowed_patterns: []
+    
+  suspicious_patterns:
+    enabled: true
+    patterns:
+      - "(?i)\\.(php|asp|jsp|cgi)\\?" # Script injection attempts
+      - "(?i)union.*select" # SQL injection
+      - "(?i)<script" # XSS attempts
+      - "(?i)\\.\\./" # Directory traversal
+      - "(?i)cmd=" # Command injection
+
+firewall:
+  backend: "iptables" # iptables, ufw, firewalld, pf
+  chain: "INPUT"
+  jump_target: "DROP" # DROP, REJECT
+  ipv6_support: true
+  
+  whitelist:
+    - "127.0.0.1"
+    - "::1"
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+    
+  persistence:
+    enabled: true
+    save_interval: 300 # seconds
+    rules_file: "/etc/nginx-defender/blocked_ips.json"
+
+notifications:
+  telegram:
+    enabled: false
+    bot_token: ""
+    chat_id: ""
+    
+  slack:
+    enabled: false
+    webhook_url: ""
+    channel: "#security"
+    
+  email:
+    enabled: false
+    smtp_host: ""
+    smtp_port: 587
+    username: ""
+    password: ""
+    from: ""
+    to: []
+    
+  webhook:
+    enabled: false
+    url: ""
+    secret: ""
+
+metrics:
+  prometheus:
+    enabled: true
+    port: 9090
+    path: "/metrics"
+    
+  grafana_dashboard: true
+  export_interval: 60 # seconds
+
+machine_learning:
+  enabled: false
+  model_path: "/etc/nginx-defender/model.json"
+  training_data_retention: 7 # days
+  anomaly_threshold: 0.85
+  update_interval: 3600 # seconds
+
+clustering:
+  enabled: false
+  redis_url: "redis://localhost:6379"
+  sync_interval: 30 # seconds
+  node_id: ""
+
+performance:
+  max_concurrent_blocks: 1000
+  log_buffer_size: 10000
+  memory_limit: 512 # MB
+  cpu_limit: 80 # percentage
+  
+honeypot:
+  enabled: false
+  ports:
+    - 22 # SSH
+    - 23 # Telnet 
+    - 3389 # RDP
+  log_attempts: true
