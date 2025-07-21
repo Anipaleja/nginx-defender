@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  nginx-defender:
+    build: .
+    container_name: nginx-defender
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "9090:9090"  # Prometheus metrics
+    volumes:
+      - /var/log/nginx:/var/log/nginx:ro
+      - /var/log/apache2:/var/log/apache2:ro
+      - ./config.yaml:/app/config.yaml
+      - nginx-defender-data:/data
+    environment:
+      - DEFENDER_CONFIG_PATH=/app/config.yaml
+    privileged: true  # Required for iptables manipulation
+    network_mode: host
+    depends_on:
+      - redis
+      - prometheus
+
+  redis:
+    image: redis:7-alpine
+    container_name: nginx-defender-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: nginx-defender-prometheus
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: nginx-defender-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+
+  nginx:
+    image: nginx:alpine
+    container_name: test-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./examples/nginx.conf:/etc/nginx/nginx.conf
+      - ./logs:/var/log/nginx
+    depends_on:
+      - nginx-defender
+
+volumes:
+  nginx-defender-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:

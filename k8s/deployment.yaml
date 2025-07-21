@@ -1,0 +1,190 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx-defender
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-defender-config
+  namespace: nginx-defender
+data:
+  config.yaml: |
+    server:
+      bind_address: "0.0.0.0"
+      port: 8080
+    logs:
+      level: "info"
+      format: "json"
+      output: "stdout"
+    detection:
+      rate_limiting:
+        enabled: true
+        threshold: 100
+        window_seconds: 60
+        block_duration: 3600
+    firewall:
+      backend: "iptables"
+      chain: "INPUT"
+      jump_target: "DROP"
+    metrics:
+      prometheus:
+        enabled: true
+        port: 9090
+        path: "/metrics"
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-defender
+  namespace: nginx-defender
+  labels:
+    app: nginx-defender
+spec:
+  selector:
+    matchLabels:
+      app: nginx-defender
+  template:
+    metadata:
+      labels:
+        app: nginx-defender
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - name: nginx-defender
+        image: nginx-defender:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: web
+        - containerPort: 9090
+          name: metrics
+        volumeMounts:
+        - name: config
+          mountPath: /app/config.yaml
+          subPath: config.yaml
+        - name: nginx-logs
+          mountPath: /var/log/nginx
+          readOnly: true
+        - name: proc
+          mountPath: /host/proc
+          readOnly: true
+        - name: sys
+          mountPath: /host/sys
+          readOnly: true
+        securityContext:
+          privileged: true
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: config
+        configMap:
+          name: nginx-defender-config
+      - name: nginx-logs
+        hostPath:
+          path: /var/log/nginx
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+      serviceAccount: nginx-defender
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-defender-web
+  namespace: nginx-defender
+  labels:
+    app: nginx-defender
+spec:
+  selector:
+    app: nginx-defender
+  ports:
+  - name: web
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-defender-metrics
+  namespace: nginx-defender
+  labels:
+    app: nginx-defender
+spec:
+  selector:
+    app: nginx-defender
+  ports:
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-defender
+  namespace: nginx-defender
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nginx-defender
+rules:
+- apiGroups: [""]
+  resources: ["nodes", "pods", "services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["daemonsets", "deployments", "replicasets"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-defender
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-defender
+subjects:
+- kind: ServiceAccount
+  name: nginx-defender
+  namespace: nginx-defender
