@@ -3,7 +3,6 @@ package logparser
 import (
 	"bufio"
 	"fmt"
-	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
