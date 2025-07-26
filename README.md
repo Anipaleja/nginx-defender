@@ -1,4 +1,4 @@
-# nginx-defender v2.0
+# nginx-defender 
 
 [![Build Status](https://github.com/anipaleja/nginx-defender/workflows/Build%20and%20Publish/badge.svg)](https://github.com/anipaleja/nginx-defender/actions)
 [![Docker Version](https://img.shields.io/badge/GHCR-nginx--defender-blue?logo=github)](https://github.com/anipaleja/nginx-defender/pkgs/container/nginx-defender)
