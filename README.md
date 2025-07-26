@@ -1,7 +1,7 @@
 # nginx-defender v2.0
 
 [![Build Status](https://github.com/anipaleja/nginx-defender/workflows/Build%20and%20Publish/badge.svg)](https://github.com/anipaleja/nginx-defender/actions)
-[![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/anipaleja/nginx-defender)](https://github.com/anipaleja/nginx-defender/pkgs/container/nginx-defender)
+[![Docker Version](https://img.shields.io/badge/GHCR-nginx--defender-blue?logo=github)](https://github.com/anipaleja/nginx-defender/pkgs/container/nginx-defender)
 [![Go Report Card](https://goreportcard.com/badge/github.com/anipaleja/nginx-defender)](https://goreportcard.com/report/github.com/anipaleja/nginx-defender)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
