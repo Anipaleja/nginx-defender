@@ -68,7 +68,7 @@ func (b *PfBackend) RemoveIP(ip string) error {
 // ListRules lists all active rules
 func (b *PfBackend) ListRules() ([]*Rule, error) {
 	cmd := exec.Command("pfctl", "-t", b.table, "-T", "show")
-	output, err := cmd.Output()
+	_, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("failed to list pf table entries: %v", err)
 	}

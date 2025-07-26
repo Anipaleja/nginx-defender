@@ -3,7 +3,6 @@ package detector
 import (
 	"math"
 	"sort"
-	"time"
 
 	"github.com/Anipaleja/nginx-defender/internal/config"
 	"github.com/Anipaleja/nginx-defender/pkg/logparser"

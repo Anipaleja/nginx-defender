@@ -3,7 +3,6 @@ package firewall
 import (
 	"fmt"
 	"os/exec"
-	"strconv"
 	"strings"
 	"time"
 
@@ -74,9 +73,23 @@ func (b *IptablesBackend) AddRule(rule *Rule) error {
 		
 	case ActionRateLimit:
 		// Implement rate limiting using iptables recent module
-		limit := "10/minute" // Default limit
+		seconds := "60"    // Default seconds
+		hitcount := "10"   // Default hitcount
+		
 		if limitStr, exists := rule.Metadata["limit"]; exists {
-			limit = limitStr
+			// Parse limit format like "10/minute" or "5/second"
+			parts := strings.Split(limitStr, "/")
+			if len(parts) == 2 {
+				hitcount = parts[0]
+				switch parts[1] {
+				case "minute":
+					seconds = "60"
+				case "second":
+					seconds = "1"
+				case "hour":
+					seconds = "3600"
+				}
+			}
 		}
 		
 		commands = append(commands, []string{
@@ -86,7 +99,7 @@ func (b *IptablesBackend) AddRule(rule *Rule) error {
 		
 		commands = append(commands, []string{
 			"iptables", "-I", b.chain, "-s", rule.IP,
-			"-m", "recent", "--update", "--seconds", "60", "--hitcount", "10",
+			"-m", "recent", "--update", "--seconds", seconds, "--hitcount", hitcount,
 			"--name", fmt.Sprintf("nginx_defender_%s", strings.ReplaceAll(rule.IP, ".", "_")),
 			"-j", "DROP",
 			"-m", "comment", "--comment", fmt.Sprintf("nginx-defender:%s:rate-limit", rule.ID),

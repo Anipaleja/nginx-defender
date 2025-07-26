@@ -2,7 +2,6 @@ package detector
 
 import (
 	"fmt"
-	"net"
 	"regexp"
 	"strings"
 	"sync"
@@ -108,7 +107,7 @@ func NewEngine(cfg *config.Config, logger *logrus.Logger) (*Engine, error) {
 	}
 	
 	// Initialize behavior analyzer
-	engine.behaviorAnalyzer = NewBehaviorAnalyzer(cfg)
+	engine.behaviorAnalyzer = NewBehaviorAnalyzer(*cfg)
 	
 	// Start cleanup routine
 	go engine.cleanupRoutine()

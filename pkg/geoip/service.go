@@ -100,14 +100,8 @@ func (s *Service) GetLocationInfo(ipStr string) (*LocationInfo, error) {
 		City:        record.City.Names["en"],
 		Latitude:    float64(record.Location.Latitude),
 		Longitude:   float64(record.Location.Longitude),
-	}
-	
-	// Try to get ISP information if available
-	if len(record.Traits.ISP) > 0 {
-		info.ISP = record.Traits.ISP
-	}
-	if len(record.Traits.Organization) > 0 {
-		info.Organization = record.Traits.Organization
+		ISP:         "Unknown", // ISP data requires separate ISP database
+		Organization: "Unknown", // Organization data requires separate ISP database
 	}
 	
 	return info, nil
