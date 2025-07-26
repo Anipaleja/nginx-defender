@@ -1,0 +1,56 @@
+[
+  {
+    "cidr": "1.2.3.4/32",
+    "name": "Known Malware C&C",
+    "description": "Command and control server for malware family XYZ",
+    "service": "threat",
+    "tags": ["malware", "c2", "botnet"],
+    "metadata": {
+      "threat_type": "malware",
+      "family": "mirai",
+      "confidence": "high"
+    }
+  },
+  {
+    "cidr": "5.6.7.0/24",
+    "name": "Botnet Infrastructure",
+    "description": "Known botnet command servers",
+    "service": "threat",
+    "tags": ["botnet", "ddos", "spam"],
+    "metadata": {
+      "threat_type": "botnet",
+      "activity": "ddos",
+      "confidence": "medium"
+    }
+  },
+  {
+    "cidr": "10.0.0.0/8",
+    "name": "Private RFC1918",
+    "description": "Private network ranges (should not appear in public logs)",
+    "service": "private",
+    "tags": ["private", "rfc1918"],
+    "metadata": {
+      "type": "private"
+    }
+  },
+  {
+    "cidr": "172.16.0.0/12",
+    "name": "Private RFC1918",
+    "description": "Private network ranges (should not appear in public logs)",
+    "service": "private",
+    "tags": ["private", "rfc1918"],
+    "metadata": {
+      "type": "private"
+    }
+  },
+  {
+    "cidr": "192.168.0.0/16",
+    "name": "Private RFC1918",
+    "description": "Private network ranges (should not appear in public logs)",
+    "service": "private",
+    "tags": ["private", "rfc1918"],
+    "metadata": {
+      "type": "private"
+    }
+  }
+]

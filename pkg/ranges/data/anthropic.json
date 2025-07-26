@@ -1,0 +1,23 @@
+[
+  {
+    "cidr": "162.158.0.0/15",
+    "name": "Anthropic Claude",
+    "description": "Anthropic Claude AI infrastructure",
+    "service": "anthropic",
+    "country": "US",
+    "tags": ["ai", "claude", "api"],
+    "metadata": {
+      "provider": "anthropic"
+    }
+  },
+  {
+    "cidr": "108.162.192.0/18",
+    "name": "Anthropic Bot",
+    "description": "Anthropic web crawler and scraper",
+    "service": "anthropic",
+    "tags": ["ai", "crawler", "scraper"],
+    "metadata": {
+      "type": "crawler"
+    }
+  }
+]

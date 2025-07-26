@@ -1,0 +1,34 @@
+[
+  {
+    "cidr": "89.234.157.254/32",
+    "name": "Tor Exit Node",
+    "description": "Known Tor exit node",
+    "service": "tor",
+    "tags": ["tor", "anonymizer", "privacy"],
+    "metadata": {
+      "type": "exit_node",
+      "last_seen": "2024-01-01"
+    }
+  },
+  {
+    "cidr": "185.220.100.240/29",
+    "name": "Tor Exit Nodes Block",
+    "description": "Block of Tor exit nodes",
+    "service": "tor",
+    "tags": ["tor", "anonymizer", "privacy"],
+    "metadata": {
+      "type": "exit_node_block"
+    }
+  },
+  {
+    "cidr": "199.87.154.255/32",
+    "name": "Tor Exit Node",
+    "description": "High-traffic Tor exit node",
+    "service": "tor",
+    "tags": ["tor", "anonymizer", "privacy"],
+    "metadata": {
+      "type": "exit_node",
+      "traffic": "high"
+    }
+  }
+]

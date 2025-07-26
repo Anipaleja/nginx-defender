@@ -1,0 +1,46 @@
+[
+  {
+    "cidr": "3.5.140.0/22",
+    "name": "OpenAI US-East",
+    "description": "OpenAI ChatGPT and API infrastructure",
+    "service": "openai",
+    "country": "US",
+    "tags": ["ai", "chatgpt", "api"],
+    "metadata": {
+      "region": "us-east-1",
+      "provider": "aws"
+    }
+  },
+  {
+    "cidr": "13.107.42.14/32",
+    "name": "OpenAI Bot",
+    "description": "OpenAI web crawler bot",
+    "service": "openai",
+    "tags": ["ai", "crawler", "bot"],
+    "metadata": {
+      "type": "crawler"
+    }
+  },
+  {
+    "cidr": "20.15.240.64/26",
+    "name": "OpenAI Europe",
+    "description": "OpenAI European infrastructure",
+    "service": "openai",
+    "country": "EU",
+    "tags": ["ai", "chatgpt", "api"],
+    "metadata": {
+      "region": "eu-west-1",
+      "provider": "azure"
+    }
+  },
+  {
+    "cidr": "40.83.2.0/24",
+    "name": "OpenAI Training",
+    "description": "OpenAI model training infrastructure",
+    "service": "openai",
+    "tags": ["ai", "training", "scraper"],
+    "metadata": {
+      "type": "training"
+    }
+  }
+]

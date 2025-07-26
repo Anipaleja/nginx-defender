@@ -1,150 +1,647 @@
-# nginx-defender Advanced Configuration
+# nginx-defender v2.0 Configuration
+# Advanced Web Application Firewall and Threat Detection System
+
+# Web server configuration
 server:
   bind_address: "0.0.0.0"
   port: 8080
   tls:
     enabled: false
-    cert_file: ""
-    key_file: ""
-  
-logs:
-  level: "info" # debug, info, warn, error
-  format: "json" # json, text
-  output: "stdout" # stdout, file
-  file_path: "/var/log/nginx-defender.log"
-  max_size: 100 # MB
-  max_backups: 3
-  max_age: 30 # days
+    cert_file: "/etc/nginx-defender/ssl/cert.pem"
+    key_file: "/etc/nginx-defender/ssl/key.pem"
 
+# Logging configuration
+logs:
+  level: "info"  # debug, info, warn, error
+  format: "text"  # text, json
+  output: "stdout"  # stdout, file
+  file_path: "/var/log/nginx-defender/defender.log"
+  max_size: 100  # MB
+  max_backups: 3
+  max_age: 28  # days
+
+# Log monitoring configuration
 monitoring:
   nginx_logs:
     - path: "/var/log/nginx/access.log"
       format: "combined" # combined, common, custom
       custom_regex: ""
+      enabled: true
     - path: "/var/log/nginx/error.log" 
       format: "error"
+      enabled: true
   
   apache_logs:
     - path: "/var/log/apache2/access.log"
       format: "combined"
+      enabled: false
+      
+  # Custom log sources
+  custom_logs:
+    - path: "/var/log/app/access.log"
+      format: "custom"
+      regex: '^(?P<ip>\S+) - - \[(?P<time>[^\]]+)\] "(?P<method>\S+) (?P<url>\S+) (?P<protocol>[^"]+)" (?P<status>\d+) (?P<size>\d+)'
+      enabled: false
 
+# Advanced threat detection engine
 detection:
+  # Machine Learning based detection
+  ml_detection:
+    enabled: true
+    model_type: "anomaly" # anomaly, behavioral, ensemble
+    training_window: 7 # days
+    retrain_interval: 24 # hours
+    anomaly_threshold: 0.85
+    behavioral_analysis: true
+    feature_extraction:
+      - "request_rate"
+      - "response_time"
+      - "user_agent_entropy"
+      - "url_patterns"
+      - "payload_size"
+    
+  # Real-time threat intelligence
+  threat_intelligence:
+    enabled: true
+    feeds:
+      - name: "tor_exit_nodes"
+        url: "https://check.torproject.org/api/bulk"
+        update_interval: 3600
+        enabled: true
+      - name: "malware_ips"
+        url: "https://feodotracker.abuse.ch/downloads/ipblocklist.txt"
+        update_interval: 3600
+        enabled: true
+    cache_duration: 86400 # 24 hours
+    
+  # Rate limiting with advanced algorithms
   rate_limiting:
     enabled: true
+    algorithm: "sliding_window" # fixed_window, sliding_window, token_bucket
     threshold: 100
     window_seconds: 60
     block_duration: 3600
+    progressive_blocking: true # increase block time for repeat offenders
+    whitelist_authenticated: true
     
+  # Brute force protection with adaptive thresholds
   brute_force:
     enabled: true
     failed_attempts: 5
     window_seconds: 300
     block_duration: 1800
+    adaptive_threshold: true # adjust based on attack patterns
+    honeypot_integration: true
     
+  # DDoS protection with multiple layers
   ddos_protection:
     enabled: true
-    requests_per_second: 10
-    burst_threshold: 50
+    layers:
+      - type: "rate_limit"
+        requests_per_second: 10
+        burst_threshold: 50
+      - type: "connection_limit"
+        max_connections: 100
+        per_ip_limit: 10
+      - type: "behavioral"
+        unusual_pattern_threshold: 0.8
     block_duration: 7200
+    mitigation_mode: "challenge" # block, challenge, rate_limit
     
+  # Geographic filtering with threat scoring
   geographic:
-    enabled: false
-    blocked_countries: ["CN", "RU"] # ISO country codes
+    enabled: true
+    mode: "threat_score" # block, allow, threat_score
+    blocked_countries: ["CN", "RU", "KP", "IR"]
     allowed_countries: [] # if set, only these are allowed
+    threat_scoring:
+      high_risk_countries: ["CN", "RU", "KP", "IR", "VN"]
+      medium_risk_countries: ["BR", "IN", "TH", "ID"]
+      score_multiplier: 1.5
     
-  user_agent_blocking:
+  # Advanced pattern matching
+  pattern_detection:
     enabled: true
-    blocked_patterns:
-      - "(?i)bot"
-      - "(?i)crawler"
-      - "(?i)spider"
-      - "(?i)scanner"
-    allowed_patterns: []
+    categories:
+      sql_injection:
+        enabled: true
+        patterns:
+          - "(?i)union.*select"
+          - "(?i)or.*1=1"
+          - "(?i)drop.*table"
+          - "(?i)insert.*into"
+        severity: "high"
+        
+      xss_attacks:
+        enabled: true
+        patterns:
+          - "(?i)<script[^>]*>.*?</script>"
+          - "(?i)javascript:"
+          - "(?i)on\\w+\\s*="
+          - "(?i)<iframe"
+        severity: "high"
+        
+      command_injection:
+        enabled: true
+        patterns:
+          - "(?i);\\s*(cat|ls|pwd|whoami|id)"
+          - "(?i)\\|\\s*(nc|netcat|wget|curl)"
+          - "(?i)\\$\\(.*\\)"
+          - "(?i)`.*`"
+        severity: "critical"
+        
+      directory_traversal:
+        enabled: true
+        patterns:
+          - "(?i)\\.\\./.*\\.\\./"
+          - "(?i)\\.\\.\\\\.*\\.\\.\\\\"
+          - "(?i)/etc/passwd"
+          - "(?i)/windows/system32"
+        severity: "high"
+        
+      file_inclusion:
+        enabled: true
+        patterns:
+          - "(?i)(http|https|ftp)://.*\\.(php|asp|jsp)"
+          - "(?i)file:///"
+          - "(?i)php://filter"
+          - "(?i)expect://"
+        severity: "high"
     
-  suspicious_patterns:
+  # User-Agent analysis
+  user_agent_analysis:
     enabled: true
-    patterns:
-      - "(?i)\\.(php|asp|jsp|cgi)\\?" # Script injection attempts
-      - "(?i)union.*select" # SQL injection
-      - "(?i)<script" # XSS attempts
-      - "(?i)\\.\\./" # Directory traversal
-      - "(?i)cmd=" # Command injection
+    block_empty: true
+    block_suspicious: true
+    suspicious_patterns:
+      - "(?i)(bot|crawler|spider|scanner|scraper)"
+      - "(?i)(sqlmap|nikto|nmap|masscan|zap)"
+      - "(?i)(python|curl|wget|libwww)"
+    whitelist_patterns:
+      - "(?i)(googlebot|bingbot|slurp|duckduckbot)"
+    entropy_threshold: 2.5 # block low-entropy UAs
+    
+  # Behavioral analysis
+  behavioral_analysis:
+    enabled: true
+    session_tracking: true
+    anomaly_detection:
+      request_timing: true
+      navigation_patterns: true
+      payload_analysis: true
+    learning_period: 168 # hours (1 week)
+    confidence_threshold: 0.7
 
+# Advanced firewall management
 firewall:
-  backend: "iptables" # iptables, ufw, firewalld, pf
-  chain: "INPUT"
-  jump_target: "DROP" # DROP, REJECT
-  ipv6_support: true
-  
-  whitelist:
-    - "127.0.0.1"
-    - "::1"
-    - "10.0.0.0/8"
-    - "172.16.0.0/12"
-    - "192.168.0.0/16"
+  # Multiple backend support
+  backend: "iptables" # iptables, nftables, ufw, firewalld, pf, mock
+  backends:
+    iptables:
+      enabled: true
+      chain: "INPUT"
+      jump_target: "DROP"
+      ipv6_support: true
+      custom_rules: []
+      
+    nftables:
+      enabled: false
+      table: "inet filter"
+      chain: "input"
+      policy: "drop"
+      ipv6_support: true
+      
+    pf:
+      enabled: false
+      anchor: "nginx-defender"
+      table: "blocked_ips"
+      
+  # Advanced rule management
+  rule_management:
+    batch_operations: true
+    max_batch_size: 100
+    async_processing: true
+    rule_validation: true
+    rollback_support: true
     
+  # IP whitelist and blacklist
+  ip_lists:
+    whitelist:
+      - "127.0.0.0/8"
+      - "::1/128"
+      - "10.0.0.0/8"
+      - "172.16.0.0/12"
+      - "192.168.0.0/16"
+      - "fc00::/7" # IPv6 private
+      
+    blacklist: []
+    
+    # Dynamic list management
+    auto_whitelist_services: true
+    whitelist_cdn_ranges:
+      cloudflare: true
+      fastly: true
+      amazon_cloudfront: true
+      
+  # Rule persistence and backup
   persistence:
     enabled: true
-    save_interval: 300 # seconds
-    rules_file: "/etc/nginx-defender/blocked_ips.json"
+    save_interval: 300
+    rules_file: "/etc/nginx-defender/firewall_rules.json"
+    backup_count: 5
+    compression: true
+    
+  # Automatic cleanup
+  cleanup:
+    enabled: true
+    cleanup_interval: 3600 # 1 hour
+    max_rule_age: 86400 # 24 hours
+    keep_persistent_rules: true
 
+# Multi-channel notification system
 notifications:
+  # Global settings
+  global:
+    rate_limit: 10 # notifications per minute
+    severity_filter: "medium" # low, medium, high, critical
+    template_customization: true
+    
+  # Telegram notifications
   telegram:
     enabled: false
     bot_token: ""
     chat_id: ""
-    
+    message_format: "markdown"
+    include_details: true
+    notification_types:
+      - "attack_detected"
+      - "ip_blocked"
+      - "system_alert"
+      
+  # Slack notifications
   slack:
     enabled: false
     webhook_url: ""
     channel: "#security"
+    username: "nginx-defender"
+    include_details: true
+    mention_users: []
     
+  # Email notifications
   email:
     enabled: false
-    smtp_host: ""
-    smtp_port: 587
-    username: ""
-    password: ""
-    from: ""
+    smtp:
+      host: ""
+      port: 587
+      username: ""
+      password: ""
+      tls: true
+      auth_type: "plain" # plain, login, crammd5
+    from: "nginx-defender@example.com"
     to: []
+    subject_prefix: "[nginx-defender]"
+    html_format: true
     
+  # Webhook notifications
   webhook:
     enabled: false
-    url: ""
-    secret: ""
+    endpoints:
+      - url: ""
+        secret: ""
+        retry_count: 3
+        timeout: 30
+        headers:
+          "Content-Type": "application/json"
+    
+  # Discord notifications
+  discord:
+    enabled: false
+    webhook_url: ""
+    username: "nginx-defender"
+    avatar_url: ""
+    
+  # PagerDuty integration
+  pagerduty:
+    enabled: false
+    integration_key: ""
+    severity_mapping:
+      critical: "critical"
+      high: "error"
+      medium: "warning"
+      low: "info"
 
+# Comprehensive metrics and monitoring
 metrics:
+  # Prometheus metrics
   prometheus:
     enabled: true
+    bind_address: "0.0.0.0"
     port: 9090
     path: "/metrics"
+    include_system_metrics: true
+    custom_labels:
+      environment: "production"
+      service: "nginx-defender"
+      
+  # Internal metrics storage
+  internal:
+    enabled: true
+    retention_days: 30
+    storage_path: "/var/lib/nginx-defender/metrics"
+    compression: true
     
-  grafana_dashboard: true
-  export_interval: 60 # seconds
+  # Export formats
+  exports:
+    json:
+      enabled: true
+      interval: 300
+      path: "/var/log/nginx-defender/metrics.json"
+    csv:
+      enabled: false
+      interval: 3600
+      path: "/var/log/nginx-defender/metrics.csv"
+      
+  # Dashboards
+  dashboards:
+    grafana:
+      enabled: true
+      dashboard_url: "http://localhost:3000"
+      api_key: ""
+    built_in:
+      enabled: true
+      refresh_interval: 30
 
+# Advanced machine learning configuration
 machine_learning:
-  enabled: false
-  model_path: "/etc/nginx-defender/model.json"
-  training_data_retention: 7 # days
-  anomaly_threshold: 0.85
-  update_interval: 3600 # seconds
+  enabled: true
+  
+  # Model configuration
+  models:
+    anomaly_detection:
+      enabled: true
+      algorithm: "isolation_forest" # isolation_forest, one_class_svm, autoencoder
+      contamination: 0.1
+      n_estimators: 100
+      
+    behavioral_analysis:
+      enabled: true
+      algorithm: "lstm" # lstm, gru, transformer
+      sequence_length: 100
+      hidden_units: 64
+      
+    threat_classification:
+      enabled: true
+      algorithm: "gradient_boosting"# random_forest, svm, neural_network
+      n_estimators: 200
+      max_depth: 10
+      
+  # Training configuration
+  training:
+    auto_retrain: true
+    retrain_interval: 86400 # 24 hours
+    min_samples: 1000
+    validation_split: 0.2
+    cross_validation: true
+    
+  # Feature engineering
+  features:
+    request_features: true
+    temporal_features: true
+    statistical_features: true
+    n_gram_features: true
+    embedding_features: true
+    
+  # Model storage
+  storage:
+    path: "/var/lib/nginx-defender/models"
+    backup_models: true
+    model_versioning: true
+    compression: true
 
+# High availability clustering
 clustering:
   enabled: false
-  redis_url: "redis://localhost:6379"
-  sync_interval: 30 # seconds
-  node_id: ""
-
-performance:
-  max_concurrent_blocks: 1000
-  log_buffer_size: 10000
-  memory_limit: 512 # MB
-  cpu_limit: 80 # percentage
   
+  # Cluster configuration
+  cluster:
+    node_id: ""
+    discovery_method: "static" # static, consul, etcd, redis
+    nodes: []
+    
+  # Redis backend
+  redis:
+    url: "redis://localhost:6379"
+    password: ""
+    db: 0
+    pool_size: 10
+    
+  # Consul backend
+  consul:
+    address: "localhost:8500"
+    datacenter: "dc1"
+    token: ""
+    
+  # Data synchronization
+  sync:
+    interval: 30
+    batch_size: 1000
+    conflict_resolution: "latest_wins" # latest_wins, manual, merge
+    
+  # Leader election
+  leader_election:
+    enabled: true
+    lease_duration: 30
+    renew_deadline: 20
+    retry_period: 5
+
+# Performance optimization
+performance:
+  # Resource limits
+  limits:
+    max_concurrent_blocks: 1000
+    max_memory_usage: 512 # MB
+    max_cpu_usage: 80 # percentage
+    max_open_files: 10000
+    
+  # Caching
+  cache:
+    enabled: true
+    size: 10000 # entries
+    ttl: 3600 # seconds
+    eviction_policy: "lru" # lru, lfu, random
+    
+  # Connection pooling
+  connection_pools:
+    database:
+      max_connections: 50
+      idle_timeout: 300
+    redis:
+      max_connections: 100
+      idle_timeout: 600
+      
+  # Buffering
+  buffers:
+    log_buffer_size: 10000
+    event_buffer_size: 5000
+    notification_buffer_size: 1000
+    
+  # Optimization flags
+  optimizations:
+    batch_processing: true
+    async_operations: true
+    memory_optimization: true
+    cpu_optimization: true
+
+# Advanced honeypot system
 honeypot:
   enabled: false
-  ports:
-    - 22 # SSH
-    - 23 # Telnet 
-    - 3389 # RDP
-  log_attempts: true
+  
+  # Service emulation
+  services:
+    ssh:
+      enabled: true
+      port: 2222
+      banner: "OpenSSH_7.4"
+      log_attempts: true
+      
+    http:
+      enabled: true
+      port: 8888
+      server_header: "Apache/2.4.41"
+      fake_pages: true
+      
+    ftp:
+      enabled: false
+      port: 2121
+      banner: "vsftpd 3.0.3"
+      
+    telnet:
+      enabled: false
+      port: 2323
+      banner: "Ubuntu 20.04.3 LTS"
+      
+  # Interaction logging
+  logging:
+    enabled: true
+    log_level: "detailed" # basic, detailed, full
+    log_path: "/var/log/nginx-defender/honeypot.log"
+    include_payloads: true
+    
+  # Integration with main detection
+  integration:
+    auto_block_attackers: true
+    share_intelligence: true
+    threat_score_boost: 2.0
+
+# Web interface configuration
+web_interface:
+  enabled: true
+  
+  # Authentication
+  auth:
+    enabled: true
+    method: "session" # session, jwt, basic
+    session_timeout: 3600
+    default_username: "admin"
+    default_password: "change_me_please"
+    password_hash_algo: "bcrypt"
+    
+  # Features
+  features:
+    real_time_dashboard: true
+    log_viewer: true
+    configuration_editor: true
+    firewall_management: true
+    statistics_charts: true
+    threat_analysis: true
+    
+  # WebSocket for real-time updates
+  websocket:
+    enabled: true
+    path: "/ws"
+    ping_interval: 30
+    pong_timeout: 10
+    
+  # API configuration
+  api:
+    enabled: true
+    version: "v1"
+    rate_limit: 1000 # requests per hour
+    cors_enabled: true
+    cors_origins: ["*"]
+    
+  # Static files
+  static:
+    path: "/web/static"
+    cache_duration: 3600
+    compression: true
+
+# Database configuration
+database:
+  enabled: true
+  type: "sqlite" # sqlite, postgres, mysql
+  
+  # SQLite configuration
+  sqlite:
+    path: "/var/lib/nginx-defender/defender.db"
+    journal_mode: "WAL"
+    synchronous: "NORMAL"
+    cache_size: 10000
+    
+  # PostgreSQL configuration
+  postgres:
+    host: "localhost"
+    port: 5432
+    database: "nginx_defender"
+    username: ""
+    password: ""
+    sslmode: "prefer"
+    max_connections: 25
+    
+  # MySQL configuration
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "nginx_defender"
+    username: ""
+    password: ""
+    charset: "utf8mb4"
+    max_connections: 25
+    
+  # Connection settings
+  connection:
+    max_idle_time: 600
+    max_lifetime: 3600
+    health_check_interval: 300
+
+# Security configuration
+security:
+  # API security
+  api_security:
+    rate_limiting: true
+    request_size_limit: 1048576 # 1MB
+    timeout: 30
+    cors_enabled: true
+    
+  # Encryption
+  encryption:
+    key_rotation_interval: 86400 # 24 hours
+    algorithm: "AES-256-GCM"
+    key_derivation: "PBKDF2"
+    
+  # Audit logging
+  audit:
+    enabled: true
+    log_path: "/var/log/nginx-defender/audit.log"
+    include_requests: true
+    include_responses: false
+    retention_days: 90
+
+# Development and debugging
+debug:
+  enabled: false
+  log_level: "debug"
+  profile_enabled: false
+  metrics_detailed: false
+  trace_requests: false
+  memory_profiling: false

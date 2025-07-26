@@ -1,0 +1,43 @@
+[
+  {
+    "cidr": "140.82.112.0/20",
+    "name": "GitHub Main",
+    "description": "GitHub main infrastructure",
+    "service": "github",
+    "country": "US",
+    "tags": ["github", "git", "api"],
+    "metadata": {
+      "provider": "github"
+    }
+  },
+  {
+    "cidr": "192.30.252.0/22",
+    "name": "GitHub Pages",
+    "description": "GitHub Pages hosting",
+    "service": "github",
+    "tags": ["github", "pages", "hosting"],
+    "metadata": {
+      "service": "pages"
+    }
+  },
+  {
+    "cidr": "185.199.108.0/22",
+    "name": "GitHub CDN",
+    "description": "GitHub CDN and static assets",
+    "service": "github",
+    "tags": ["github", "cdn", "static"],
+    "metadata": {
+      "service": "cdn"
+    }
+  },
+  {
+    "cidr": "20.201.28.151/32",
+    "name": "GitHub Copilot",
+    "description": "GitHub Copilot AI assistant",
+    "service": "github",
+    "tags": ["github", "copilot", "ai"],
+    "metadata": {
+      "service": "copilot"
+    }
+  }
+]

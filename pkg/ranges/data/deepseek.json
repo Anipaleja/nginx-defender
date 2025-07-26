@@ -1,0 +1,24 @@
+[
+  {
+    "cidr": "103.45.246.0/24",
+    "name": "DeepSeek API",
+    "description": "DeepSeek AI API servers",
+    "service": "deepseek",
+    "country": "CN",
+    "tags": ["ai", "deepseek", "api"],
+    "metadata": {
+      "provider": "deepseek"
+    }
+  },
+  {
+    "cidr": "8.222.128.0/17",
+    "name": "DeepSeek Training",
+    "description": "DeepSeek model training infrastructure",
+    "service": "deepseek",
+    "country": "CN",
+    "tags": ["ai", "training", "scraper"],
+    "metadata": {
+      "type": "training"
+    }
+  }
+]

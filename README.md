@@ -1,46 +1,50 @@
-# nginx-defender
+# nginx-defender v2.0
 
-[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)](https://golang.org/)  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)  [![Stars](https://img.shields.io/github/stars/anipaleja/nginx-defender?style=social)](https://github.com/anipaleja/nginx-defender/stargazers)
+[![Build Status](https://github.com/yourusername/nginx-defender/workflows/Build%20and%20Publish/badge.svg)](https://github.com/yourusername/nginx-defender/actions)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ghcr.io/yourusername/nginx-defender)](https://github.com/yourusername/nginx-defender/pkgs/container/nginx-defender)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yourusername/nginx-defender)](https://goreportcard.com/report/github.com/yourusername/nginx-defender)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> A real-time Nginx log monitor that detects abusive IPs and blocks them with 'iptables'. Lightweight, fast, and perfect for self-hosters, Raspberry Pi users, and small servers.
+**nginx-defender** is an advanced, enterprise-grade Web Application Firewall (WAF) and threat detection system designed to protect your web applications from sophisticated attacks. Built with Go, it provides real-time threat detection, machine learning-based anomaly detection, and comprehensive security monitoring.
 
-## Overview
+## 🚀 Features
 
-**nginx-defender** watches your Nginx access logs and protects your server from brute-force attacks, DDoS floods, and scrapers by automatically blocking IPs that exceed a customizable request threshold within a time window.
+### 🛡️ Advanced Threat Detection
+- **Machine Learning Integration**: Anomaly detection and behavioral analysis
+- **Real-time Threat Intelligence**: Automated feeds from multiple sources
+- **Multi-layered Protection**: Rate limiting, DDoS protection, brute force detection
+- **Pattern-based Detection**: SQL injection, XSS, command injection, directory traversal
+- **Geographic Filtering**: Country-based blocking with threat scoring
+- **Behavioral Analysis**: Session tracking and navigation pattern analysis
 
-No cloud dependencies. No bloated services. Just raw, efficient defense in pure Go.
+### 🔥 Firewall Management
+- **Multiple Backend Support**: iptables, nftables, UFW, firewalld, pf
+- **Async Rule Processing**: High-performance rule management
+- **Automatic Cleanup**: Time-based rule expiration
+- **Rule Persistence**: Backup and restore capabilities
+- **IP Range Management**: Built-in threat intelligence data
 
+### 📊 Monitoring & Analytics
+- **Real-time Dashboard**: Web-based management interface
+- **Prometheus Metrics**: Comprehensive metrics collection
+- **WebSocket Updates**: Live threat feeds and notifications
+- **Geographic Visualization**: Global threat mapping
+- **Performance Monitoring**: System resource tracking
 
-## Features
+### 🔔 Multi-channel Notifications
+- **Telegram Integration**: Real-time threat alerts
+- **Slack Notifications**: Team collaboration features
+- **Email Alerts**: SMTP-based notifications
+- **Webhook Support**: Custom integrations
+- **Discord & PagerDuty**: Additional notification channels
 
-- Real-time Nginx access log monitoring  
-- Auto-blocks abusive IPs using `iptables`  
-- Time window + request threshold logic  
-- Unblocks IPs after timeout  
-- Lightweight single-binary deployment  
-- Thread-safe & efficient using Go routines and locks
+### 🕸️ Honeypot System
+- **Service Emulation**: SSH, HTTP, FTP, Telnet honeypots
+- **Attack Intelligence**: Detailed interaction logging
+- **Threat Boost**: Enhanced scoring for honeypot attackers
 
-## Example
-
-If a single IP makes more than 100 requests in 60 seconds, it will be blocked via iptables for 1 hour.
-
-This makes it ideal for:
-- Self-hosted apps (like Ghost, WordPress, etc.)
-- Raspberry Pi or home servers
-- Lightweight VPS security
-
-
-## Installation
-
-```bash
-git clone https://github.com/yourusername/nginx-defender.git
-cd nginx-defender
-go build -o nginx_defender ./cmd/nginx-defender
-```
-
-**Or run directly:**
-
-```bash
-sudo go run ./cmd/nginx-defender/nginx_defender.go
-```
-**NOTE:** sudo is required because the tool interacts with iptables
+### ⚡ High Performance
+- **Clustering Support**: Multi-node deployment
+- **Connection Pooling**: Optimized database connections
+- **Caching Layer**: High-speed threat detection
+- **Async Processing**: Non-blocking operations
