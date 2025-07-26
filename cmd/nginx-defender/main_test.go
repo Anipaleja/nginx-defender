@@ -11,10 +11,25 @@ func TestBasic(t *testing.T) {
 	}
 }
 
-func TestVersion(t *testing.T) {
-	// Test that we can at least compile
-	version := "2.0.0"
+func TestVersionConstants(t *testing.T) {
+	// Test that version constants are properly set
 	if version == "" {
 		t.Error("Version should not be empty")
+	}
+	
+	if buildTime == "" {
+		t.Error("Build time should not be empty")
+	}
+	
+	if gitHash == "" {
+		t.Error("Git hash should not be empty")
+	}
+}
+
+func TestApplicationStruct(t *testing.T) {
+	// Test that we can create the Application struct
+	app := &Application{}
+	if app == nil {
+		t.Error("Application struct should not be nil")
 	}
 }
