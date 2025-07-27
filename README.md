@@ -67,12 +67,12 @@ graph TD
 
 | Feature | nginx-defender | Commercial WAFs | Open Source WAFs |
 |---------|----------------|-----------------|------------------|
-| **Real-time ML Detection** | ✅ Native | ❌ Limited | ❌ None |
-| **Multi-backend Firewall** | ✅ 5+ backends | ❌ Proprietary | ❌ Limited |
-| **Advanced Analytics** | ✅ Built-in | ✅ Expensive addon | ❌ Basic |
-| **Geographic Intelligence** | ✅ Integrated | ✅ Licensed | ❌ Manual |
-| **Clustering Support** | ✅ Native | ✅ Enterprise only | ❌ None |
-| **Container Ready** | ✅ OCI compliant | ❌ Legacy | ❌ Configuration heavy |
+| **Real-time ML Detection** | Native | Limited | None |
+| **Multi-backend Firewall** | 5+ backends | Proprietary | Limited |
+| **Advanced Analytics** | Built-in | Expensive addon | Basic |
+| **Geographic Intelligence** | Integrated | Licensed | Manual |
+| **Clustering Support** | Native | Enterprise only | None |
+| **Container Ready** | OCI compliant | Legacy | Configuration heavy |
 
 ---
 
@@ -84,35 +84,35 @@ graph TD
 <summary>High-Level Architecture Diagram</summary>
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────────────┐
 │                        nginx-defender                          │
-├─────────────────────────────────────────────────────────────────┤
+├────────────────────────────────────────────────────────────────┤
 │  ┌───────────────┐  ┌──────────────┐  ┌─────────────────────┐  │
 │  │  Log Monitor  │  │ Threat Intel │  │   Web Dashboard     │  │
 │  │   (Async)     │  │   (Real-time)│  │   (WebSocket)       │  │
 │  └───────┬───────┘  └──────┬───────┘  └─────────┬───────────┘  │
 │          │                 │                    │              │
 │  ┌───────▼─────────────────▼────────────────────▼───────────┐  │
-│  │              Threat Detection Engine                    │  │
-│  │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────┐   │  │
-│  │  │   Pattern   │ │ ML Anomaly   │ │ Rate Limiting   │   │  │
-│  │  │   Matcher   │ │  Detection   │ │    Engine       │   │  │
-│  │  └─────────────┘ └──────────────┘ └─────────────────┘   │  │
-│  └─────────────────────────┬───────────────────────────────┘  │
-│                            │                                  │
-│  ┌─────────────────────────▼───────────────────────────────┐  │
-│  │              Firewall Manager                          │  │
-│  │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────┐   │  │
-│  │  │  iptables   │ │   nftables   │ │      pf         │   │  │
-│  │  │   Backend   │ │   Backend    │ │   Backend       │   │  │
-│  │  └─────────────┘ └──────────────┘ └─────────────────┘   │  │
-│  └─────────────────────────┬───────────────────────────────┘  │
-│                            │                                  │
-│  ┌─────────────────────────▼───────────────────────────────┐  │
-│  │         Multi-Channel Notification System              │  │
-│  │    Telegram │ Slack │ Email │ Webhook │ Discord        │  │
-│  └─────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+│  │              Threat Detection Engine                     │  │
+│  │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────┐    │  │
+│  │  │   Pattern   │ │ ML Anomaly   │ │ Rate Limiting   │    │  │
+│  │  │   Matcher   │ │  Detection   │ │    Engine       │    │  │
+│  │  └─────────────┘ └──────────────┘ └─────────────────┘    │  │
+│  └─────────────────────────┬────────────────────────────────┘  │
+│                            │                                   │
+│  ┌─────────────────────────▼────────────────────────────────┐  │
+│  │              Firewall Manager                            │  │
+│  │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────┐    │  │
+│  │  │  iptables   │ │   nftables   │ │      pf         │    │  │
+│  │  │   Backend   │ │   Backend    │ │   Backend       │    │  │
+│  │  └─────────────┘ └──────────────┘ └─────────────────┘    │  │
+│  └─────────────────────────┬────────────────────────────────┘  │
+│                            │                                   │
+│  ┌─────────────────────────▼────────────────────────────────┐  │
+│  │         Multi-Channel Notification System                │  │
+│  │    Telegram │ Slack │ Email │ Webhook │ Discord          │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────┘
 ```
 
 </details>
