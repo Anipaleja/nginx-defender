@@ -1,0 +1,52 @@
+firewall:
+  backend: "mock"  # Safe mock backend for testing
+  whitelist:
+    - "127.0.0.1"
+    - "::1"
+    - "192.168.0.0/16"
+    - "10.0.0.0/8"
+
+detection:
+  enabled: true
+  ml_model: ""  # Disable ML for demo
+  patterns_file: "pkg/patterns/common.yaml"
+  rate_limiting:
+    enabled: true
+    window: "1m"
+    max_requests: 10
+  geo_blocking:
+    enabled: false
+
+logs:
+  level: "info"
+  format: "text"
+  output: "stdout"
+  sources:
+    - path: "/tmp/demo-nginx.log"
+      format: "combined"
+      follow: true
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  tls:
+    enabled: false
+
+metrics:
+  enabled: true
+  prometheus:
+    enabled: true
+    host: "0.0.0.0"
+    port: 9090
+
+notifications:
+  enabled: true
+  channels:
+    console:
+      enabled: true
+    email:
+      enabled: false
+    telegram:
+      enabled: false
+    slack:
+      enabled: false

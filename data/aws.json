@@ -1,0 +1,12 @@
+{
+  "name": "AWS IP Ranges",
+  "description": "Amazon Web Services IP ranges",
+  "last_updated": "2025-07-27",
+  "ranges": [
+    "3.5.140.0/22",
+    "13.248.118.0/24",
+    "18.208.0.0/13",
+    "52.94.249.0/24",
+    "54.239.1.0/24"
+  ]
+}

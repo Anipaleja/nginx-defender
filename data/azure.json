@@ -1,0 +1,11 @@
+{
+  "name": "Azure IP Ranges",
+  "description": "Microsoft Azure IP ranges",
+  "last_updated": "2025-07-27",
+  "ranges": [
+    "13.67.8.0/21",
+    "20.37.74.0/23",
+    "40.64.146.0/23",
+    "52.187.0.0/16"
+  ]
+}

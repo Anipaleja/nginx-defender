@@ -103,7 +103,7 @@ func (m *Matcher) loadDefaultPatterns() {
 		// File inclusion
 		{
 			Name:        "file_inclusion",
-			Pattern:     `(?i)(include|require)(_once)?\\s*\\([^)]*\\.(php|asp|jsp)`,
+			Pattern:     `(?i)(include|require)(_once)?\\s*\\([^)]*\\.(php|asp|jsp)\\)`,
 			Severity:    9,
 			Categories:  []string{"file_inclusion", "attack"},
 			Description: "File inclusion attempt",

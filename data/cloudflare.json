@@ -1,0 +1,11 @@
+{
+  "name": "Cloudflare IP Ranges",
+  "description": "Cloudflare IP ranges",
+  "last_updated": "2025-07-27",
+  "ranges": [
+    "103.21.244.0/22",
+    "103.22.200.0/22",
+    "173.245.48.0/20",
+    "198.41.128.0/17"
+  ]
+}
