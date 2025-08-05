@@ -54,7 +54,7 @@ func (b *MockBackend) ListRules() ([]*Rule, error) {
 	return rules, nil
 }
 
-// IsBlocked checks if an IP is blocked in the mock backend
+// IsBlocked will check if an IP is blocked in the mock backend
 func (b *MockBackend) IsBlocked(ip string) (bool, error) {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
