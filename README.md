@@ -1,13 +1,13 @@
 # nginx-defender
 
 <div align="center">
-
+  
 [![Build Status](https://github.com/anipaleja/nginx-defender/workflows/Build%20and%20Publish/badge.svg)](https://github.com/anipaleja/nginx-defender/actions)
 [![Docker Version](https://img.shields.io/badge/GHCR-nginx--defender-blue?logo=github)](https://github.com/anipaleja/nginx-defender/pkgs/container/nginx-defender)
 [![Go Report Card](https://goreportcard.com/badge/github.com/anipaleja/nginx-defender)](https://goreportcard.com/report/github.com/anipaleja/nginx-defender)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go)](https://golang.org/)
-[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20FreeBSD-lightgrey)](https://github.com/anipaleja/nginx-defender)
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20FreeBSD-orange)](https://github.com/anipaleja/nginx-defender)
 
 **Enterprise-Grade Web Application Firewall with Advanced Threat Intelligence**
 
@@ -37,7 +37,6 @@
 - [Performance Benchmarks](#performance-benchmarks)
 - [Security Considerations](#security-considerations)
 - [Development](#development)
-- [Contributing](#contributing)
 - [License](#license)
 
 </details>
@@ -67,12 +66,12 @@ graph TD
 
 | Feature | nginx-defender | Commercial WAFs | Open Source WAFs |
 |---------|----------------|-----------------|------------------|
-| **Real-time ML Detection** | ✅ Native | ❌ Limited | ❌ None |
-| **Multi-backend Firewall** | ✅ 5+ backends | ❌ Proprietary | ❌ Limited |
-| **Advanced Analytics** | ✅ Built-in | ✅ Expensive addon | ❌ Basic |
-| **Geographic Intelligence** | ✅ Integrated | ✅ Licensed | ❌ Manual |
-| **Clustering Support** | ✅ Native | ✅ Enterprise only | ❌ None |
-| **Container Ready** | ✅ OCI compliant | ❌ Legacy | ❌ Configuration heavy |
+| **Real-time ML Detection** | Native | Limited | None |
+| **Multi-backend Firewall** | 5+ backends | Proprietary | Limited |
+| **Advanced Analytics** | Built-in | Expensive addon | Basic |
+| **Geographic Intelligence** | Integrated | Licensed | Manual |
+| **Clustering Support** | Native | Enterprise only | None |
+| **Container Ready** | OCI compliant | Legacy | Configuration heavy |
 
 ---
 
@@ -84,35 +83,35 @@ graph TD
 <summary>High-Level Architecture Diagram</summary>
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────────────┐
 │                        nginx-defender                          │
-├─────────────────────────────────────────────────────────────────┤
+├────────────────────────────────────────────────────────────────┤
 │  ┌───────────────┐  ┌──────────────┐  ┌─────────────────────┐  │
 │  │  Log Monitor  │  │ Threat Intel │  │   Web Dashboard     │  │
 │  │   (Async)     │  │   (Real-time)│  │   (WebSocket)       │  │
 │  └───────┬───────┘  └──────┬───────┘  └─────────┬───────────┘  │
 │          │                 │                    │              │
 │  ┌───────▼─────────────────▼────────────────────▼───────────┐  │
-│  │              Threat Detection Engine                    │  │
-│  │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────┐   │  │
-│  │  │   Pattern   │ │ ML Anomaly   │ │ Rate Limiting   │   │  │
-│  │  │   Matcher   │ │  Detection   │ │    Engine       │   │  │
-│  │  └─────────────┘ └──────────────┘ └─────────────────┘   │  │
-│  └─────────────────────────┬───────────────────────────────┘  │
-│                            │                                  │
-│  ┌─────────────────────────▼───────────────────────────────┐  │
-│  │              Firewall Manager                          │  │
-│  │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────┐   │  │
-│  │  │  iptables   │ │   nftables   │ │      pf         │   │  │
-│  │  │   Backend   │ │   Backend    │ │   Backend       │   │  │
-│  │  └─────────────┘ └──────────────┘ └─────────────────┘   │  │
-│  └─────────────────────────┬───────────────────────────────┘  │
-│                            │                                  │
-│  ┌─────────────────────────▼───────────────────────────────┐  │
-│  │         Multi-Channel Notification System              │  │
-│  │    Telegram │ Slack │ Email │ Webhook │ Discord        │  │
-│  └─────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+│  │                Threat Detection Engine                   │  │
+│  │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────┐    │  │
+│  │  │   Pattern   │ │ ML Anomaly   │ │ Rate Limiting   │    │  │
+│  │  │   Matcher   │ │  Detection   │ │    Engine       │    │  │
+│  │  └─────────────┘ └──────────────┘ └─────────────────┘    │  │
+│  └─────────────────────────┬────────────────────────────────┘  │
+│                            │                                   │
+│  ┌─────────────────────────▼────────────────────────────────┐  │
+│  │                  Firewall Manager                        │  │
+│  │  ┌─────────────┐ ┌──────────────┐ ┌─────────────────┐    │  │
+│  │  │  iptables   │ │   nftables   │ │      pf         │    │  │
+│  │  │   Backend   │ │   Backend    │ │   Backend       │    │  │
+│  │  └─────────────┘ └──────────────┘ └─────────────────┘    │  │
+│  └─────────────────────────┬────────────────────────────────┘  │
+│                            │                                   │
+│  ┌─────────────────────────▼────────────────────────────────┐  │
+│  │            Multi-Channel Notification System             │  │
+│  │    Telegram │ Slack │ Email │ Webhook │ Discord          │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────┘
 ```
 
 </details>
@@ -1165,7 +1164,7 @@ gosec ./...
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 
 ### Third-Party Licenses
 

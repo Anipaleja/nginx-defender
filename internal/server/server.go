@@ -98,7 +98,7 @@ func (s *Server) setupRoutes() {
 	api.HandleFunc("/status", s.statusHandler).Methods("GET")
 	api.HandleFunc("/stats", s.statsHandler).Methods("GET")
 	
-	// Threat detection
+	// Threat detector
 	api.HandleFunc("/threats", s.apiThreatsHandler).Methods("GET")
 	api.HandleFunc("/threats/{id}", s.apiThreatHandler).Methods("GET")
 	api.HandleFunc("/threats/search", s.apiThreatSearchHandler).Methods("POST")

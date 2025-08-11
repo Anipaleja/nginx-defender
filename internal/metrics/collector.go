@@ -49,7 +49,7 @@ type Collector struct {
 	mutex sync.RWMutex
 }
 
-// NewCollector creates a new metrics collector
+// NewCollector will create a new metrics collector
 func NewCollector(cfg config.MetricsConfig, logger *logrus.Logger) *Collector {
 	registry := prometheus.NewRegistry()
 	
@@ -71,7 +71,7 @@ func NewCollector(cfg config.MetricsConfig, logger *logrus.Logger) *Collector {
 	return collector
 }
 
-// initializeMetrics initializes all Prometheus metrics
+// initializeMetrics will start initializing all Prometheus metrics
 func (c *Collector) initializeMetrics() {
 	// Request metrics
 	c.totalRequests = prometheus.NewCounterVec(
