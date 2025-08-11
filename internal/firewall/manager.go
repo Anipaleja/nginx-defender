@@ -247,6 +247,10 @@ func (m *Manager) ruleWorker() {
 		case <-m.ctx.Done():
 			return
 		case rule := <-m.ruleChan:
+			if rule == nil {
+				m.logger.Warn("Received nil rule, skipping")
+				continue
+			}
 			if err := m.processRule(rule); err != nil {
 				m.logger.WithError(err).Errorf("Failed to process rule for IP %s", rule.IP)
 			}

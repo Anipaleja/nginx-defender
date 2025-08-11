@@ -1,6 +1,7 @@
 package firewall
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -25,6 +26,10 @@ func (b *MockBackend) Name() string {
 
 // AddRule adds a rule to the mock backend
 func (b *MockBackend) AddRule(rule *Rule) error {
+	if rule == nil {
+		return fmt.Errorf("cannot add nil rule")
+	}
+	
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 	

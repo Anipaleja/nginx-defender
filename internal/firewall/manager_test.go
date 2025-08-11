@@ -38,8 +38,9 @@ func NewTestSuite(t *testing.T) *TestSuite {
 			"127.0.0.1",
 			"::1",
 			"169.254.0.0/16", // Link-local addresses
+			"192.168.0.0/16", // Private range for testing
+			"10.0.0.0/8",     // Private range for testing
 		},
-		MaxRules: 100, // Limit rule count in tests
 	}
 	
 	manager, err := NewManager(cfg, logger)
@@ -67,13 +68,6 @@ func (ts *TestSuite) Cleanup() {
 // generateSecureTestIP generates a cryptographically secure test IP
 func generateSecureTestIP(t *testing.T) string {
 	t.Helper()
-	
-	// Generate random private IP to avoid affecting real networks
-	privateRanges := []string{
-		"10.0.0.0/8",
-		"172.16.0.0/12", 
-		"192.168.0.0/16",
-	}
 	
 	// Use 192.168.x.x range for testing (safe private range)
 	buf := make([]byte, 2)
@@ -156,10 +150,24 @@ func TestRuleCreation(t *testing.T) {
 }
 
 func TestBlockIP_SecureImplementation(t *testing.T) {
-	ts := NewTestSuite(t)
-	defer ts.Cleanup()
+	// Create a separate test manager with limited whitelist for this test
+	logger := logrus.New()
+	logger.SetLevel(logrus.ErrorLevel)
+	logger.SetOutput(os.Stderr)
 	
-	// Generate secure test IP
+	// Use minimal whitelist to allow blocking test
+	cfg := config.FirewallConfig{
+		Backend: "mock",
+		Whitelist: []string{
+			"127.0.0.1", // Only localhost whitelisted
+		},
+	}
+	
+	manager, err := NewManager(cfg, logger)
+	require.NoError(t, err, "Failed to create test manager")
+	defer manager.Shutdown()
+	
+	// Generate secure test IP (not whitelisted)
 	testIP := generateSecureTestIP(t)
 	validateTestIP(t, testIP)
 	
@@ -175,7 +183,7 @@ func TestBlockIP_SecureImplementation(t *testing.T) {
 		"context":    "automated_testing",
 	}
 	
-	err := ts.manager.BlockIP(testIP, ActionBlock, 5*time.Minute, "Security test block", metadata)
+	err = manager.BlockIP(testIP, ActionBlock, 5*time.Minute, "Security test block", metadata)
 	require.NoError(t, err, "Should successfully block test IP")
 	
 	// Wait for processing with timeout protection
@@ -187,7 +195,7 @@ func TestBlockIP_SecureImplementation(t *testing.T) {
 	}
 	
 	// Verify blocking worked securely
-	blocked, rule := ts.manager.IsBlocked(testIP)
+	blocked, rule := manager.IsBlocked(testIP)
 	assert.True(t, blocked, "IP should be blocked")
 	require.NotNil(t, rule, "Rule should exist")
 	
