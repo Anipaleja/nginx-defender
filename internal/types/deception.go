@@ -516,14 +516,6 @@ type UserSession struct {
 	Location    string                   `json:"location"`
 }
 
-type UserActivity struct {
-	Type        string                   `json:"type"`
-	Action      string                   `json:"action"`
-	Target      string                   `json:"target"`
-	Result      string                   `json:"result"`
-	Timestamp   time.Time                `json:"timestamp"`
-}
-
 type UserIncident struct {
 	ID          string                   `json:"id"`
 	Type        string                   `json:"type"`
@@ -871,38 +863,6 @@ type TechniqueApplication struct {
 	Frequency   string                   `json:"frequency"`
 }
 
-type BehaviorAnalyzer struct {
-	Models      []*BehaviorModel         `json:"models"`
-	Predictors  []*BehaviorPredictor     `json:"predictors"`
-	Classifiers []*BehaviorClassifier    `json:"classifiers"`
-	Detector    *AnomalyDetector         `json:"detector"`
-}
-
-type BehaviorModel struct {
-	ID          string                   `json:"id"`
-	Type        string                   `json:"type"`
-	Algorithm   string                   `json:"algorithm"`
-	Features    []string                 `json:"features"`
-	Parameters  map[string]interface{}   `json:"parameters"`
-	Performance *ModelPerformance        `json:"performance"`
-}
-
-type BehaviorPredictor struct {
-	Model       *BehaviorModel           `json:"model"`
-	Horizon     time.Duration            `json:"horizon"`
-	Confidence  float64                  `json:"confidence"`
-	Features    []string                 `json:"features"`
-	Threshold   float64                  `json:"threshold"`
-}
-
-type BehaviorClassifier struct {
-	Model       *BehaviorModel           `json:"model"`
-	Classes     []string                 `json:"classes"`
-	Features    []string                 `json:"features"`
-	Threshold   float64                  `json:"threshold"`
-	Multiclass  bool                     `json:"multiclass"`
-}
-
 type PsychAdaptor struct {
 	Strategies  []*AdaptationStrategy    `json:"strategies"`
 	Controller  *AdaptationController    `json:"controller"`
@@ -1010,6 +970,15 @@ type RecommendationRanker struct {
 	Features    []string                 `json:"features"`
 	Weights     map[string]float64       `json:"weights"`
 	Threshold   float64                  `json:"threshold"`
+}
+
+type BehaviorModel struct {
+	ID          string                   `json:"id"`
+	Type        string                   `json:"type"`
+	Algorithm   string                   `json:"algorithm"`
+	Features    []string                 `json:"features"`
+	Parameters  map[string]interface{}   `json:"parameters"`
+	Performance *ModelPerformance        `json:"performance"`
 }
 
 type PsychLearner struct {
@@ -1725,4 +1694,307 @@ type DeploymentConfig struct {
 	RetryAttempts int                    `json:"retry_attempts"`
 	Timeout       time.Duration          `json:"timeout"`
 	Config        map[string]interface{} `json:"config"`
+}
+
+// Additional honeypot types
+type AutoScalingEngine struct {
+	Policies     []*ScalingPolicy           `json:"policies"`
+	Metrics      map[string]*ScalingMetric  `json:"metrics"`
+	Rules        []*ScalingRule             `json:"rules"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type ScalingPolicy struct {
+	ID           string                     `json:"id"`
+	Name         string                     `json:"name"`
+	Type         string                     `json:"type"`
+	Trigger      string                     `json:"trigger"`
+	Action       string                     `json:"action"`
+	Threshold    float64                    `json:"threshold"`
+	Cooldown     time.Duration              `json:"cooldown"`
+}
+
+type ScalingMetric struct {
+	Name         string                     `json:"name"`
+	Type         string                     `json:"type"`
+	Value        float64                    `json:"value"`
+	Threshold    float64                    `json:"threshold"`
+	Timestamp    time.Time                  `json:"timestamp"`
+}
+
+type ScalingRule struct {
+	ID           string                     `json:"id"`
+	Condition    string                     `json:"condition"`
+	Action       string                     `json:"action"`
+	Priority     int                        `json:"priority"`
+	Enabled      bool                       `json:"enabled"`
+}
+
+type HoneypotLoadBalancer struct {
+	Targets      []*LoadBalancerTarget      `json:"targets"`
+	Algorithm    string                     `json:"algorithm"`
+	HealthChecks *HealthCheck               `json:"health_checks"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type LoadBalancerTarget struct {
+	ID           string                     `json:"id"`
+	Address      string                     `json:"address"`
+	Port         int                        `json:"port"`
+	Weight       int                        `json:"weight"`
+	Health       string                     `json:"health"`
+	LastCheck    time.Time                  `json:"last_check"`
+}
+
+type HealthCheck struct {
+	Interval     time.Duration              `json:"interval"`
+	Timeout      time.Duration              `json:"timeout"`
+	Retries      int                        `json:"retries"`
+	Path         string                     `json:"path"`
+	Expected     string                     `json:"expected"`
+}
+
+type HealthMonitor struct {
+	Checks       map[string]*HealthCheck    `json:"checks"`
+	Status       map[string]string          `json:"status"`
+	History      []*HealthRecord            `json:"history"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type HealthRecord struct {
+	Target       string                     `json:"target"`
+	Status       string                     `json:"status"`
+	Latency      time.Duration              `json:"latency"`
+	Timestamp    time.Time                  `json:"timestamp"`
+	Error        string                     `json:"error"`
+}
+
+type ConfigurationManager struct {
+	Configs      map[string]*Configuration  `json:"configs"`
+	Templates    map[string]*ConfigTemplate `json:"templates"`
+	Validator    *ConfigValidator           `json:"validator"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type Configuration struct {
+	ID           string                     `json:"id"`
+	Name         string                     `json:"name"`
+	Type         string                     `json:"type"`
+	Data         map[string]interface{}     `json:"data"`
+	Version      string                     `json:"version"`
+	LastUpdate   time.Time                  `json:"last_update"`
+}
+
+type ConfigTemplate struct {
+	ID           string                     `json:"id"`
+	Name         string                     `json:"name"`
+	Schema       map[string]interface{}     `json:"schema"`
+	Defaults     map[string]interface{}     `json:"defaults"`
+	Required     []string                   `json:"required"`
+}
+
+type ConfigValidator struct {
+	Rules        []*ValidationRule          `json:"rules"`
+	Schemas      map[string]interface{}     `json:"schemas"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type LifecycleManager struct {
+	States       map[string]*LifecycleState `json:"states"`
+	Transitions  []*StateTransition         `json:"transitions"`
+	Hooks        map[string]*LifecycleHook  `json:"hooks"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type LifecycleState struct {
+	Name         string                     `json:"name"`
+	Description  string                     `json:"description"`
+	Actions      []string                   `json:"actions"`
+	Transitions  []string                   `json:"transitions"`
+	Timeout      time.Duration              `json:"timeout"`
+}
+
+type StateTransition struct {
+	From         string                     `json:"from"`
+	To           string                     `json:"to"`
+	Trigger      string                     `json:"trigger"`
+	Condition    string                     `json:"condition"`
+	Action       string                     `json:"action"`
+}
+
+type LifecycleHook struct {
+	Event        string                     `json:"event"`
+	Handler      string                     `json:"handler"`
+	Priority     int                        `json:"priority"`
+	Async        bool                       `json:"async"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type MigrationEngine struct {
+	Migrations   []*Migration               `json:"migrations"`
+	History      []*MigrationRecord         `json:"history"`
+	Strategy     string                     `json:"strategy"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type Migration struct {
+	ID           string                     `json:"id"`
+	Name         string                     `json:"name"`
+	Version      string                     `json:"version"`
+	Steps        []*MigrationStep           `json:"steps"`
+	Rollback     []*MigrationStep           `json:"rollback"`
+	Dependencies []string                   `json:"dependencies"`
+}
+
+type MigrationStep struct {
+	Action       string                     `json:"action"`
+	Parameters   map[string]interface{}     `json:"parameters"`
+	Validation   string                     `json:"validation"`
+	Rollback     string                     `json:"rollback"`
+}
+
+type MigrationRecord struct {
+	Migration    string                     `json:"migration"`
+	Status       string                     `json:"status"`
+	Started      time.Time                  `json:"started"`
+	Completed    *time.Time                 `json:"completed"`
+	Error        string                     `json:"error"`
+}
+
+type WebTrapManager struct {
+	Traps        map[string]*WebTrap        `json:"traps"`
+	Templates    map[string]*TrapTemplate   `json:"templates"`
+	Analytics    *TrapAnalytics             `json:"analytics"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type WebTrap struct {
+	ID           string                     `json:"id"`
+	URL          string                     `json:"url"`
+	Type         string                     `json:"type"`
+	Content      string                     `json:"content"`
+	Triggers     []*TrapTrigger             `json:"triggers"`
+	Interactions []*TrapInteraction         `json:"interactions"`
+}
+
+type TrapTemplate struct {
+	ID           string                     `json:"id"`
+	Name         string                     `json:"name"`
+	Type         string                     `json:"type"`
+	Content      string                     `json:"content"`
+	Variables    map[string]string          `json:"variables"`
+}
+
+type TrapTrigger struct {
+	Type         string                     `json:"type"`
+	Condition    string                     `json:"condition"`
+	Action       string                     `json:"action"`
+	Delay        time.Duration              `json:"delay"`
+	Probability  float64                    `json:"probability"`
+}
+
+type TrapInteraction struct {
+	ID           string                     `json:"id"`
+	IP           string                     `json:"ip"`
+	UserAgent    string                     `json:"user_agent"`
+	Method       string                     `json:"method"`
+	Path         string                     `json:"path"`
+	Headers      map[string]string          `json:"headers"`
+	Body         string                     `json:"body"`
+	Timestamp    time.Time                  `json:"timestamp"`
+}
+
+type TrapAnalytics struct {
+	Interactions int                        `json:"interactions"`
+	UniqueIPs    int                        `json:"unique_ips"`
+	TopPaths     map[string]int             `json:"top_paths"`
+	TopAgents    map[string]int             `json:"top_agents"`
+	LastUpdate   time.Time                  `json:"last_update"`
+}
+
+type NetworkTrapManager struct {
+	Traps        map[string]*NetworkTrap    `json:"traps"`
+	Listeners    map[string]*TrapListener   `json:"listeners"`
+	Analytics    *NetworkTrapAnalytics      `json:"analytics"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type NetworkTrap struct {
+	ID           string                     `json:"id"`
+	Port         int                        `json:"port"`
+	Protocol     string                     `json:"protocol"`
+	Service      string                     `json:"service"`
+	Banner       string                     `json:"banner"`
+	Interactions []*NetworkInteraction      `json:"interactions"`
+}
+
+type TrapListener struct {
+	Port         int                        `json:"port"`
+	Protocol     string                     `json:"protocol"`
+	Active       bool                       `json:"active"`
+	Connections  int                        `json:"connections"`
+	LastActivity time.Time                  `json:"last_activity"`
+}
+
+type NetworkInteraction struct {
+	ID           string                     `json:"id"`
+	SourceIP     string                     `json:"source_ip"`
+	SourcePort   int                        `json:"source_port"`
+	Protocol     string                     `json:"protocol"`
+	Data         []byte                     `json:"data"`
+	Timestamp    time.Time                  `json:"timestamp"`
+	Duration     time.Duration              `json:"duration"`
+}
+
+type NetworkTrapAnalytics struct {
+	Connections  int                        `json:"connections"`
+	UniqueIPs    int                        `json:"unique_ips"`
+	TopPorts     map[int]int                `json:"top_ports"`
+	TopProtocols map[string]int             `json:"top_protocols"`
+	LastUpdate   time.Time                  `json:"last_update"`
+}
+
+type EmailTrapManager struct {
+	Traps        map[string]*EmailTrap      `json:"traps"`
+	Addresses    []*TrapEmailAddress        `json:"addresses"`
+	Analytics    *EmailTrapAnalytics        `json:"analytics"`
+	Config       map[string]interface{}     `json:"config"`
+}
+
+type EmailTrap struct {
+	ID           string                     `json:"id"`
+	Address      string                     `json:"address"`
+	Domain       string                     `json:"domain"`
+	Type         string                     `json:"type"`
+	AutoReply    bool                       `json:"auto_reply"`
+	Template     string                     `json:"template"`
+	Emails       []*TrapEmail               `json:"emails"`
+}
+
+type TrapEmailAddress struct {
+	Address      string                     `json:"address"`
+	Type         string                     `json:"type"`
+	Created      time.Time                  `json:"created"`
+	EmailCount   int                        `json:"email_count"`
+	LastEmail    time.Time                  `json:"last_email"`
+}
+
+type TrapEmail struct {
+	ID           string                     `json:"id"`
+	From         string                     `json:"from"`
+	To           string                     `json:"to"`
+	Subject      string                     `json:"subject"`
+	Body         string                     `json:"body"`
+	Attachments  []string                   `json:"attachments"`
+	Timestamp    time.Time                  `json:"timestamp"`
+	Spam         bool                       `json:"spam"`
+}
+
+type EmailTrapAnalytics struct {
+	Emails       int                        `json:"emails"`
+	UniqueSenders int                       `json:"unique_senders"`
+	SpamCount    int                        `json:"spam_count"`
+	TopSenders   map[string]int             `json:"top_senders"`
+	TopSubjects  map[string]int             `json:"top_subjects"`
+	LastUpdate   time.Time                  `json:"last_update"`
 }

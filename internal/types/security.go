@@ -183,14 +183,23 @@ type UAPattern struct {
 	Confidence  float64 `json:"confidence"`
 }
 
-type BehaviorProfile struct {
+type SecurityAnomaly struct {
+	Type        string                 `json:"type"`
+	Description string                 `json:"description"`
+	Severity    string                 `json:"severity"`
+	Score       float64                `json:"score"`
+	Evidence    map[string]interface{} `json:"evidence"`
+	Timestamp   time.Time              `json:"timestamp"`
+}
+
+type SecurityBehaviorProfile struct {
 	UserID          string                 `json:"user_id"`
 	SessionID       string                 `json:"session_id"`
 	RequestPatterns *RequestPatterns       `json:"request_patterns"`
 	NavigationFlow  *NavigationFlow        `json:"navigation_flow"`
 	TimingProfile   *TimingProfile         `json:"timing_profile"`
 	InteractionData *InteractionData       `json:"interaction_data"`
-	Anomalies       []*BehaviorAnomaly     `json:"anomalies"`
+	Anomalies       []*SecurityAnomaly     `json:"anomalies"`
 	Score           float64                `json:"score"`
 	Classification  string                 `json:"classification"`
 	LastUpdated     time.Time              `json:"last_updated"`
@@ -261,15 +270,6 @@ type FormInteraction struct {
 	FillTime    time.Duration `json:"fill_time"`
 	Corrections int           `json:"corrections"`
 	Timestamp   time.Time     `json:"timestamp"`
-}
-
-type BehaviorAnomaly struct {
-	Type        string                 `json:"type"`
-	Description string                 `json:"description"`
-	Severity    string                 `json:"severity"`
-	Score       float64                `json:"score"`
-	Evidence    map[string]interface{} `json:"evidence"`
-	Timestamp   time.Time              `json:"timestamp"`
 }
 
 type ChallengeType struct {

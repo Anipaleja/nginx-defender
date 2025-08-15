@@ -188,9 +188,9 @@ type EngineStats struct {
 type TransformerModel struct {
 	modelPath     string
 	config        *TransformerConfig
-	tokenizer     *Tokenizer
-	attention     *AttentionMechanism
-	embeddings    *EmbeddingLayer
+	tokenizer     *types.Tokenizer
+	attention     *types.AttentionMechanism
+	embeddings    *types.EmbeddingLayer
 	accuracy      float64
 	version       string
 	mutex         sync.RWMutex
@@ -289,7 +289,7 @@ type FederatedLearningClient struct {
 	globalModel    Model
 	updateInterval time.Duration
 	privacyEngine  *PrivacyEngine
-	aggregator     *ModelAggregator
+	aggregator     *types.ModelAggregator
 	logger         *logrus.Logger
 }
 

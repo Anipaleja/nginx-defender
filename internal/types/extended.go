@@ -142,6 +142,8 @@ type NoiseGenerator struct {
 	Config      map[string]interface{} `json:"config"`
 }
 
+// AI/ML model types
+
 // Missing types for Protection package
 type HTTPFingerprintAnalyzer struct {
 	HeaderPatterns map[string]*HeaderPattern `json:"header_patterns"`
@@ -222,14 +224,6 @@ type BotDetector struct {
 	Threshold   float64                    `json:"threshold"`
 	Algorithm   string                     `json:"algorithm"`
 	Model       Model                      `json:"model"`
-}
-
-type DetectionRule struct {
-	Name        string                     `json:"name"`
-	Condition   string                     `json:"condition"`
-	Weight      float64                    `json:"weight"`
-	Enabled     bool                       `json:"enabled"`
-	Description string                     `json:"description"`
 }
 
 type CanvasDatabase struct {
@@ -506,4 +500,240 @@ type TypingRhythm struct {
 	Consistency float64                       `json:"consistency"`
 	Pauses      []time.Duration               `json:"pauses"`
 	Bursts      []int                         `json:"bursts"`
+}
+
+// Additional protection types
+type ScrollBehaviorTracker struct {
+	Patterns     map[string]*ScrollPattern `json:"patterns"`
+	Velocity     float64                   `json:"velocity"`
+	Direction    string                    `json:"direction"`
+	Config       map[string]interface{}    `json:"config"`
+}
+
+type ScrollPattern struct {
+	Direction    string                 `json:"direction"`
+	Speed        float64                `json:"speed"`
+	Acceleration float64                `json:"acceleration"`
+	Timestamp    time.Time              `json:"timestamp"`
+}
+
+type ClickPatternAnalyzer struct {
+	Patterns     []*ClickPattern        `json:"patterns"`
+	Frequency    float64                `json:"frequency"`
+	Timing       []time.Duration        `json:"timing"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type ClickPattern struct {
+	X            int                    `json:"x"`
+	Y            int                    `json:"y"`
+	Button       int                    `json:"button"`
+	Timestamp    time.Time              `json:"timestamp"`
+	Duration     time.Duration          `json:"duration"`
+}
+
+type NavigationAnalyzer struct {
+	Paths        []*NavigationPath      `json:"paths"`
+	Patterns     map[string]int         `json:"patterns"`
+	Anomalies    []string               `json:"anomalies"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type NavigationPath struct {
+	URL          string                 `json:"url"`
+	Method       string                 `json:"method"`
+	Timestamp    time.Time              `json:"timestamp"`
+	Duration     time.Duration          `json:"duration"`
+	Referer      string                 `json:"referer"`
+}
+
+type InteractionAnalyzer struct {
+	Events       []*InteractionEvent    `json:"events"`
+	Patterns     map[string]float64     `json:"patterns"`
+	Score        float64                `json:"score"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type InteractionEvent struct {
+	Type         string                 `json:"type"`
+	Target       string                 `json:"target"`
+	Value        string                 `json:"value"`
+	Timestamp    time.Time              `json:"timestamp"`
+	Metadata     map[string]interface{} `json:"metadata"`
+}
+
+type SessionAnalyzer struct {
+	Sessions     map[string]*UserSession `json:"sessions"`
+	Patterns     []*SessionPattern       `json:"patterns"`
+	Anomalies    []string                `json:"anomalies"`
+	Config       map[string]interface{}  `json:"config"`
+}
+
+type SessionPattern struct {
+	Duration     time.Duration          `json:"duration"`
+	RequestCount int                    `json:"request_count"`
+	UserAgent    string                 `json:"user_agent"`
+	IPs          []string               `json:"ips"`
+	Score        float64                `json:"score"`
+}
+
+type AbnormalityDetector struct {
+	Thresholds   map[string]float64     `json:"thresholds"`
+	Algorithms   []string               `json:"algorithms"`
+	Models       []*DetectionModel      `json:"models"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type DetectionModel struct {
+	Name         string                 `json:"name"`
+	Type         string                 `json:"type"`
+	Accuracy     float64                `json:"accuracy"`
+	LastTrained  time.Time              `json:"last_trained"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type EnsembleClassifier struct {
+	Models       []*ClassificationModel `json:"models"`
+	Strategy     string                 `json:"strategy"`
+	Weights      []float64              `json:"weights"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type ClassificationModel struct {
+	Name         string                 `json:"name"`
+	Type         string                 `json:"type"`
+	Features     []string               `json:"features"`
+	Accuracy     float64                `json:"accuracy"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type NetworkLayer struct {
+	Type        string                 `json:"type"`
+	Size        int                    `json:"size"`
+	Activation  string                 `json:"activation"`
+	Weights     [][]float64            `json:"weights"`
+	Biases      []float64              `json:"biases"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type DeepLearningModel struct {
+	Architecture string                 `json:"architecture"`
+	Layers       []*NetworkLayer        `json:"layers"`
+	Optimizer    string                 `json:"optimizer"`
+	LossFunction string                 `json:"loss_function"`
+	Trained      bool                   `json:"trained"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type GradientBoostingModel struct {
+	Trees        []*DecisionTree        `json:"trees"`
+	LearningRate float64                `json:"learning_rate"`
+	MaxDepth     int                    `json:"max_depth"`
+	NumTrees     int                    `json:"num_trees"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type DecisionTree struct {
+	Root         *TreeNode              `json:"root"`
+	MaxDepth     int                    `json:"max_depth"`
+	MinSamples   int                    `json:"min_samples"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type TreeNode struct {
+	Feature      string                 `json:"feature"`
+	Threshold    float64                `json:"threshold"`
+	Left         *TreeNode              `json:"left"`
+	Right        *TreeNode              `json:"right"`
+	Value        float64                `json:"value"`
+	IsLeaf       bool                   `json:"is_leaf"`
+}
+
+// Additional AI and ML types
+type AttentionMechanism struct {
+	Type        string                 `json:"type"`
+	Heads       int                    `json:"heads"`
+	Dimension   int                    `json:"dimension"`
+	Weights     [][]float64            `json:"weights"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type EmbeddingLayer struct {
+	VocabSize   int                    `json:"vocab_size"`
+	EmbedSize   int                    `json:"embed_size"`
+	Embeddings  [][]float64            `json:"embeddings"`
+	Trainable   bool                   `json:"trainable"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type TransformerModel struct {
+	Type        string                 `json:"type"`
+	Layers      int                    `json:"layers"`
+	Heads       int                    `json:"heads"`
+	Dimension   int                    `json:"dimension"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type ModelUpdater struct {
+	Strategy    string                 `json:"strategy"`
+	Frequency   string                 `json:"frequency"`
+	Threshold   float64                `json:"threshold"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+// Challenge and protection types
+type CAPTCHAEngine struct {
+	Type        string                 `json:"type"`
+	Difficulty  int                    `json:"difficulty"`
+	Provider    string                 `json:"provider"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type JavaScriptChallenge struct {
+	Code        string                 `json:"code"`
+	Timeout     int                    `json:"timeout"`
+	Expected    string                 `json:"expected"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type ProofOfWorkChallenge struct {
+	Algorithm   string                 `json:"algorithm"`
+	Difficulty  int                    `json:"difficulty"`
+	Target      string                 `json:"target"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type BiometricChallenge struct {
+	Type        string                 `json:"type"`
+	Threshold   float64                `json:"threshold"`
+	Provider    string                 `json:"provider"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type PuzzleChallenge struct {
+	Type        string                 `json:"type"`
+	Pieces      int                    `json:"pieces"`
+	TimeLimit   int                    `json:"time_limit"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type GameBasedChallenge struct {
+	Game        string                 `json:"game"`
+	Level       int                    `json:"level"`
+	TimeLimit   int                    `json:"time_limit"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type InvisibleChallenge struct {
+	Type        string                 `json:"type"`
+	Hidden      bool                   `json:"hidden"`
+	Trigger     string                 `json:"trigger"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type AdaptiveChallenge struct {
+	Strategy    string                 `json:"strategy"`
+	Difficulty  float64                `json:"difficulty"`
+	Adaptor     string                 `json:"adaptor"`
+	Config      map[string]interface{} `json:"config"`
 }

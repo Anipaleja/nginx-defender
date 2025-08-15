@@ -59,23 +59,23 @@ type FingerprintEngine struct {
 type BehaviorAnalyzer struct {
 	mouseTracker         *types.MouseMovementTracker
 	keyboardTracker      *types.KeyboardPatternTracker
-	scrollTracker        *ScrollBehaviorTracker
-	clickPatternAnalyzer *ClickPatternAnalyzer
-	navigationAnalyzer   *NavigationAnalyzer
-	interactionAnalyzer  *InteractionAnalyzer
-	sessionAnalyzer      *SessionAnalyzer
-	abnormalityDetector  *AbnormalityDetector
+	scrollTracker        *types.ScrollBehaviorTracker
+	clickPatternAnalyzer *types.ClickPatternAnalyzer
+	navigationAnalyzer   *types.NavigationAnalyzer
+	interactionAnalyzer  *types.InteractionAnalyzer
+	sessionAnalyzer      *types.SessionAnalyzer
+	abnormalityDetector  *types.AbnormalityDetector
 }
 
 // MLBotClassifier uses machine learning for bot classification
 type MLBotClassifier struct {
-	ensemble             *EnsembleClassifier
-	deepLearningModel    *DeepLearningModel
-	gradientBoostingModel *GradientBoostingModel
-	neuralNetwork        *NeuralNetwork
-	transformerModel     *TransformerModel
-	featureExtractor     *FeatureExtractor
-	modelUpdater         *ModelUpdater
+	ensemble             *types.EnsembleClassifier
+	deepLearningModel    *types.DeepLearningModel
+	gradientBoostingModel *types.GradientBoostingModel
+	neuralNetwork        *types.NeuralNetwork
+	transformerModel     *types.TransformerModel
+	featureExtractor     *types.FeatureExtractor
+	modelUpdater         *types.ModelUpdater
 }
 
 // ChallengeSystem implements sophisticated challenge mechanisms

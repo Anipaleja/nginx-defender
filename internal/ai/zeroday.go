@@ -39,11 +39,11 @@ type ZeroDayDetector struct {
 
 // Autoencoder for unsupervised anomaly detection
 type Autoencoder struct {
-	encoder          *NeuralNetwork
-	decoder          *NeuralNetwork
+	encoder          *types.NeuralNetwork
+	decoder          *types.NeuralNetwork
 	latentDimension  int
 	reconstructionThreshold float64
-	trainingHistory  []*TrainingPoint
+	trainingHistory  []*types.TrainingPoint
 	version          string
 }
 
@@ -52,13 +52,13 @@ type EnsembleModel struct {
 	models       []Model
 	votingMethod string // majority, weighted, stacking
 	weights      []float64
-	metaLearner  *MetaLearner
+	metaLearner  *types.MetaLearner
 }
 
 // SemanticAnalyzer performs deep semantic analysis of requests
 type SemanticAnalyzer struct {
-	nlpProcessor     *NLPProcessor
-	codeAnalyzer     *CodeAnalyzer
+	nlpProcessor     *types.NLPProcessor
+	codeAnalyzer     *types.CodeAnalyzer
 	syntaxParser     *SyntaxParser
 	intentClassifier *IntentClassifier
 	embeddings       *SemanticEmbeddings
@@ -199,7 +199,7 @@ type EnrichedThreatIntel struct {
 	ThreatActors      []ThreatActor         `json:"threat_actors"`
 	TTPs              []TTP                 `json:"ttps"` // Tactics, Techniques, Procedures
 	IOCs              []IOC                 `json:"iocs"` // Indicators of Compromise
-	RelatedCampaigns  []Campaign            `json:"related_campaigns"`
+	RelatedCampaigns  []types.Campaign      `json:"related_campaigns"`
 	GeopoliticalContext *GeopoliticalInfo   `json:"geopolitical_context"`
 }
 
@@ -234,17 +234,6 @@ type IOC struct {
 	LastSeen    time.Time `json:"last_seen"`
 	Source      string    `json:"source"`
 	Tags        []string  `json:"tags"`
-}
-
-// Campaign represents threat campaign information
-type Campaign struct {
-	Name        string      `json:"name"`
-	Aliases     []string    `json:"aliases"`
-	StartDate   time.Time   `json:"start_date"`
-	EndDate     *time.Time  `json:"end_date"`
-	Objectives  []string    `json:"objectives"`
-	Targets     []string    `json:"targets"`
-	Attribution string      `json:"attribution"`
 }
 
 // GeopoliticalInfo provides geopolitical context

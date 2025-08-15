@@ -1,8 +1,38 @@
 package types
 
 import (
+	"context"
 	"time"
 )
+
+// Core interfaces
+type Detector interface {
+	Detect(ctx context.Context, input interface{}) (bool, float64, error)
+	Train(data interface{}) error
+	Update(feedback interface{}) error
+	GetStats() interface{}
+}
+
+// Missing types for hunting package
+type IOCEnrichment struct {
+	IOC         string                       `json:"ioc"`
+	Type        string                       `json:"type"`
+	Sources     []string                     `json:"sources"`
+	Reputation  float64                      `json:"reputation"`
+	Tags        []string                     `json:"tags"`
+	Attribution []string                     `json:"attribution"`
+	Context     map[string]interface{}       `json:"context"`
+}
+
+type ThreatIntelligence struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Value       string                       `json:"value"`
+	Source      string                       `json:"source"`
+	Confidence  float64                      `json:"confidence"`
+	Timestamp   time.Time                    `json:"timestamp"`
+	Context     map[string]interface{}       `json:"context"`
+}
 
 // Missing types for Hunting package
 type HuntExecutor struct {
@@ -569,4 +599,574 @@ type CorrelationAnalyzer struct {
 	Matrix      [][]float64                   `json:"matrix"`
 	Threshold   float64                       `json:"threshold"`
 	Significant []string                      `json:"significant"`
+}
+
+// Additional hunting types
+type EvidenceCollector struct {
+	Sources     map[string]*EvidenceSource   `json:"sources"`
+	Artifacts   []*DigitalArtifact           `json:"artifacts"`
+	Chain       *EvidenceChain               `json:"chain"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type EvidenceSource struct {
+	Type        string                       `json:"type"`
+	Location    string                       `json:"location"`
+	Reliability float64                      `json:"reliability"`
+	LastAccess  time.Time                    `json:"last_access"`
+}
+
+type DigitalArtifact struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Hash        string                       `json:"hash"`
+	Size        int64                        `json:"size"`
+	Created     time.Time                    `json:"created"`
+	Metadata    map[string]interface{}       `json:"metadata"`
+}
+
+type EvidenceChain struct {
+	Links       []*ChainLink                 `json:"links"`
+	Integrity   bool                         `json:"integrity"`
+	Verified    bool                         `json:"verified"`
+	Timestamp   time.Time                    `json:"timestamp"`
+}
+
+type ChainLink struct {
+	Hash        string                       `json:"hash"`
+	Previous    string                       `json:"previous"`
+	Evidence    string                       `json:"evidence"`
+	Timestamp   time.Time                    `json:"timestamp"`
+}
+
+type AttackChainAnalyzer struct {
+	Chains      []*AttackChain               `json:"chains"`
+	Patterns    map[string]*ChainPattern     `json:"patterns"`
+	Predictor   *ChainPredictor              `json:"predictor"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type AttackChain struct {
+	ID          string                       `json:"id"`
+	Steps       []*AttackStep                `json:"steps"`
+	Timeline    []time.Time                  `json:"timeline"`
+	Confidence  float64                      `json:"confidence"`
+	Complete    bool                         `json:"complete"`
+}
+
+type AttackStep struct {
+	Technique   string                       `json:"technique"`
+	Tool        string                       `json:"tool"`
+	Target      string                       `json:"target"`
+	Success     bool                         `json:"success"`
+	Timestamp   time.Time                    `json:"timestamp"`
+}
+
+type ChainPattern struct {
+	Sequence    []string                     `json:"sequence"`
+	Frequency   int                          `json:"frequency"`
+	Success     float64                      `json:"success"`
+	LastSeen    time.Time                    `json:"last_seen"`
+}
+
+type ChainPredictor struct {
+	Model       string                       `json:"model"`
+	Accuracy    float64                      `json:"accuracy"`
+	Predictions map[string]float64           `json:"predictions"`
+	LastTrained time.Time                    `json:"last_trained"`
+}
+
+type MITRETacticsMapper struct {
+	Tactics     map[string]*MITRETactic      `json:"tactics"`
+	Techniques  map[string]*MITRETechnique   `json:"techniques"`
+	Procedures  map[string]*MITREProcedure   `json:"procedures"`
+	Mapping     map[string][]string          `json:"mapping"`
+}
+
+type MITRETactic struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Description string                       `json:"description"`
+	Techniques  []string                     `json:"techniques"`
+}
+
+type MITRETechnique struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Tactic      string                       `json:"tactic"`
+	Description string                       `json:"description"`
+	Procedures  []string                     `json:"procedures"`
+}
+
+type MITREProcedure struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Technique   string                       `json:"technique"`
+	Description string                       `json:"description"`
+	Groups      []string                     `json:"groups"`
+}
+
+type TechniqueDetector struct {
+	Detectors   map[string]*Detector         `json:"detectors"`
+	Rules       []*DetectionRule             `json:"rules"`
+	Analytics   []*TechniqueAnalytic         `json:"analytics"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type DetectionRule struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Logic       string                       `json:"logic"`
+	Threshold   float64                      `json:"threshold"`
+	Enabled     bool                         `json:"enabled"`
+}
+
+type TechniqueAnalytic struct {
+	ID          string                       `json:"id"`
+	Technique   string                       `json:"technique"`
+	Query       string                       `json:"query"`
+	Frequency   time.Duration                `json:"frequency"`
+	LastRun     time.Time                    `json:"last_run"`
+}
+
+type CampaignTracker struct {
+	Campaigns   map[string]*Campaign         `json:"campaigns"`
+	Indicators  map[string]*CampaignIOC      `json:"indicators"`
+	Timeline    *CampaignTimeline            `json:"timeline"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type Campaign struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Group       string                       `json:"group"`
+	Start       time.Time                    `json:"start"`
+	End         *time.Time                   `json:"end"`
+	Active      bool                         `json:"active"`
+	IOCs        []string                     `json:"iocs"`
+}
+
+type CampaignIOC struct {
+	Value       string                       `json:"value"`
+	Type        string                       `json:"type"`
+	Campaign    string                       `json:"campaign"`
+	FirstSeen   time.Time                    `json:"first_seen"`
+	LastSeen    time.Time                    `json:"last_seen"`
+}
+
+type CampaignTimeline struct {
+	Events      []*CampaignEvent             `json:"events"`
+	Phases      []*CampaignPhase             `json:"phases"`
+	Duration    time.Duration                `json:"duration"`
+	Updated     time.Time                    `json:"updated"`
+}
+
+type CampaignEvent struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Description string                       `json:"description"`
+	Timestamp   time.Time                    `json:"timestamp"`
+	IOCs        []string                     `json:"iocs"`
+}
+
+type CampaignPhase struct {
+	Name        string                       `json:"name"`
+	Start       time.Time                    `json:"start"`
+	End         *time.Time                   `json:"end"`
+	TTPs        []string                     `json:"ttps"`
+	Success     bool                         `json:"success"`
+}
+
+type ThreatActorProfiler struct {
+	Profiles    map[string]*ThreatActorProfile `json:"profiles"`
+	Behaviors   map[string]*ActorBehavior     `json:"behaviors"`
+	Attribution *Attribution                  `json:"attribution"`
+	Config      map[string]interface{}        `json:"config"`
+}
+
+type ThreatActorProfile struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Aliases     []string                     `json:"aliases"`
+	Country     string                       `json:"country"`
+	Motivation  string                       `json:"motivation"`
+	Sophistication string                     `json:"sophistication"`
+	TTPs        []string                     `json:"ttps"`
+	Campaigns   []string                     `json:"campaigns"`
+}
+
+type ActorBehavior struct {
+	Pattern     string                       `json:"pattern"`
+	Frequency   float64                      `json:"frequency"`
+	Confidence  float64                      `json:"confidence"`
+	Examples    []string                     `json:"examples"`
+	LastSeen    time.Time                    `json:"last_seen"`
+}
+
+type Attribution struct {
+	Confidence  float64                      `json:"confidence"`
+	Factors     map[string]float64           `json:"factors"`
+	Evidence    []string                     `json:"evidence"`
+	Analysis    string                       `json:"analysis"`
+	Updated     time.Time                    `json:"updated"`
+}
+
+type IOCManager struct {
+	IOCs        map[string]*IOC              `json:"iocs"`
+	Sources     []*IOCSource                 `json:"sources"`
+	Enrichment  *IOCEnrichment               `json:"enrichment"`
+	Analytics   *IOCAnalyzer                 `json:"analytics"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type IOCSource struct {
+	Name        string                       `json:"name"`
+	URL         string                       `json:"url"`
+	Type        string                       `json:"type"`
+	Reliability float64                      `json:"reliability"`
+	LastUpdate  time.Time                    `json:"last_update"`
+}
+
+type IOCAnalyzer struct {
+	Patterns    map[string]*IOCPattern       `json:"patterns"`
+	Correlations []*IOCCorrelation           `json:"correlations"`
+	Stats       *IOCStatistics               `json:"stats"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type IOCCorrelation struct {
+	IOC1        string                       `json:"ioc1"`
+	IOC2        string                       `json:"ioc2"`
+	Type        string                       `json:"type"`
+	Strength    float64                      `json:"strength"`
+	LastSeen    time.Time                    `json:"last_seen"`
+}
+
+type IOCStatistics struct {
+	Total       int                          `json:"total"`
+	ByType      map[string]int               `json:"by_type"`
+	BySource    map[string]int               `json:"by_source"`
+	Recent      int                          `json:"recent"`
+	Updated     time.Time                    `json:"updated"`
+}
+
+// Dashboard analyzer types
+type TrendAnalyzer struct {
+	Trends      map[string]*Trend            `json:"trends"`
+	Forecasts   map[string]*Forecast         `json:"forecasts"`
+	Algorithms  []string                     `json:"algorithms"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type Trend struct {
+	Metric      string                       `json:"metric"`
+	Direction   string                       `json:"direction"`
+	Strength    float64                      `json:"strength"`
+	Duration    time.Duration                `json:"duration"`
+	Confidence  float64                      `json:"confidence"`
+}
+
+type Forecast struct {
+	Metric      string                       `json:"metric"`
+	Values      []float64                    `json:"values"`
+	Timestamps  []time.Time                  `json:"timestamps"`
+	Confidence  []float64                    `json:"confidence"`
+	Method      string                       `json:"method"`
+}
+
+type PatternRecognition struct {
+	Patterns    map[string]*Pattern          `json:"patterns"`
+	Matcher     *PatternMatcher              `json:"matcher"`
+	Learner     *PatternLearner              `json:"learner"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type Pattern struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Signature   []float64                    `json:"signature"`
+	Frequency   int                          `json:"frequency"`
+	LastSeen    time.Time                    `json:"last_seen"`
+}
+
+type PatternMatcher struct {
+	Algorithm   string                       `json:"algorithm"`
+	Threshold   float64                      `json:"threshold"`
+	Cache       map[string]bool              `json:"cache"`
+	Stats       *MatchingStats               `json:"stats"`
+}
+
+type PatternLearner struct {
+	Model       string                       `json:"model"`
+	Training    bool                         `json:"training"`
+	Accuracy    float64                      `json:"accuracy"`
+	LastTrained time.Time                    `json:"last_trained"`
+}
+
+type MatchingStats struct {
+	Matches     int                          `json:"matches"`
+	FalsePos    int                          `json:"false_positives"`
+	FalseNeg    int                          `json:"false_negatives"`
+	Accuracy    float64                      `json:"accuracy"`
+}
+
+type BehaviorAnalyzer struct {
+	Profiles    map[string]*BehaviorProfile  `json:"profiles"`
+	Anomalies   []*BehaviorAnomaly           `json:"anomalies"`
+	Baselines   map[string]*Baseline         `json:"baselines"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type BehaviorProfile struct {
+	UserID      string                       `json:"user_id"`
+	Patterns    map[string]float64           `json:"patterns"`
+	LastUpdate  time.Time                    `json:"last_update"`
+	Confidence  float64                      `json:"confidence"`
+}
+
+type BehaviorAnomaly struct {
+	UserID      string                       `json:"user_id"`
+	Type        string                       `json:"type"`
+	Severity    float64                      `json:"severity"`
+	Timestamp   time.Time                    `json:"timestamp"`
+	Details     map[string]interface{}       `json:"details"`
+}
+
+type Baseline struct {
+	Metric      string                       `json:"metric"`
+	Mean        float64                      `json:"mean"`
+	StdDev      float64                      `json:"std_dev"`
+	Min         float64                      `json:"min"`
+	Max         float64                      `json:"max"`
+	Updated     time.Time                    `json:"updated"`
+}
+
+type NetworkAnalyzer struct {
+	Flows       []*NetworkFlow               `json:"flows"`
+	Topology    *NetworkTopology             `json:"topology"`
+	Anomalies   []*NetworkAnomaly            `json:"anomalies"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type NetworkFlow struct {
+	SourceIP    string                       `json:"source_ip"`
+	DestIP      string                       `json:"dest_ip"`
+	SourcePort  int                          `json:"source_port"`
+	DestPort    int                          `json:"dest_port"`
+	Protocol    string                       `json:"protocol"`
+	Bytes       int64                        `json:"bytes"`
+	Packets     int64                        `json:"packets"`
+	Duration    time.Duration                `json:"duration"`
+}
+
+type NetworkTopology struct {
+	Nodes       []*NetworkNode               `json:"nodes"`
+	Edges       []*NetworkEdge               `json:"edges"`
+	Subnets     []*Subnet                    `json:"subnets"`
+	Updated     time.Time                    `json:"updated"`
+}
+
+type NetworkNode struct {
+	IP          string                       `json:"ip"`
+	Type        string                       `json:"type"`
+	Role        string                       `json:"role"`
+	Services    []string                     `json:"services"`
+	LastSeen    time.Time                    `json:"last_seen"`
+}
+
+type NetworkEdge struct {
+	Source      string                       `json:"source"`
+	Dest        string                       `json:"dest"`
+	Weight      float64                      `json:"weight"`
+	Type        string                       `json:"type"`
+}
+
+type Subnet struct {
+	CIDR        string                       `json:"cidr"`
+	Name        string                       `json:"name"`
+	Type        string                       `json:"type"`
+	Nodes       []string                     `json:"nodes"`
+}
+
+type NetworkAnomaly struct {
+	Type        string                       `json:"type"`
+	Source      string                       `json:"source"`
+	Dest        string                       `json:"dest"`
+	Severity    float64                      `json:"severity"`
+	Timestamp   time.Time                    `json:"timestamp"`
+	Details     string                       `json:"details"`
+}
+
+type UserAnalyzer struct {
+	Users       map[string]*UserProfile      `json:"users"`
+	Sessions    map[string]*UserSession      `json:"sessions"`
+	Activities  []*UserActivity              `json:"activities"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type UserProfile struct {
+	ID          string                       `json:"id"`
+	Username    string                       `json:"username"`
+	Role        string                       `json:"role"`
+	LastLogin   time.Time                    `json:"last_login"`
+	Permissions []string                     `json:"permissions"`
+	Risk        float64                      `json:"risk"`
+}
+
+type UserActivity struct {
+	UserID      string                       `json:"user_id"`
+	Action      string                       `json:"action"`
+	Resource    string                       `json:"resource"`
+	Result      string                       `json:"result"`
+	Timestamp   time.Time                    `json:"timestamp"`
+	IP          string                       `json:"ip"`
+}
+
+type AssetAnalyzer struct {
+	Assets      map[string]*Asset            `json:"assets"`
+	Inventory   *AssetInventory              `json:"inventory"`
+	Risks       []*AssetRisk                 `json:"risks"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type Asset struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Type        string                       `json:"type"`
+	Owner       string                       `json:"owner"`
+	Value       string                       `json:"value"`
+	Location    string                       `json:"location"`
+	LastScanned time.Time                    `json:"last_scanned"`
+}
+
+type AssetInventory struct {
+	Total       int                          `json:"total"`
+	ByType      map[string]int               `json:"by_type"`
+	ByOwner     map[string]int               `json:"by_owner"`
+	ByLocation  map[string]int               `json:"by_location"`
+	Updated     time.Time                    `json:"updated"`
+}
+
+type AssetRisk struct {
+	AssetID     string                       `json:"asset_id"`
+	Type        string                       `json:"type"`
+	Severity    string                       `json:"severity"`
+	Score       float64                      `json:"score"`
+	Description string                       `json:"description"`
+	Timestamp   time.Time                    `json:"timestamp"`
+}
+
+type ThreatAnalyzer struct {
+	Threats     map[string]*ThreatInfo       `json:"threats"`
+	Intelligence *ThreatIntelligence         `json:"intelligence"`
+	Predictions []*ThreatPrediction          `json:"predictions"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type ThreatInfo struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Type        string                       `json:"type"`
+	Severity    string                       `json:"severity"`
+	Description string                       `json:"description"`
+	TTPs        []string                     `json:"ttps"`
+	IOCs        []string                     `json:"iocs"`
+}
+
+type ThreatPrediction struct {
+	ThreatID    string                       `json:"threat_id"`
+	Probability float64                      `json:"probability"`
+	Timeframe   time.Duration                `json:"timeframe"`
+	Confidence  float64                      `json:"confidence"`
+	Factors     []string                     `json:"factors"`
+}
+
+type ComplianceAnalyzer struct {
+	Frameworks  map[string]*ComplianceFramework `json:"frameworks"`
+	Controls    map[string]*Control          `json:"controls"`
+	Assessments []*ComplianceAssessment      `json:"assessments"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type ComplianceFramework struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Version     string                       `json:"version"`
+	Controls    []string                     `json:"controls"`
+	Updated     time.Time                    `json:"updated"`
+}
+
+type Control struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Description string                       `json:"description"`
+	Category    string                       `json:"category"`
+	Status      string                       `json:"status"`
+	LastTest    time.Time                    `json:"last_test"`
+}
+
+type ComplianceAssessment struct {
+	FrameworkID string                       `json:"framework_id"`
+	Score       float64                      `json:"score"`
+	Passed      int                          `json:"passed"`
+	Failed      int                          `json:"failed"`
+	Timestamp   time.Time                    `json:"timestamp"`
+	Details     map[string]string            `json:"details"`
+}
+
+type BusinessImpactAnalyzer struct {
+	Impacts     []*BusinessImpact            `json:"impacts"`
+	Metrics     *ImpactMetrics               `json:"metrics"`
+	Scenarios   []*ImpactScenario            `json:"scenarios"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type BusinessImpact struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Asset       string                       `json:"asset"`
+	Financial   float64                      `json:"financial"`
+	Operational string                       `json:"operational"`
+	Reputational string                      `json:"reputational"`
+	Timestamp   time.Time                    `json:"timestamp"`
+}
+
+type ImpactMetrics struct {
+	TotalFinancial    float64                `json:"total_financial"`
+	AvgDowntime       time.Duration          `json:"avg_downtime"`
+	AffectedServices  int                    `json:"affected_services"`
+	CustomerImpact    float64                `json:"customer_impact"`
+	Updated           time.Time              `json:"updated"`
+}
+
+type ImpactScenario struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Likelihood  float64                      `json:"likelihood"`
+	Impact      float64                      `json:"impact"`
+	Risk        float64                      `json:"risk"`
+	Mitigation  []string                     `json:"mitigation"`
+}
+
+type ChartRenderer struct {
+	Charts      map[string]*Chart            `json:"charts"`
+	Templates   map[string]*ChartTemplate    `json:"templates"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type Chart struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Title       string                       `json:"title"`
+	Data        interface{}                  `json:"data"`
+	Options     map[string]interface{}       `json:"options"`
+	Updated     time.Time                    `json:"updated"`
+}
+
+type ChartTemplate struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Type        string                       `json:"type"`
+	Layout      map[string]interface{}       `json:"layout"`
+	DefaultOptions map[string]interface{}    `json:"default_options"`
 }

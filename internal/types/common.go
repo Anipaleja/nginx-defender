@@ -423,16 +423,6 @@ type IOC struct {
 	Tags        []string  `json:"tags"`
 }
 
-type Campaign struct {
-	Name        string      `json:"name"`
-	Aliases     []string    `json:"aliases"`
-	StartDate   time.Time   `json:"start_date"`
-	EndDate     *time.Time  `json:"end_date"`
-	Objectives  []string    `json:"objectives"`
-	Targets     []string    `json:"targets"`
-	Attribution string      `json:"attribution"`
-}
-
 type GeopoliticalInfo struct {
 	OriginCountry    string   `json:"origin_country"`
 	TargetCountries  []string `json:"target_countries"`
@@ -513,13 +503,6 @@ type Analyzer interface {
 	GetConfig() interface{}
 	SetConfig(config interface{}) error
 	GetMetrics() interface{}
-}
-
-type Detector interface {
-	Detect(ctx context.Context, input interface{}) (bool, float64, error)
-	Train(data interface{}) error
-	Update(feedback interface{}) error
-	GetStats() interface{}
 }
 
 type Engine interface {

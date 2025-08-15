@@ -54,35 +54,35 @@ type AdvancedThreatHunter struct {
 type HuntingEngine struct {
 	huntStrategies       map[string]*HuntStrategy
 	huntExecutor         *types.HuntExecutor
-	evidenceCollector    *EvidenceCollector
-	chainAnalyzer        *AttackChainAnalyzer
-	tacticsMapper        *MITRETacticsMapper
-	techniqueDetector    *TechniqueDetector
-	campaignTracker      *CampaignTracker
-	actorProfiler        *ThreatActorProfiler
+	evidenceCollector    *types.EvidenceCollector
+	chainAnalyzer        *types.AttackChainAnalyzer
+	tacticsMapper        *types.MITRETacticsMapper
+	techniqueDetector    *types.TechniqueDetector
+	campaignTracker      *types.CampaignTracker
+	actorProfiler        *types.ThreatActorProfiler
 }
 
 // IndicatorEngine manages and analyzes threat indicators
 type IndicatorEngine struct {
-	iocManager           *IOCManager
-	iocAnalyzer          *IOCAnalyzer
-	iocEnrichment        *IOCEnrichment
-	iocCorrelation       *IOCCorrelation
-	iocScoring           *IOCScoring
-	iocLifecycle         *IOCLifecycle
-	customIndicators     *CustomIndicatorEngine
-	indicatorFusion      *IndicatorFusion
+	iocManager           *types.IOCManager
+	iocAnalyzer          *types.IOCAnalyzer
+	iocEnrichment        *types.IOCEnrichment
+	iocCorrelation       *types.IOCCorrelation
+	iocScoring           *types.IOCScoring
+	iocLifecycle         *types.IOCLifecycle
+	customIndicators     *types.CustomIndicatorEngine
+	indicatorFusion      *types.IndicatorFusion
 }
 
 // BehaviorAnalyzer analyzes behavioral patterns for threats
 type BehaviorAnalyzer struct {
-	userBehavior         *UserBehaviorAnalyzer
-	networkBehavior      *NetworkBehaviorAnalyzer
-	systemBehavior       *SystemBehaviorAnalyzer
-	applicationBehavior  *ApplicationBehaviorAnalyzer
-	dataflowAnalyzer     *DataflowAnalyzer
-	accessPatternAnalyzer *AccessPatternAnalyzer
-	temporalAnalyzer     *TemporalAnalyzer
+	userBehavior         *types.UserBehaviorAnalyzer
+	networkBehavior      *types.NetworkBehaviorAnalyzer
+	systemBehavior       *types.SystemBehaviorAnalyzer
+	applicationBehavior  *types.ApplicationBehaviorAnalyzer
+	dataflowAnalyzer     *types.DataflowAnalyzer
+	accessPatternAnalyzer *types.AccessPatternAnalyzer
+	temporalAnalyzer     *types.TemporalAnalyzer
 	geospatialAnalyzer   *GeospatialAnalyzer
 }
 
