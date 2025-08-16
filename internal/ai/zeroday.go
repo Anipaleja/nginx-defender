@@ -59,24 +59,24 @@ type EnsembleModel struct {
 type SemanticAnalyzer struct {
 	nlpProcessor     *types.NLPProcessor
 	codeAnalyzer     *types.CodeAnalyzer
-	syntaxParser     *SyntaxParser
-	intentClassifier *IntentClassifier
-	embeddings       *SemanticEmbeddings
+	syntaxParser     *types.SyntaxParser
+	intentClassifier *types.IntentClassifier
+	embeddings       *types.SemanticEmbeddings
 }
 
 // MemoryAugmentedNetwork for learning from past attacks
 type MemoryAugmentedNetwork struct {
-	memory          *ExternalMemory
-	controller      *MemoryController
-	readHeads       []*ReadHead
-	writeHead       *WriteHead
-	networkState    *NetworkState
+	memory          *types.ExternalMemory
+	controller      *types.MemoryController
+	readHeads       []*types.ReadHead
+	writeHead       *types.WriteHead
+	networkState    *types.NetworkState
 }
 
 // QuantumAnomalyDetector - Cutting-edge quantum-inspired detection
 type QuantumAnomalyDetector struct {
-	quantumCircuits  []*QuantumCircuit
-	quantumStates    map[string]*QuantumState
+	quantumCircuits  []*types.QuantumCircuit
+	quantumStates    map[string]*types.QuantumState
 	entanglement     *QuantumEntanglement
 	superposition    *QuantumSuperposition
 	measurement      *QuantumMeasurement

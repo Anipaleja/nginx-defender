@@ -21,38 +21,38 @@ import (
 // AdvancedThreatHunter - The most sophisticated threat hunting system
 // Revolutionizes proactive threat detection with AI-powered hunting capabilities
 type AdvancedThreatHunter struct {
-	huntingEngine        *HuntingEngine
-	indicatorEngine      *IndicatorEngine
-	behaviorAnalyzer     *BehaviorAnalyzer
-	anomalyDetector      *AnomalyDetector
-	correlationEngine    *CorrelationEngine
-	intelligenceEngine   *ThreatIntelligenceEngine
-	hypothesisGenerator  *HypothesisGenerator
-	investigationEngine  *InvestigationEngine
-	huntingWorkflow      *HuntingWorkflow
-	knowledgeBase        *ThreatKnowledgeBase
-	collaborationEngine  *CollaborationEngine
-	automationEngine     *AutomationEngine
-	visualizationEngine  *VisualizationEngine
-	reportingEngine      *ReportingEngine
+	huntingEngine        *types.HuntingEngine
+	indicatorEngine      *types.IndicatorEngine
+	behaviorAnalyzer     *types.BehaviorAnalyzer
+	anomalyDetector      *types.AnomalyDetector
+	correlationEngine    *types.CorrelationEngine
+	intelligenceEngine   *types.ThreatIntelligenceEngine
+	hypothesisGenerator  *types.HypothesisGenerator
+	investigationEngine  *types.InvestigationEngine
+	huntingWorkflow      *types.HuntingWorkflow
+	knowledgeBase        *types.ThreatKnowledgeBase
+	collaborationEngine  *types.CollaborationEngine
+	automationEngine     *types.AutomationEngine
+	visualizationEngine  *types.VisualizationEngine
+	reportingEngine      *types.ReportingEngine
 	logger               *logrus.Logger
 	mutex                sync.RWMutex
 	
 	// Active hunts and investigations
-	activeHunts          map[string]*ThreatHunt
-	investigations       map[string]*ThreatInvestigation
+	activeHunts          map[string]*types.ThreatHunt
+	investigations       map[string]*types.ThreatInvestigation
 	
 	// Statistics and metrics
-	stats                *ThreatHuntingStats
+	stats                *types.ThreatHuntingStats
 	
 	// Machine learning and AI
-	mlEngine             *MLHuntingEngine
-	aiAssistant          *AIHuntingAssistant
+	mlEngine             *types.MLHuntingEngine
+	aiAssistant          *types.AIHuntingAssistant
 }
 
 // HuntingEngine orchestrates threat hunting activities
 type HuntingEngine struct {
-	huntStrategies       map[string]*HuntStrategy
+	huntStrategies       map[string]*types.HuntStrategy
 	huntExecutor         *types.HuntExecutor
 	evidenceCollector    *types.EvidenceCollector
 	chainAnalyzer        *types.AttackChainAnalyzer
@@ -83,67 +83,67 @@ type BehaviorAnalyzer struct {
 	dataflowAnalyzer     *types.DataflowAnalyzer
 	accessPatternAnalyzer *types.AccessPatternAnalyzer
 	temporalAnalyzer     *types.TemporalAnalyzer
-	geospatialAnalyzer   *GeospatialAnalyzer
+	geospatialAnalyzer   *types.GeospatialAnalyzer
 }
 
 // AnomalyDetector identifies anomalous activities
 type AnomalyDetector struct {
-	statisticalDetector  *StatisticalAnomalyDetector
-	mlAnomalyDetector    *MLAnomalyDetector
-	timeSeriesDetector   *TimeSeriesAnomalyDetector
-	clusteringDetector   *ClusteringAnomalyDetector
-	outlierDetector      *OutlierDetector
-	changePointDetector  *ChangePointDetector
-	seasonalityDetector  *SeasonalityDetector
-	multiVariateDetector *MultivariateAnomalyDetector
+	statisticalDetector  *types.StatisticalAnomalyDetector
+	mlAnomalyDetector    *types.MLAnomalyDetector
+	timeSeriesDetector   *types.TimeSeriesAnomalyDetector
+	clusteringDetector   *types.ClusteringAnomalyDetector
+	outlierDetector      *types.OutlierDetector
+	changePointDetector  *types.ChangePointDetector
+	seasonalityDetector  *types.SeasonalityDetector
+	multiVariateDetector *types.MultivariateAnomalyDetector
 }
 
 // CorrelationEngine correlates events and indicators
 type CorrelationEngine struct {
-	eventCorrelator      *EventCorrelator
-	temporalCorrelator   *TemporalCorrelator
-	spatialCorrelator    *SpatialCorrelator
-	entityCorrelator     *EntityCorrelator
-	patternCorrelator    *PatternCorrelator
-	ruleEngine          *CorrelationRuleEngine
-	graphAnalyzer       *GraphCorrelationAnalyzer
-	chainReconstructor  *AttackChainReconstructor
+	eventCorrelator      *types.EventCorrelator
+	temporalCorrelator   *types.TemporalCorrelator
+	spatialCorrelator    *types.SpatialCorrelator
+	entityCorrelator     *types.EntityCorrelator
+	patternCorrelator    *types.PatternCorrelator
+	ruleEngine          *types.CorrelationRuleEngine
+	graphAnalyzer       *types.GraphCorrelationAnalyzer
+	chainReconstructor  *types.AttackChainReconstructor
 }
 
 // ThreatIntelligenceEngine integrates threat intelligence
 type ThreatIntelligenceEngine struct {
-	feedManager          *ThreatFeedManager
-	enrichmentEngine     *ThreatEnrichmentEngine
-	contextualizer       *ThreatContextualizer
-	attributionEngine    *AttributionEngine
-	campaignAnalyzer     *CampaignAnalyzer
-	tacticsAnalyzer      *TacticsAnalyzer
-	ttpsMapper           *TTpsMapper
-	intelligenceFusion   *IntelligenceFusion
+	feedManager          *types.ThreatFeedManager
+	enrichmentEngine     *types.ThreatEnrichmentEngine
+	contextualizer       *types.ThreatContextualizer
+	attributionEngine    *types.AttributionEngine
+	campaignAnalyzer     *types.CampaignAnalyzer
+	tacticsAnalyzer      *types.TacticsAnalyzer
+	ttpsMapper           *types.TTpsMapper
+	intelligenceFusion   *types.IntelligenceFusion
 }
 
 // HypothesisGenerator generates hunting hypotheses
 type HypothesisGenerator struct {
-	aiHypothesis         *AIHypothesisGenerator
-	templateEngine       *HypothesisTemplateEngine
-	scenarioGenerator    *ScenarioGenerator
-	riskAssessment       *HypothesisRiskAssessment
-	prioritizer          *HypothesisPrioritizer
-	validator            *HypothesisValidator
-	refinementEngine     *HypothesisRefinementEngine
-	creativityEngine     *CreativityEngine
+	aiHypothesis         *types.AIHypothesisGenerator
+	templateEngine       *types.HypothesisTemplateEngine
+	scenarioGenerator    *types.ScenarioGenerator
+	riskAssessment       *types.HypothesisRiskAssessment
+	prioritizer          *types.HypothesisPrioritizer
+	validator            *types.HypothesisValidator
+	refinementEngine     *types.HypothesisRefinementEngine
+	creativityEngine     *types.CreativityEngine
 }
 
 // InvestigationEngine supports threat investigations
 type InvestigationEngine struct {
-	investigationManager *InvestigationManager
-	evidenceAnalyzer     *EvidenceAnalyzer
-	timelineBuilder      *TimelineBuilder
-	forensicsEngine      *ForensicsEngine
-	rootCauseAnalyzer    *RootCauseAnalyzer
-	impactAssessment     *ImpactAssessment
-	remediationPlanner   *RemediationPlanner
-	caseworkEngine       *CaseworkEngine
+	investigationManager *types.InvestigationManager
+	evidenceAnalyzer     *types.EvidenceAnalyzer
+	timelineBuilder      *types.TimelineBuilder
+	forensicsEngine      *types.ForensicsEngine
+	rootCauseAnalyzer    *types.RootCauseAnalyzer
+	impactAssessment     *types.ImpactAssessment
+	remediationPlanner   *types.RemediationPlanner
+	caseworkEngine       *types.CaseworkEngine
 }
 
 // ThreatHunt represents an active threat hunt
@@ -151,8 +151,8 @@ type ThreatHunt struct {
 	ID                   string                  `json:"id"`
 	Name                 string                  `json:"name"`
 	Description          string                  `json:"description"`
-	Hypothesis           *ThreatHypothesis       `json:"hypothesis"`
-	Strategy             *HuntStrategy           `json:"strategy"`
+	Hypothesis           *types.ThreatHypothesis       `json:"hypothesis"`
+	Strategy             *types.HuntStrategy           `json:"strategy"`
 	Status               string                  `json:"status"`
 	Priority             string                  `json:"priority"`
 	Hunters              []string                `json:"hunters"`
@@ -160,27 +160,27 @@ type ThreatHunt struct {
 	EndTime              *time.Time              `json:"end_time,omitempty"`
 	Duration             time.Duration           `json:"duration"`
 	Progress             float64                 `json:"progress"`
-	Findings             []*ThreatFinding        `json:"findings"`
-	Evidence             []*Evidence             `json:"evidence"`
-	IOCs                 []*IOC                  `json:"iocs"`
-	Indicators           []*ThreatIndicator      `json:"indicators"`
-	Techniques           []*MITRETechnique       `json:"techniques"`
+	Findings             []*types.ThreatFinding        `json:"findings"`
+	Evidence             []*types.Evidence             `json:"evidence"`
+	IOCs                 []*types.IOC                  `json:"iocs"`
+	Indicators           []*types.ThreatIndicator      `json:"indicators"`
+	Techniques           []*types.MITRETechnique       `json:"techniques"`
 	Tactics              []string                `json:"tactics"`
-	ActorProfile         *ThreatActorProfile     `json:"actor_profile,omitempty"`
-	Campaign             *ThreatCampaign         `json:"campaign,omitempty"`
+	ActorProfile         *types.ThreatActorProfile     `json:"actor_profile,omitempty"`
+	Campaign             *types.ThreatCampaign         `json:"campaign,omitempty"`
 	Confidence           float64                 `json:"confidence"`
 	RiskScore            float64                 `json:"risk_score"`
-	Impact               *ThreatImpact           `json:"impact"`
-	Recommendations      []*Recommendation       `json:"recommendations"`
-	Artifacts            []*HuntArtifact         `json:"artifacts"`
-	Timeline             *HuntTimeline           `json:"timeline"`
-	Collaborators        []*Collaborator         `json:"collaborators"`
+	Impact               *types.ThreatImpact           `json:"impact"`
+	Recommendations      []*types.Recommendation       `json:"recommendations"`
+	Artifacts            []*types.HuntArtifact         `json:"artifacts"`
+	Timeline             *types.HuntTimeline           `json:"timeline"`
+	Collaborators        []*types.Collaborator         `json:"collaborators"`
 	AutomationLevel      string                  `json:"automation_level"`
 	QualityScore         float64                 `json:"quality_score"`
 	LessonsLearned       []string                `json:"lessons_learned"`
 	NextSteps            []string                `json:"next_steps"`
 	RelatedHunts         []string                `json:"related_hunts"`
-	ExternalReferences   []*ExternalReference    `json:"external_references"`
+	ExternalReferences   []*types.ExternalReference    `json:"external_references"`
 	Metadata             map[string]interface{}  `json:"metadata"`
 }
 
@@ -191,12 +191,12 @@ type ThreatHypothesis struct {
 	Rationale            string                  `json:"rationale"`
 	Assumptions          []string                `json:"assumptions"`
 	TestableQuestions    []string                `json:"testable_questions"`
-	DataRequirements     []*DataRequirement      `json:"data_requirements"`
-	ExpectedIndicators   []*ExpectedIndicator    `json:"expected_indicators"`
-	SuccessCriteria      []*SuccessCriterion     `json:"success_criteria"`
-	RiskFactors          []*RiskFactor           `json:"risk_factors"`
-	MITREMapping         *MITREMapping           `json:"mitre_mapping"`
-	ThreatModeling       *ThreatModel            `json:"threat_modeling"`
+	DataRequirements     []*types.DataRequirement      `json:"data_requirements"`
+	ExpectedIndicators   []*types.ExpectedIndicator    `json:"expected_indicators"`
+	SuccessCriteria      []*types.SuccessCriterion     `json:"success_criteria"`
+	RiskFactors          []*types.RiskFactor           `json:"risk_factors"`
+	MITREMapping         *types.MITREMapping           `json:"mitre_mapping"`
+	ThreatModeling       *types.ThreatModel            `json:"threat_modeling"`
 	Confidence           float64                 `json:"confidence"`
 	Probability          float64                 `json:"probability"`
 	Severity             string                  `json:"severity"`
@@ -206,7 +206,7 @@ type ThreatHypothesis struct {
 	CreatedAt            time.Time               `json:"created_at"`
 	UpdatedAt            time.Time               `json:"updated_at"`
 	ValidationStatus     string                  `json:"validation_status"`
-	ValidationResults    []*ValidationResult     `json:"validation_results"`
+	ValidationResults    []*types.ValidationResult     `json:"validation_results"`
 }
 
 // HuntStrategy defines hunting approach and methodology
@@ -216,12 +216,12 @@ type HuntStrategy struct {
 	Type                 string                  `json:"type"`
 	Methodology          string                  `json:"methodology"`
 	Framework            string                  `json:"framework"`
-	Phases               []*HuntPhase            `json:"phases"`
-	Techniques           []*HuntTechnique        `json:"techniques"`
+	Phases               []*types.HuntPhase            `json:"phases"`
+	Techniques           []*types.HuntTechnique        `json:"techniques"`
 	DataSources          []*types.DataSource           `json:"data_sources"`
 	Tools                []*types.HuntTool             `json:"tools"`
-	Queries              []*HuntQuery            `json:"queries"`
-	Analytics            []*HuntAnalytic         `json:"analytics"`
+	Queries              []*types.HuntQuery            `json:"queries"`
+	Analytics            []*types.HuntAnalytic         `json:"analytics"`
 	Playbooks            []*types.HuntPlaybook         `json:"playbooks"`
 	Automations          []*types.HuntAutomation       `json:"automations"`
 	SuccessMetrics       []*types.SuccessMetric        `json:"success_metrics"`
@@ -244,36 +244,36 @@ type ThreatFinding struct {
 	Title                string                  `json:"title"`
 	Description          string                  `json:"description"`
 	Summary              string                  `json:"summary"`
-	ThreatActor          *ThreatActor            `json:"threat_actor,omitempty"`
-	Campaign             *ThreatCampaign         `json:"campaign,omitempty"`
-	Techniques           []*MITRETechnique       `json:"techniques"`
+	ThreatActor          *types.ThreatActor            `json:"threat_actor,omitempty"`
+	Campaign             *types.ThreatCampaign         `json:"campaign,omitempty"`
+	Techniques           []*types.MITRETechnique       `json:"techniques"`
 	Tactics              []string                `json:"tactics"`
-	IOCs                 []*IOC                  `json:"iocs"`
-	Evidence             []*Evidence             `json:"evidence"`
-	Timeline             *FindingTimeline        `json:"timeline"`
-	AffectedAssets       []*AffectedAsset        `json:"affected_assets"`
-	DataExfiltration     *DataExfiltration       `json:"data_exfiltration,omitempty"`
-	LateralMovement      *LateralMovement        `json:"lateral_movement,omitempty"`
-	Persistence          *Persistence            `json:"persistence,omitempty"`
-	PrivilegeEscalation  *PrivilegeEscalation    `json:"privilege_escalation,omitempty"`
-	DefenseEvasion       *DefenseEvasion         `json:"defense_evasion,omitempty"`
-	CommandAndControl    *CommandAndControl      `json:"command_and_control,omitempty"`
-	Impact               *ThreatImpact           `json:"impact"`
+	IOCs                 []*types.IOC                  `json:"iocs"`
+	Evidence             []*types.Evidence             `json:"evidence"`
+	Timeline             *types.FindingTimeline        `json:"timeline"`
+	AffectedAssets       []*types.AffectedAsset        `json:"affected_assets"`
+	DataExfiltration     *types.DataExfiltration       `json:"data_exfiltration,omitempty"`
+	LateralMovement      *types.LateralMovement        `json:"lateral_movement,omitempty"`
+	Persistence          *types.Persistence            `json:"persistence,omitempty"`
+	PrivilegeEscalation  *types.PrivilegeEscalation    `json:"privilege_escalation,omitempty"`
+	DefenseEvasion       *types.DefenseEvasion         `json:"defense_evasion,omitempty"`
+	CommandAndControl    *types.CommandAndControl      `json:"command_and_control,omitempty"`
+	Impact               *types.ThreatImpact           `json:"impact"`
 	RiskScore            float64                 `json:"risk_score"`
-	BusinessImpact       *BusinessImpact         `json:"business_impact"`
-	Recommendations      []*Recommendation       `json:"recommendations"`
-	RemediationSteps     []*RemediationStep      `json:"remediation_steps"`
-	ContainmentActions   []*ContainmentAction    `json:"containment_actions"`
-	EradicationActions   []*EradicationAction    `json:"eradication_actions"`
-	RecoveryActions      []*RecoveryAction       `json:"recovery_actions"`
+	BusinessImpact       *types.BusinessImpact         `json:"business_impact"`
+	Recommendations      []*types.Recommendation       `json:"recommendations"`
+	RemediationSteps     []*types.RemediationStep      `json:"remediation_steps"`
+	ContainmentActions   []*types.ContainmentAction    `json:"containment_actions"`
+	EradicationActions   []*types.EradicationAction    `json:"eradication_actions"`
+	RecoveryActions      []*types.RecoveryAction       `json:"recovery_actions"`
 	LessonsLearned       []string                `json:"lessons_learned"`
-	Attribution          *Attribution            `json:"attribution,omitempty"`
-	GeographicContext    *GeographicContext      `json:"geographic_context,omitempty"`
-	IndustryContext      *IndustryContext        `json:"industry_context,omitempty"`
-	RegulatoryImpact     *RegulatoryImpact       `json:"regulatory_impact,omitempty"`
-	ForensicArtifacts    []*ForensicArtifact     `json:"forensic_artifacts"`
+	Attribution          *types.Attribution            `json:"attribution,omitempty"`
+	GeographicContext    *types.GeographicContext      `json:"geographic_context,omitempty"`
+	IndustryContext      *types.IndustryContext        `json:"industry_context,omitempty"`
+	RegulatoryImpact     *types.RegulatoryImpact       `json:"regulatory_impact,omitempty"`
+	ForensicArtifacts    []*types.ForensicArtifact     `json:"forensic_artifacts"`
 	RelatedFindings      []string                `json:"related_findings"`
-	ExternalReferences   []*ExternalReference    `json:"external_references"`
+	ExternalReferences   []*types.ExternalReference    `json:"external_references"`
 	DiscoveredBy         string                  `json:"discovered_by"`
 	DiscoveredAt         time.Time               `json:"discovered_at"`
 	UpdatedAt            time.Time               `json:"updated_at"`
@@ -294,40 +294,40 @@ type ThreatInvestigation struct {
 	Status               string                  `json:"status"`
 	Priority             string                  `json:"priority"`
 	Severity             string                  `json:"severity"`
-	Investigators        []*Investigator         `json:"investigators"`
+	Investigators        []*types.Investigator         `json:"investigators"`
 	LeadInvestigator     string                  `json:"lead_investigator"`
 	StartTime            time.Time               `json:"start_time"`
 	EndTime              *time.Time              `json:"end_time,omitempty"`
 	Duration             time.Duration           `json:"duration"`
-	TriggerEvent         *TriggerEvent           `json:"trigger_event"`
-	InitialFindings      []*ThreatFinding        `json:"initial_findings"`
-	HypothesesTested     []*ThreatHypothesis     `json:"hypotheses_tested"`
-	EvidenceCollected    []*Evidence             `json:"evidence_collected"`
-	InterviewsConducted  []*Interview            `json:"interviews_conducted"`
-	ForensicAnalysis     []*ForensicAnalysis     `json:"forensic_analysis"`
-	Timeline             *InvestigationTimeline  `json:"timeline"`
-	RootCause            *RootCause              `json:"root_cause,omitempty"`
-	AttackChain          *AttackChain            `json:"attack_chain,omitempty"`
-	ThreatActor          *ThreatActor            `json:"threat_actor,omitempty"`
-	Campaign             *ThreatCampaign         `json:"campaign,omitempty"`
-	ImpactAssessment     *ImpactAssessment       `json:"impact_assessment"`
-	BusinessImpact       *BusinessImpact         `json:"business_impact"`
-	DataBreach           *DataBreach             `json:"data_breach,omitempty"`
-	RegulatoryObligations []*RegulatoryObligation `json:"regulatory_obligations"`
-	LegalImplications    *LegalImplications      `json:"legal_implications,omitempty"`
-	ContainmentActions   []*ContainmentAction    `json:"containment_actions"`
-	EradicationActions   []*EradicationAction    `json:"eradication_actions"`
-	RecoveryActions      []*RecoveryAction       `json:"recovery_actions"`
-	LessonsLearned       []*LessonLearned        `json:"lessons_learned"`
-	Recommendations      []*Recommendation       `json:"recommendations"`
-	Reports              []*InvestigationReport  `json:"reports"`
-	QualityAssurance     *QualityAssurance       `json:"quality_assurance"`
-	PeerReview           *PeerReview             `json:"peer_review,omitempty"`
-	ExternalConsultation *ExternalConsultation   `json:"external_consultation,omitempty"`
-	Collaboration        *InvestigationCollaboration `json:"collaboration"`
-	CommunicationPlan    *CommunicationPlan      `json:"communication_plan"`
-	Documentation        *InvestigationDocumentation `json:"documentation"`
-	Archives             []*InvestigationArchive `json:"archives"`
+	TriggerEvent         *types.TriggerEvent           `json:"trigger_event"`
+	InitialFindings      []*types.ThreatFinding        `json:"initial_findings"`
+	HypothesesTested     []*types.ThreatHypothesis     `json:"hypotheses_tested"`
+	EvidenceCollected    []*types.Evidence             `json:"evidence_collected"`
+	InterviewsConducted  []*types.Interview            `json:"interviews_conducted"`
+	ForensicAnalysis     []*types.ForensicAnalysis     `json:"forensic_analysis"`
+	Timeline             *types.InvestigationTimeline  `json:"timeline"`
+	RootCause            *types.RootCause              `json:"root_cause,omitempty"`
+	AttackChain          *types.AttackChain            `json:"attack_chain,omitempty"`
+	ThreatActor          *types.ThreatActor            `json:"threat_actor,omitempty"`
+	Campaign             *types.ThreatCampaign         `json:"campaign,omitempty"`
+	ImpactAssessment     *types.ImpactAssessment       `json:"impact_assessment"`
+	BusinessImpact       *types.BusinessImpact         `json:"business_impact"`
+	DataBreach           *types.DataBreach             `json:"data_breach,omitempty"`
+	RegulatoryObligations []*types.RegulatoryObligation `json:"regulatory_obligations"`
+	LegalImplications    *types.LegalImplications      `json:"legal_implications,omitempty"`
+	ContainmentActions   []*types.ContainmentAction    `json:"containment_actions"`
+	EradicationActions   []*types.EradicationAction    `json:"eradication_actions"`
+	RecoveryActions      []*types.RecoveryAction       `json:"recovery_actions"`
+	LessonsLearned       []*types.LessonLearned        `json:"lessons_learned"`
+	Recommendations      []*types.Recommendation       `json:"recommendations"`
+	Reports              []*types.InvestigationReport  `json:"reports"`
+	QualityAssurance     *types.QualityAssurance       `json:"quality_assurance"`
+	PeerReview           *types.PeerReview             `json:"peer_review,omitempty"`
+	ExternalConsultation *types.ExternalConsultation   `json:"external_consultation,omitempty"`
+	Collaboration        *types.InvestigationCollaboration `json:"collaboration"`
+	CommunicationPlan    *types.CommunicationPlan      `json:"communication_plan"`
+	Documentation        *types.InvestigationDocumentation `json:"documentation"`
+	Archives             []*types.InvestigationArchive `json:"archives"`
 	CreatedBy            string                  `json:"created_by"`
 	CreatedAt            time.Time               `json:"created_at"`
 	UpdatedAt            time.Time               `json:"updated_at"`
@@ -336,11 +336,11 @@ type ThreatInvestigation struct {
 }
 
 // NewAdvancedThreatHunter creates a new advanced threat hunting system
-func NewAdvancedThreatHunter(config *ThreatHuntingConfig, logger *logrus.Logger) (*AdvancedThreatHunter, error) {
+func NewAdvancedThreatHunter(config *types.ThreatHuntingConfig, logger *logrus.Logger) (*types.AdvancedThreatHunter, error) {
 	hunter := &AdvancedThreatHunter{
 		logger:         logger,
-		activeHunts:    make(map[string]*ThreatHunt),
-		investigations: make(map[string]*ThreatInvestigation),
+		activeHunts:    make(map[string]*types.ThreatHunt),
+		investigations: make(map[string]*types.ThreatInvestigation),
 		stats:          &ThreatHuntingStats{},
 	}
 	
@@ -461,7 +461,7 @@ func NewAdvancedThreatHunter(config *ThreatHuntingConfig, logger *logrus.Logger)
 }
 
 // StartThreatHunt initiates a new threat hunt
-func (th *AdvancedThreatHunter) StartThreatHunt(ctx context.Context, request *ThreatHuntRequest) (*ThreatHunt, error) {
+func (th *types.AdvancedThreatHunter) StartThreatHunt(ctx context.Context, request *types.ThreatHuntRequest) (*types.ThreatHunt, error) {
 	th.mutex.Lock()
 	defer th.mutex.Unlock()
 	
@@ -478,11 +478,11 @@ func (th *AdvancedThreatHunter) StartThreatHunt(ctx context.Context, request *Th
 		Hunters:     request.Hunters,
 		StartTime:   time.Now(),
 		Progress:    0.0,
-		Findings:    []*ThreatFinding{},
-		Evidence:    []*Evidence{},
-		IOCs:        []*IOC{},
-		Indicators:  []*ThreatIndicator{},
-		Techniques:  []*MITRETechnique{},
+		Findings:    []*types.ThreatFinding{},
+		Evidence:    []*types.Evidence{},
+		IOCs:        []*types.IOC{},
+		Indicators:  []*types.ThreatIndicator{},
+		Techniques:  []*types.MITRETechnique{},
 		Tactics:     []string{},
 		Confidence:  0.0,
 		RiskScore:   0.0,
@@ -530,7 +530,7 @@ func (th *AdvancedThreatHunter) StartThreatHunt(ctx context.Context, request *Th
 	
 	// Create initial timeline entry
 	hunt.Timeline = &HuntTimeline{
-		Events: []*TimelineEvent{
+		Events: []*types.TimelineEvent{
 			{
 				Timestamp:   time.Now(),
 				EventType:   "hunt_started",
@@ -561,7 +561,7 @@ func (th *AdvancedThreatHunter) StartThreatHunt(ctx context.Context, request *Th
 }
 
 // ExecuteHunt executes the threat hunting process
-func (th *AdvancedThreatHunter) ExecuteHunt(ctx context.Context, huntID string) (*ThreatHuntResults, error) {
+func (th *types.AdvancedThreatHunter) ExecuteHunt(ctx context.Context, huntID string) (*types.ThreatHuntResults, error) {
 	th.mutex.RLock()
 	hunt, exists := th.activeHunts[huntID]
 	th.mutex.RUnlock()
@@ -577,10 +577,10 @@ func (th *AdvancedThreatHunter) ExecuteHunt(ctx context.Context, huntID string) 
 	results := &ThreatHuntResults{
 		HuntID:     huntID,
 		StartTime:  time.Now(),
-		Findings:   []*ThreatFinding{},
-		Evidence:   []*Evidence{},
-		IOCs:       []*IOC{},
-		Techniques: []*MITRETechnique{},
+		Findings:   []*types.ThreatFinding{},
+		Evidence:   []*types.Evidence{},
+		IOCs:       []*types.IOC{},
+		Techniques: []*types.MITRETechnique{},
 	}
 	
 	// Execute hunting phases
@@ -708,15 +708,15 @@ func (th *AdvancedThreatHunter) ExecuteHunt(ctx context.Context, huntID string) 
 }
 
 // executeHuntPhase executes a specific hunting phase
-func (th *AdvancedThreatHunter) executeHuntPhase(ctx context.Context, hunt *ThreatHunt, phase *HuntPhase) (*HuntPhaseResults, error) {
+func (th *types.AdvancedThreatHunter) executeHuntPhase(ctx context.Context, hunt *types.ThreatHunt, phase *types.HuntPhase) (*types.HuntPhaseResults, error) {
 	results := &HuntPhaseResults{
 		PhaseID:    phase.ID,
 		PhaseName:  phase.Name,
 		StartTime:  time.Now(),
-		Findings:   []*ThreatFinding{},
-		Evidence:   []*Evidence{},
-		IOCs:       []*IOC{},
-		Techniques: []*MITRETechnique{},
+		Findings:   []*types.ThreatFinding{},
+		Evidence:   []*types.Evidence{},
+		IOCs:       []*types.IOC{},
+		Techniques: []*types.MITRETechnique{},
 	}
 	
 	// Execute phase techniques
@@ -768,12 +768,12 @@ func (th *AdvancedThreatHunter) executeHuntPhase(ctx context.Context, hunt *Thre
 }
 
 // GenerateHypothesis generates a threat hunting hypothesis
-func (th *AdvancedThreatHunter) GenerateHypothesis(ctx context.Context, request *HypothesisRequest) (*ThreatHypothesis, error) {
+func (th *types.AdvancedThreatHunter) GenerateHypothesis(ctx context.Context, request *types.HypothesisRequest) (*types.ThreatHypothesis, error) {
 	return th.hypothesisGenerator.GenerateHypothesis(ctx, request)
 }
 
 // StartInvestigation initiates a threat investigation
-func (th *AdvancedThreatHunter) StartInvestigation(ctx context.Context, request *InvestigationRequest) (*ThreatInvestigation, error) {
+func (th *types.AdvancedThreatHunter) StartInvestigation(ctx context.Context, request *types.InvestigationRequest) (*types.ThreatInvestigation, error) {
 	th.mutex.Lock()
 	defer th.mutex.Unlock()
 	
@@ -826,11 +826,11 @@ func (th *AdvancedThreatHunter) StartInvestigation(ctx context.Context, request 
 }
 
 // GetActiveHunts returns all active threat hunts
-func (th *AdvancedThreatHunter) GetActiveHunts() []*ThreatHunt {
+func (th *types.AdvancedThreatHunter) GetActiveHunts() []*types.ThreatHunt {
 	th.mutex.RLock()
 	defer th.mutex.RUnlock()
 	
-	hunts := make([]*ThreatHunt, 0, len(th.activeHunts))
+	hunts := make([]*types.ThreatHunt, 0, len(th.activeHunts))
 	for _, hunt := range th.activeHunts {
 		hunts = append(hunts, hunt)
 	}
@@ -839,11 +839,11 @@ func (th *AdvancedThreatHunter) GetActiveHunts() []*ThreatHunt {
 }
 
 // GetActiveInvestigations returns all active investigations
-func (th *AdvancedThreatHunter) GetActiveInvestigations() []*ThreatInvestigation {
+func (th *types.AdvancedThreatHunter) GetActiveInvestigations() []*types.ThreatInvestigation {
 	th.mutex.RLock()
 	defer th.mutex.RUnlock()
 	
-	investigations := make([]*ThreatInvestigation, 0, len(th.investigations))
+	investigations := make([]*types.ThreatInvestigation, 0, len(th.investigations))
 	for _, investigation := range th.investigations {
 		investigations = append(investigations, investigation)
 	}
@@ -852,7 +852,7 @@ func (th *AdvancedThreatHunter) GetActiveInvestigations() []*ThreatInvestigation
 }
 
 // GetHuntingStats returns threat hunting statistics
-func (th *AdvancedThreatHunter) GetHuntingStats() *ThreatHuntingStats {
+func (th *types.AdvancedThreatHunter) GetHuntingStats() *types.ThreatHuntingStats {
 	th.mutex.RLock()
 	defer th.mutex.RUnlock()
 	
@@ -863,19 +863,19 @@ func (th *AdvancedThreatHunter) GetHuntingStats() *ThreatHuntingStats {
 
 // Helper functions
 
-func (th *AdvancedThreatHunter) generateHuntID(request *ThreatHuntRequest) string {
+func (th *types.AdvancedThreatHunter) generateHuntID(request *types.ThreatHuntRequest) string {
 	data := fmt.Sprintf("%s:%s:%d", request.Name, request.InitiatedBy, time.Now().UnixNano())
 	hash := sha256.Sum256([]byte(data))
 	return fmt.Sprintf("hunt_%s", hex.EncodeToString(hash[:8]))
 }
 
-func (th *AdvancedThreatHunter) generateInvestigationID(request *InvestigationRequest) string {
+func (th *types.AdvancedThreatHunter) generateInvestigationID(request *types.InvestigationRequest) string {
 	data := fmt.Sprintf("%s:%s:%d", request.Title, request.InitiatedBy, time.Now().UnixNano())
 	hash := sha256.Sum256([]byte(data))
 	return fmt.Sprintf("inv_%s", hex.EncodeToString(hash[:8]))
 }
 
-func (th *AdvancedThreatHunter) shouldTerminateHunt(hunt *ThreatHunt, phaseResults *HuntPhaseResults) bool {
+func (th *types.AdvancedThreatHunter) shouldTerminateHunt(hunt *types.ThreatHunt, phaseResults *types.HuntPhaseResults) bool {
 	// Check for critical findings that require immediate action
 	for _, finding := range phaseResults.Findings {
 		if finding.Severity == "critical" && finding.Confidence > 0.9 {
@@ -891,7 +891,7 @@ func (th *AdvancedThreatHunter) shouldTerminateHunt(hunt *ThreatHunt, phaseResul
 	return false
 }
 
-func (th *AdvancedThreatHunter) calculateHuntConfidence(results *ThreatHuntResults) float64 {
+func (th *types.AdvancedThreatHunter) calculateHuntConfidence(results *types.ThreatHuntResults) float64 {
 	if len(results.Findings) == 0 {
 		return 0.0
 	}
@@ -904,7 +904,7 @@ func (th *AdvancedThreatHunter) calculateHuntConfidence(results *ThreatHuntResul
 	return totalConfidence / float64(len(results.Findings))
 }
 
-func (th *AdvancedThreatHunter) calculateHuntRiskScore(results *ThreatHuntResults) float64 {
+func (th *types.AdvancedThreatHunter) calculateHuntRiskScore(results *types.ThreatHuntResults) float64 {
 	if len(results.Findings) == 0 {
 		return 0.0
 	}
@@ -919,7 +919,7 @@ func (th *AdvancedThreatHunter) calculateHuntRiskScore(results *ThreatHuntResult
 	return maxRisk
 }
 
-func (th *AdvancedThreatHunter) calculateAverageHuntDuration() time.Duration {
+func (th *types.AdvancedThreatHunter) calculateAverageHuntDuration() time.Duration {
 	// Implementation would calculate average from completed hunts
 	return time.Hour * 2 // Placeholder
 }
@@ -957,11 +957,11 @@ type ThreatHuntRequest struct {
 	Description     string              `json:"description"`
 	Priority        string              `json:"priority"`
 	Hunters         []string            `json:"hunters"`
-	Hypothesis      *ThreatHypothesis   `json:"hypothesis,omitempty"`
-	Strategy        *HuntStrategy       `json:"strategy,omitempty"`
+	Hypothesis      *types.ThreatHypothesis   `json:"hypothesis,omitempty"`
+	Strategy        *types.HuntStrategy       `json:"strategy,omitempty"`
 	DataSources     []*types.DataSource       `json:"data_sources"`
 	TimeRange       *types.TimeRange          `json:"time_range"`
-	Scope           *HuntScope          `json:"scope"`
+	Scope           *types.HuntScope          `json:"scope"`
 	AutomationLevel string              `json:"automation_level"`
 	InitiatedBy     string              `json:"initiated_by"`
 	Tags            []string            `json:"tags"`
@@ -973,15 +973,15 @@ type ThreatHuntResults struct {
 	StartTime           time.Time                 `json:"start_time"`
 	EndTime             time.Time                 `json:"end_time"`
 	Duration            time.Duration             `json:"duration"`
-	Findings            []*ThreatFinding          `json:"findings"`
-	Evidence            []*Evidence               `json:"evidence"`
-	IOCs                []*IOC                    `json:"iocs"`
-	Techniques          []*MITRETechnique         `json:"techniques"`
-	CorrelationResults  *CorrelationResults       `json:"correlation_results,omitempty"`
-	IntelligenceResults *IntelligenceResults      `json:"intelligence_results,omitempty"`
-	MLResults           *MLResults                `json:"ml_results,omitempty"`
-	AIInsights          *AIInsights               `json:"ai_insights,omitempty"`
-	Report              *HuntReport               `json:"report,omitempty"`
+	Findings            []*types.ThreatFinding          `json:"findings"`
+	Evidence            []*types.Evidence               `json:"evidence"`
+	IOCs                []*types.IOC                    `json:"iocs"`
+	Techniques          []*types.MITRETechnique         `json:"techniques"`
+	CorrelationResults  *types.CorrelationResults       `json:"correlation_results,omitempty"`
+	IntelligenceResults *types.IntelligenceResults      `json:"intelligence_results,omitempty"`
+	MLResults           *types.MLResults                `json:"ml_results,omitempty"`
+	AIInsights          *types.AIInsights               `json:"ai_insights,omitempty"`
+	Report              *types.HuntReport               `json:"report,omitempty"`
 	Success             bool                      `json:"success"`
 	QualityScore        float64                   `json:"quality_score"`
 }
@@ -992,7 +992,7 @@ type HypothesisRequest struct {
 	Techniques      []string            `json:"techniques"`
 	Tactics         []string            `json:"tactics"`
 	DataSources     []*types.DataSource       `json:"data_sources"`
-	Environment     *Environment        `json:"environment"`
+	Environment     *types.Environment        `json:"environment"`
 	Context         string              `json:"context"`
 	Priority        string              `json:"priority"`
 	RequestedBy     string              `json:"requested_by"`
@@ -1006,12 +1006,12 @@ type InvestigationRequest struct {
 	Category         string              `json:"category"`
 	Priority         string              `json:"priority"`
 	Severity         string              `json:"severity"`
-	Investigators    []*Investigator     `json:"investigators"`
+	Investigators    []*types.Investigator     `json:"investigators"`
 	LeadInvestigator string              `json:"lead_investigator"`
-	TriggerEvent     *TriggerEvent       `json:"trigger_event"`
-	InitialFindings  []*ThreatFinding    `json:"initial_findings"`
-	Scope            *InvestigationScope `json:"scope"`
-	Timeline         *TimeRange          `json:"timeline"`
+	TriggerEvent     *types.TriggerEvent       `json:"trigger_event"`
+	InitialFindings  []*types.ThreatFinding    `json:"initial_findings"`
+	Scope            *types.InvestigationScope `json:"scope"`
+	Timeline         *types.TimeRange          `json:"timeline"`
 	InitiatedBy      string              `json:"initiated_by"`
 	Tags             []string            `json:"tags"`
 	Metadata         map[string]interface{} `json:"metadata"`
@@ -1019,22 +1019,22 @@ type InvestigationRequest struct {
 
 // Additional configuration structures
 type ThreatHuntingConfig struct {
-	HuntingEngine         *HuntingEngineConfig         `yaml:"hunting_engine"`
-	IndicatorEngine       *IndicatorEngineConfig       `yaml:"indicator_engine"`
-	BehaviorAnalyzer      *BehaviorAnalyzerConfig      `yaml:"behavior_analyzer"`
-	AnomalyDetector       *AnomalyDetectorConfig       `yaml:"anomaly_detector"`
-	CorrelationEngine     *CorrelationEngineConfig     `yaml:"correlation_engine"`
-	IntelligenceEngine    *IntelligenceEngineConfig    `yaml:"intelligence_engine"`
-	HypothesisGenerator   *HypothesisGeneratorConfig   `yaml:"hypothesis_generator"`
-	InvestigationEngine   *InvestigationEngineConfig   `yaml:"investigation_engine"`
-	HuntingWorkflow       *HuntingWorkflowConfig       `yaml:"hunting_workflow"`
-	KnowledgeBase         *KnowledgeBaseConfig         `yaml:"knowledge_base"`
-	CollaborationEngine   *CollaborationEngineConfig   `yaml:"collaboration_engine"`
-	AutomationEngine      *AutomationEngineConfig      `yaml:"automation_engine"`
-	VisualizationEngine   *VisualizationEngineConfig   `yaml:"visualization_engine"`
-	ReportingEngine       *ReportingEngineConfig       `yaml:"reporting_engine"`
-	MLEngine              *MLEngineConfig              `yaml:"ml_engine"`
-	AIAssistant           *AIAssistantConfig           `yaml:"ai_assistant"`
+	HuntingEngine         *types.HuntingEngineConfig         `yaml:"hunting_engine"`
+	IndicatorEngine       *types.IndicatorEngineConfig       `yaml:"indicator_engine"`
+	BehaviorAnalyzer      *types.BehaviorAnalyzerConfig      `yaml:"behavior_analyzer"`
+	AnomalyDetector       *types.AnomalyDetectorConfig       `yaml:"anomaly_detector"`
+	CorrelationEngine     *types.CorrelationEngineConfig     `yaml:"correlation_engine"`
+	IntelligenceEngine    *types.IntelligenceEngineConfig    `yaml:"intelligence_engine"`
+	HypothesisGenerator   *types.HypothesisGeneratorConfig   `yaml:"hypothesis_generator"`
+	InvestigationEngine   *types.InvestigationEngineConfig   `yaml:"investigation_engine"`
+	HuntingWorkflow       *types.HuntingWorkflowConfig       `yaml:"hunting_workflow"`
+	KnowledgeBase         *types.KnowledgeBaseConfig         `yaml:"knowledge_base"`
+	CollaborationEngine   *types.CollaborationEngineConfig   `yaml:"collaboration_engine"`
+	AutomationEngine      *types.AutomationEngineConfig      `yaml:"automation_engine"`
+	VisualizationEngine   *types.VisualizationEngineConfig   `yaml:"visualization_engine"`
+	ReportingEngine       *types.ReportingEngineConfig       `yaml:"reporting_engine"`
+	MLEngine              *types.MLEngineConfig              `yaml:"ml_engine"`
+	AIAssistant           *types.AIAssistantConfig           `yaml:"ai_assistant"`
 }
 
 // Placeholder configurations - these would be fully implemented
@@ -1062,144 +1062,144 @@ type IndicatorEngineConfig struct {
 // Additional stub functions for component initialization
 // These would be fully implemented in a real system
 
-func NewHuntingEngine(config *HuntingEngineConfig, logger *logrus.Logger) (*HuntingEngine, error) {
+func NewHuntingEngine(config *types.HuntingEngineConfig, logger *logrus.Logger) (*types.HuntingEngine, error) {
 	return &HuntingEngine{}, nil
 }
 
-func NewIndicatorEngine(config *IndicatorEngineConfig, logger *logrus.Logger) (*IndicatorEngine, error) {
+func NewIndicatorEngine(config *types.IndicatorEngineConfig, logger *logrus.Logger) (*types.IndicatorEngine, error) {
 	return &IndicatorEngine{}, nil
 }
 
-func NewBehaviorAnalyzer(config *BehaviorAnalyzerConfig, logger *logrus.Logger) (*BehaviorAnalyzer, error) {
+func NewBehaviorAnalyzer(config *types.BehaviorAnalyzerConfig, logger *logrus.Logger) (*types.BehaviorAnalyzer, error) {
 	return &BehaviorAnalyzer{}, nil
 }
 
-func NewAnomalyDetector(config *AnomalyDetectorConfig, logger *logrus.Logger) (*AnomalyDetector, error) {
+func NewAnomalyDetector(config *types.AnomalyDetectorConfig, logger *logrus.Logger) (*types.AnomalyDetector, error) {
 	return &AnomalyDetector{}, nil
 }
 
-func NewCorrelationEngine(config *CorrelationEngineConfig, logger *logrus.Logger) (*CorrelationEngine, error) {
+func NewCorrelationEngine(config *types.CorrelationEngineConfig, logger *logrus.Logger) (*types.CorrelationEngine, error) {
 	return &CorrelationEngine{}, nil
 }
 
-func NewThreatIntelligenceEngine(config *IntelligenceEngineConfig, logger *logrus.Logger) (*ThreatIntelligenceEngine, error) {
+func NewThreatIntelligenceEngine(config *types.IntelligenceEngineConfig, logger *logrus.Logger) (*types.ThreatIntelligenceEngine, error) {
 	return &ThreatIntelligenceEngine{}, nil
 }
 
-func NewHypothesisGenerator(config *HypothesisGeneratorConfig, logger *logrus.Logger) (*HypothesisGenerator, error) {
+func NewHypothesisGenerator(config *types.HypothesisGeneratorConfig, logger *logrus.Logger) (*types.HypothesisGenerator, error) {
 	return &HypothesisGenerator{}, nil
 }
 
-func NewInvestigationEngine(config *InvestigationEngineConfig, logger *logrus.Logger) (*InvestigationEngine, error) {
+func NewInvestigationEngine(config *types.InvestigationEngineConfig, logger *logrus.Logger) (*types.InvestigationEngine, error) {
 	return &InvestigationEngine{}, nil
 }
 
-func NewHuntingWorkflow(config *HuntingWorkflowConfig, logger *logrus.Logger) (*HuntingWorkflow, error) {
+func NewHuntingWorkflow(config *types.HuntingWorkflowConfig, logger *logrus.Logger) (*types.HuntingWorkflow, error) {
 	return &HuntingWorkflow{}, nil
 }
 
-func NewThreatKnowledgeBase(config *KnowledgeBaseConfig, logger *logrus.Logger) (*ThreatKnowledgeBase, error) {
+func NewThreatKnowledgeBase(config *types.KnowledgeBaseConfig, logger *logrus.Logger) (*types.ThreatKnowledgeBase, error) {
 	return &ThreatKnowledgeBase{}, nil
 }
 
-func NewCollaborationEngine(config *CollaborationEngineConfig, logger *logrus.Logger) (*CollaborationEngine, error) {
+func NewCollaborationEngine(config *types.CollaborationEngineConfig, logger *logrus.Logger) (*types.CollaborationEngine, error) {
 	return &CollaborationEngine{}, nil
 }
 
-func NewAutomationEngine(config *AutomationEngineConfig, logger *logrus.Logger) (*AutomationEngine, error) {
+func NewAutomationEngine(config *types.AutomationEngineConfig, logger *logrus.Logger) (*types.AutomationEngine, error) {
 	return &AutomationEngine{}, nil
 }
 
-func NewVisualizationEngine(config *VisualizationEngineConfig, logger *logrus.Logger) (*VisualizationEngine, error) {
+func NewVisualizationEngine(config *types.VisualizationEngineConfig, logger *logrus.Logger) (*types.VisualizationEngine, error) {
 	return &VisualizationEngine{}, nil
 }
 
-func NewReportingEngine(config *ReportingEngineConfig, logger *logrus.Logger) (*ReportingEngine, error) {
+func NewReportingEngine(config *types.ReportingEngineConfig, logger *logrus.Logger) (*types.ReportingEngine, error) {
 	return &ReportingEngine{}, nil
 }
 
-func NewMLHuntingEngine(config *MLEngineConfig, logger *logrus.Logger) (*MLHuntingEngine, error) {
+func NewMLHuntingEngine(config *types.MLEngineConfig, logger *logrus.Logger) (*types.MLHuntingEngine, error) {
 	return &MLHuntingEngine{}, nil
 }
 
-func NewAIHuntingAssistant(config *AIAssistantConfig, logger *logrus.Logger) (*AIHuntingAssistant, error) {
+func NewAIHuntingAssistant(config *types.AIAssistantConfig, logger *logrus.Logger) (*types.AIHuntingAssistant, error) {
 	return &AIHuntingAssistant{}, nil
 }
 
 // Additional method stubs
-func (he *HuntingEngine) DetermineStrategy(ctx context.Context, hypothesis *ThreatHypothesis, request *ThreatHuntRequest) (*HuntStrategy, error) {
+func (he *types.HuntingEngine) DetermineStrategy(ctx context.Context, hypothesis *types.ThreatHypothesis, request *types.ThreatHuntRequest) (*types.HuntStrategy, error) {
 	return &HuntStrategy{}, nil
 }
 
-func (hw *HuntingWorkflow) InitializeWorkflow(ctx context.Context, hunt *ThreatHunt) (*HuntingWorkflow, error) {
+func (hw *types.HuntingWorkflow) InitializeWorkflow(ctx context.Context, hunt *types.ThreatHunt) (*types.HuntingWorkflow, error) {
 	return hw, nil
 }
 
-func (ae *AutomationEngine) StartAutomatedHunt(ctx context.Context, hunt *ThreatHunt) error {
+func (ae *types.AutomationEngine) StartAutomatedHunt(ctx context.Context, hunt *types.ThreatHunt) error {
 	return nil
 }
 
-func (ce *CollaborationEngine) NotifyHuntStarted(ctx context.Context, hunt *ThreatHunt) error {
+func (ce *types.CollaborationEngine) NotifyHuntStarted(ctx context.Context, hunt *types.ThreatHunt) error {
 	return nil
 }
 
-func (ce *CollaborationEngine) NotifyHuntCompleted(ctx context.Context, hunt *ThreatHunt, results *ThreatHuntResults) error {
+func (ce *types.CollaborationEngine) NotifyHuntCompleted(ctx context.Context, hunt *types.ThreatHunt, results *types.ThreatHuntResults) error {
 	return nil
 }
 
-func (th *AdvancedThreatHunter) executeTechnique(ctx context.Context, hunt *ThreatHunt, technique *HuntTechnique) (*TechniqueResults, error) {
+func (th *types.AdvancedThreatHunter) executeTechnique(ctx context.Context, hunt *types.ThreatHunt, technique *types.HuntTechnique) (*types.TechniqueResults, error) {
 	return &TechniqueResults{}, nil
 }
 
-func (th *AdvancedThreatHunter) executeQuery(ctx context.Context, hunt *ThreatHunt, query *HuntQuery) (*QueryResults, error) {
+func (th *types.AdvancedThreatHunter) executeQuery(ctx context.Context, hunt *types.ThreatHunt, query *types.HuntQuery) (*types.QueryResults, error) {
 	return &QueryResults{}, nil
 }
 
-func (th *AdvancedThreatHunter) executeAnalytic(ctx context.Context, hunt *ThreatHunt, analytic *HuntAnalytic) (*AnalyticResults, error) {
+func (th *types.AdvancedThreatHunter) executeAnalytic(ctx context.Context, hunt *types.ThreatHunt, analytic *types.HuntAnalytic) (*types.AnalyticResults, error) {
 	return &AnalyticResults{}, nil
 }
 
-func (th *AdvancedThreatHunter) processQueryResults(results *QueryResults, query *HuntQuery) []*ThreatFinding {
-	return []*ThreatFinding{}
+func (th *types.AdvancedThreatHunter) processQueryResults(results *types.QueryResults, query *types.HuntQuery) []*types.ThreatFinding {
+	return []*types.ThreatFinding{}
 }
 
-func (th *AdvancedThreatHunter) processAnalyticResults(results *AnalyticResults, analytic *HuntAnalytic) []*ThreatFinding {
-	return []*ThreatFinding{}
+func (th *types.AdvancedThreatHunter) processAnalyticResults(results *types.AnalyticResults, analytic *types.HuntAnalytic) []*types.ThreatFinding {
+	return []*types.ThreatFinding{}
 }
 
-func (ce *CorrelationEngine) CorrelateFindings(ctx context.Context, findings []*ThreatFinding) (*CorrelationResults, error) {
+func (ce *types.CorrelationEngine) CorrelateFindings(ctx context.Context, findings []*types.ThreatFinding) (*types.CorrelationResults, error) {
 	return &CorrelationResults{}, nil
 }
 
-func (tie *ThreatIntelligenceEngine) EnrichFindings(ctx context.Context, findings []*ThreatFinding) (*IntelligenceResults, error) {
+func (tie *types.ThreatIntelligenceEngine) EnrichFindings(ctx context.Context, findings []*types.ThreatFinding) (*types.IntelligenceResults, error) {
 	return &IntelligenceResults{}, nil
 }
 
-func (mle *MLHuntingEngine) AnalyzeHuntResults(ctx context.Context, results *ThreatHuntResults) (*MLResults, error) {
+func (mle *types.MLHuntingEngine) AnalyzeHuntResults(ctx context.Context, results *types.ThreatHuntResults) (*types.MLResults, error) {
 	return &MLResults{}, nil
 }
 
-func (aia *AIHuntingAssistant) GenerateInsights(ctx context.Context, hunt *ThreatHunt, results *ThreatHuntResults) (*AIInsights, error) {
+func (aia *types.AIHuntingAssistant) GenerateInsights(ctx context.Context, hunt *types.ThreatHunt, results *types.ThreatHuntResults) (*types.AIInsights, error) {
 	return &AIInsights{}, nil
 }
 
-func (th *AdvancedThreatHunter) generateRecommendations(ctx context.Context, hunt *ThreatHunt, results *ThreatHuntResults) ([]*Recommendation, error) {
-	return []*Recommendation{}, nil
+func (th *types.AdvancedThreatHunter) generateRecommendations(ctx context.Context, hunt *types.ThreatHunt, results *types.ThreatHuntResults) ([]*types.Recommendation, error) {
+	return []*types.Recommendation{}, nil
 }
 
-func (tkb *ThreatKnowledgeBase) StoreHuntResults(ctx context.Context, hunt *ThreatHunt, results *ThreatHuntResults) error {
+func (tkb *types.ThreatKnowledgeBase) StoreHuntResults(ctx context.Context, hunt *types.ThreatHunt, results *types.ThreatHuntResults) error {
 	return nil
 }
 
-func (re *ReportingEngine) GenerateHuntReport(ctx context.Context, hunt *ThreatHunt, results *ThreatHuntResults) (*HuntReport, error) {
+func (re *types.ReportingEngine) GenerateHuntReport(ctx context.Context, hunt *types.ThreatHunt, results *types.ThreatHuntResults) (*types.HuntReport, error) {
 	return &HuntReport{}, nil
 }
 
-func (hg *HypothesisGenerator) GenerateHypothesis(ctx context.Context, request interface{}) (*ThreatHypothesis, error) {
+func (hg *types.HypothesisGenerator) GenerateHypothesis(ctx context.Context, request interface{}) (*types.ThreatHypothesis, error) {
 	return &ThreatHypothesis{}, nil
 }
 
-func (ie *InvestigationEngine) InitializeInvestigation(ctx context.Context, investigation *ThreatInvestigation) error {
+func (ie *types.InvestigationEngine) InitializeInvestigation(ctx context.Context, investigation *types.ThreatInvestigation) error {
 	return nil
 }
 
@@ -1215,9 +1215,9 @@ type AIHuntingAssistant struct{}
 type HuntPhase struct {
 	ID         string          `json:"id"`
 	Name       string          `json:"name"`
-	Techniques []*HuntTechnique `json:"techniques"`
-	Queries    []*HuntQuery     `json:"queries"`
-	Analytics  []*HuntAnalytic  `json:"analytics"`
+	Techniques []*types.HuntTechnique `json:"techniques"`
+	Queries    []*types.HuntQuery     `json:"queries"`
+	Analytics  []*types.HuntAnalytic  `json:"analytics"`
 }
 type HuntTechnique struct {
 	Name string `json:"name"`
@@ -1235,16 +1235,16 @@ type HuntPhaseResults struct {
 	EndTime    time.Time           `json:"end_time"`
 	Duration   time.Duration       `json:"duration"`
 	Success    bool                `json:"success"`
-	Findings   []*ThreatFinding    `json:"findings"`
-	Evidence   []*Evidence         `json:"evidence"`
-	IOCs       []*IOC              `json:"iocs"`
-	Techniques []*MITRETechnique   `json:"techniques"`
+	Findings   []*types.ThreatFinding    `json:"findings"`
+	Evidence   []*types.Evidence         `json:"evidence"`
+	IOCs       []*types.IOC              `json:"iocs"`
+	Techniques []*types.MITRETechnique   `json:"techniques"`
 }
 type TechniqueResults struct {
-	Findings   []*ThreatFinding  `json:"findings"`
-	Evidence   []*Evidence       `json:"evidence"`
-	IOCs       []*IOC            `json:"iocs"`
-	Techniques []*MITRETechnique `json:"techniques"`
+	Findings   []*types.ThreatFinding  `json:"findings"`
+	Evidence   []*types.Evidence       `json:"evidence"`
+	IOCs       []*types.IOC            `json:"iocs"`
+	Techniques []*types.MITRETechnique `json:"techniques"`
 }
 type QueryResults struct{}
 type AnalyticResults struct{}

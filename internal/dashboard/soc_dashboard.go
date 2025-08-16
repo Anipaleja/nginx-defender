@@ -18,45 +18,45 @@ import (
 // AdvancedSOCDashboard - The most sophisticated Security Operations Center dashboard
 // Revolutionizes security monitoring with real-time AI-powered analytics and visualization
 type AdvancedSOCDashboard struct {
-	realTimeEngine       *RealTimeEngine
-	analyticsEngine      *AnalyticsEngine
-	visualizationEngine  *VisualizationEngine
-	alertManager         *AlertManager
-	incidentManager      *IncidentManager
-	threatIntelligence   *ThreatIntelligencePanel
-	complianceMonitor    *ComplianceMonitor
-	performanceMonitor   *PerformanceMonitor
-	workflowEngine       *WorkflowEngine
-	collaborationHub     *CollaborationHub
-	automationEngine     *AutomationEngine
-	reportingEngine      *ReportingEngine
-	customizationEngine  *CustomizationEngine
-	integrationHub       *IntegrationHub
+	realTimeEngine       *types.RealTimeEngine
+	analyticsEngine      *types.AnalyticsEngine
+	visualizationEngine  *types.VisualizationEngine
+	alertManager         *types.AlertManager
+	incidentManager      *types.IncidentManager
+	threatIntelligence   *types.ThreatIntelligencePanel
+	complianceMonitor    *types.ComplianceMonitor
+	performanceMonitor   *types.PerformanceMonitor
+	workflowEngine       *types.WorkflowEngine
+	collaborationHub     *types.CollaborationHub
+	automationEngine     *types.AutomationEngine
+	reportingEngine      *types.ReportingEngine
+	customizationEngine  *types.CustomizationEngine
+	integrationHub       *types.IntegrationHub
 	logger               *logrus.Logger
 	mutex                sync.RWMutex
 	
 	// WebSocket connections for real-time updates
-	wsConnections        map[string]*WebSocketConnection
+	wsConnections        map[string]*types.WebSocketConnection
 	
 	// Dashboard state and configuration
-	dashboardConfig      *DashboardConfig
-	userPreferences      map[string]*UserPreferences
-	widgets              map[string]*DashboardWidget
+	dashboardConfig      *types.DashboardConfig
+	userPreferences      map[string]*types.UserPreferences
+	widgets              map[string]*types.DashboardWidget
 	
 	// Real-time data streams
-	dataStreams          map[string]*DataStream
+	dataStreams          map[string]*types.DataStream
 	
 	// Statistics and metrics
-	stats                *DashboardStats
+	stats                *types.DashboardStats
 	
 	// AI and ML components
-	aiInsights           *AIInsightsEngine
-	predictiveAnalytics  *PredictiveAnalytics
-	anomalyDetection     *AnomalyDetectionEngine
+	aiInsights           *types.AIInsightsEngine
+	predictiveAnalytics  *types.PredictiveAnalytics
+	anomalyDetection     *types.AnomalyDetectionEngine
 	
 	// Security metrics
-	securityMetrics      *SecurityMetrics
-	kpiCalculator        *KPICalculator
+	securityMetrics      *types.SecurityMetrics
+	kpiCalculator        *types.KPICalculator
 }
 
 // RealTimeEngine handles real-time data processing and streaming
@@ -76,59 +76,59 @@ type AnalyticsEngine struct {
 	timeSeriesAnalyzer   *types.TimeSeriesAnalyzer
 	statisticalAnalyzer  *types.StatisticalAnalyzer
 	correlationAnalyzer  *types.CorrelationAnalyzer
-	trendAnalyzer        *TrendAnalyzer
-	patternRecognition   *PatternRecognition
-	behaviorAnalyzer     *BehaviorAnalyzer
-	networkAnalyzer      *NetworkAnalyzer
-	userAnalyzer         *UserAnalyzer
-	assetAnalyzer        *AssetAnalyzer
-	threatAnalyzer       *ThreatAnalyzer
-	complianceAnalyzer   *ComplianceAnalyzer
-	businessImpactAnalyzer *BusinessImpactAnalyzer
+	trendAnalyzer        *types.TrendAnalyzer
+	patternRecognition   *types.PatternRecognition
+	behaviorAnalyzer     *types.BehaviorAnalyzer
+	networkAnalyzer      *types.NetworkAnalyzer
+	userAnalyzer         *types.UserAnalyzer
+	assetAnalyzer        *types.AssetAnalyzer
+	threatAnalyzer       *types.ThreatAnalyzer
+	complianceAnalyzer   *types.ComplianceAnalyzer
+	businessImpactAnalyzer *types.BusinessImpactAnalyzer
 }
 
 // VisualizationEngine creates interactive visualizations
 type VisualizationEngine struct {
-	chartRenderer        *ChartRenderer
-	mapRenderer          *MapRenderer
-	graphRenderer        *GraphRenderer
-	heatmapRenderer      *HeatmapRenderer
-	timelineRenderer     *TimelineRenderer
-	networkRenderer      *NetworkRenderer
-	flowRenderer         *FlowRenderer
-	dashboardRenderer    *DashboardRenderer
-	reportRenderer       *ReportRenderer
-	interactivityEngine  *InteractivityEngine
-	animationEngine      *AnimationEngine
-	responsiveEngine     *ResponsiveEngine
+	chartRenderer        *types.ChartRenderer
+	mapRenderer          *types.MapRenderer
+	graphRenderer        *types.GraphRenderer
+	heatmapRenderer      *types.HeatmapRenderer
+	timelineRenderer     *types.TimelineRenderer
+	networkRenderer      *types.NetworkRenderer
+	flowRenderer         *types.FlowRenderer
+	dashboardRenderer    *types.DashboardRenderer
+	reportRenderer       *types.ReportRenderer
+	interactivityEngine  *types.InteractivityEngine
+	animationEngine      *types.AnimationEngine
+	responsiveEngine     *types.ResponsiveEngine
 }
 
 // AlertManager handles security alerts and notifications
 type AlertManager struct {
-	alertProcessor       *AlertProcessor
-	prioritizer          *AlertPrioritizer
-	correlator           *AlertCorrelator
-	deduplicator         *AlertDeduplicator
-	escalationEngine     *EscalationEngine
-	notificationEngine   *NotificationEngine
-	acknowledger         *AlertAcknowledger
-	resolver             *AlertResolver
-	falsePositiveDetector *FalsePositiveDetector
-	alertEnrichment      *AlertEnrichment
+	alertProcessor       *types.AlertProcessor
+	prioritizer          *types.AlertPrioritizer
+	correlator           *types.AlertCorrelator
+	deduplicator         *types.AlertDeduplicator
+	escalationEngine     *types.EscalationEngine
+	notificationEngine   *types.NotificationEngine
+	acknowledger         *types.AlertAcknowledger
+	resolver             *types.AlertResolver
+	falsePositiveDetector *types.FalsePositiveDetector
+	alertEnrichment      *types.AlertEnrichment
 }
 
 // IncidentManager handles security incidents
 type IncidentManager struct {
-	incidentProcessor    *IncidentProcessor
-	incidentTracker      *IncidentTracker
-	workflowManager      *IncidentWorkflowManager
-	responseOrchestrator *ResponseOrchestrator
-	timelineBuilder      *IncidentTimelineBuilder
-	impactAssessor       *ImpactAssessor
-	communicationManager *CommunicationManager
-	documentationEngine  *DocumentationEngine
-	lessonsLearnedEngine *LessonsLearnedEngine
-	reportGenerator      *IncidentReportGenerator
+	incidentProcessor    *types.IncidentProcessor
+	incidentTracker      *types.IncidentTracker
+	workflowManager      *types.IncidentWorkflowManager
+	responseOrchestrator *types.ResponseOrchestrator
+	timelineBuilder      *types.IncidentTimelineBuilder
+	impactAssessor       *types.ImpactAssessor
+	communicationManager *types.CommunicationManager
+	documentationEngine  *types.DocumentationEngine
+	lessonsLearnedEngine *types.LessonsLearnedEngine
+	reportGenerator      *types.IncidentReportGenerator
 }
 
 // DashboardWidget represents a widget on the dashboard
@@ -137,15 +137,15 @@ type DashboardWidget struct {
 	Type                 string                 `json:"type"`
 	Title                string                 `json:"title"`
 	Description          string                 `json:"description"`
-	Position             *WidgetPosition        `json:"position"`
-	Size                 *WidgetSize            `json:"size"`
-	Configuration        *WidgetConfiguration   `json:"configuration"`
-	DataSource           *DataSourceConfig      `json:"data_source"`
+	Position             *types.WidgetPosition        `json:"position"`
+	Size                 *types.WidgetSize            `json:"size"`
+	Configuration        *types.WidgetConfiguration   `json:"configuration"`
+	DataSource           *types.DataSourceConfig      `json:"data_source"`
 	RefreshInterval      time.Duration          `json:"refresh_interval"`
-	Filters              []*WidgetFilter        `json:"filters"`
-	Visualization        *VisualizationConfig   `json:"visualization"`
-	Interactions         []*WidgetInteraction   `json:"interactions"`
-	Permissions          *WidgetPermissions     `json:"permissions"`
+	Filters              []*types.WidgetFilter        `json:"filters"`
+	Visualization        *types.VisualizationConfig   `json:"visualization"`
+	Interactions         []*types.WidgetInteraction   `json:"interactions"`
+	Permissions          *types.WidgetPermissions     `json:"permissions"`
 	Status               string                 `json:"status"`
 	LastUpdated          time.Time              `json:"last_updated"`
 	ErrorMessage         string                 `json:"error_message,omitempty"`
@@ -155,18 +155,18 @@ type DashboardWidget struct {
 
 // SecurityMetrics contains comprehensive security metrics
 type SecurityMetrics struct {
-	RealTimeMetrics      *RealTimeMetrics       `json:"real_time_metrics"`
-	ThreatMetrics        *ThreatMetrics         `json:"threat_metrics"`
-	VulnerabilityMetrics *VulnerabilityMetrics  `json:"vulnerability_metrics"`
-	ComplianceMetrics    *ComplianceMetrics     `json:"compliance_metrics"`
-	PerformanceMetrics   *PerformanceMetrics    `json:"performance_metrics"`
-	OperationalMetrics   *OperationalMetrics    `json:"operational_metrics"`
-	BusinessMetrics      *BusinessMetrics       `json:"business_metrics"`
-	UserMetrics          *UserMetrics           `json:"user_metrics"`
-	NetworkMetrics       *NetworkMetrics        `json:"network_metrics"`
-	AssetMetrics         *AssetMetrics          `json:"asset_metrics"`
-	IncidentMetrics      *IncidentMetrics       `json:"incident_metrics"`
-	ResponseMetrics      *ResponseMetrics       `json:"response_metrics"`
+	RealTimeMetrics      *types.RealTimeMetrics       `json:"real_time_metrics"`
+	ThreatMetrics        *types.ThreatMetrics         `json:"threat_metrics"`
+	VulnerabilityMetrics *types.VulnerabilityMetrics  `json:"vulnerability_metrics"`
+	ComplianceMetrics    *types.ComplianceMetrics     `json:"compliance_metrics"`
+	PerformanceMetrics   *types.PerformanceMetrics    `json:"performance_metrics"`
+	OperationalMetrics   *types.OperationalMetrics    `json:"operational_metrics"`
+	BusinessMetrics      *types.BusinessMetrics       `json:"business_metrics"`
+	UserMetrics          *types.UserMetrics           `json:"user_metrics"`
+	NetworkMetrics       *types.NetworkMetrics        `json:"network_metrics"`
+	AssetMetrics         *types.AssetMetrics          `json:"asset_metrics"`
+	IncidentMetrics      *types.IncidentMetrics       `json:"incident_metrics"`
+	ResponseMetrics      *types.ResponseMetrics       `json:"response_metrics"`
 }
 
 // RealTimeMetrics contains real-time security metrics
@@ -181,7 +181,7 @@ type RealTimeMetrics struct {
 	TopThreatTypes       map[string]uint64 `json:"top_threat_types"`
 	TopAttackerIPs       map[string]uint64 `json:"top_attacker_ips"`
 	ProtocolDistribution map[string]uint64 `json:"protocol_distribution"`
-	SystemHealth         *SystemHealth `json:"system_health"`
+	SystemHealth         *types.SystemHealth `json:"system_health"`
 	Timestamp            time.Time  `json:"timestamp"`
 }
 
@@ -194,14 +194,14 @@ type ThreatMetrics struct {
 	ThreatsBySeverity    map[string]uint64     `json:"threats_by_severity"`
 	ThreatsBySource      map[string]uint64     `json:"threats_by_source"`
 	ThreatsByTarget      map[string]uint64     `json:"threats_by_target"`
-	ThreatActors         *ThreatActorMetrics   `json:"threat_actors"`
-	Campaigns            *CampaignMetrics      `json:"campaigns"`
-	TTPs                 *TTPMetrics           `json:"ttps"`
-	IOCs                 *IOCMetrics           `json:"iocs"`
-	DetectionMetrics     *DetectionMetrics     `json:"detection_metrics"`
-	ResponseMetrics      *ResponseMetrics      `json:"response_metrics"`
-	TrendAnalysis        *ThreatTrendAnalysis  `json:"trend_analysis"`
-	RiskScores           *RiskScoreMetrics     `json:"risk_scores"`
+	ThreatActors         *types.ThreatActorMetrics   `json:"threat_actors"`
+	Campaigns            *types.CampaignMetrics      `json:"campaigns"`
+	TTPs                 *types.TTPMetrics           `json:"ttps"`
+	IOCs                 *types.IOCMetrics           `json:"iocs"`
+	DetectionMetrics     *types.DetectionMetrics     `json:"detection_metrics"`
+	ResponseMetrics      *types.ResponseMetrics      `json:"response_metrics"`
+	TrendAnalysis        *types.ThreatTrendAnalysis  `json:"trend_analysis"`
+	RiskScores           *types.RiskScoreMetrics     `json:"risk_scores"`
 }
 
 // DashboardConfig contains dashboard configuration
@@ -210,27 +210,27 @@ type DashboardConfig struct {
 	Layout               string                `json:"layout"`
 	RefreshInterval      time.Duration         `json:"refresh_interval"`
 	AutoSave             bool                  `json:"auto_save"`
-	Notifications        *NotificationConfig   `json:"notifications"`
-	Widgets              []*WidgetConfig       `json:"widgets"`
-	DataRetention        *DataRetentionConfig  `json:"data_retention"`
-	Security             *SecurityConfig       `json:"security"`
-	Performance          *PerformanceConfig    `json:"performance"`
-	Integrations         []*IntegrationConfig  `json:"integrations"`
-	CustomBranding       *BrandingConfig       `json:"custom_branding"`
-	AccessControl        *AccessControlConfig  `json:"access_control"`
-	AuditSettings        *AuditConfig          `json:"audit_settings"`
-	BackupSettings       *BackupConfig         `json:"backup_settings"`
+	Notifications        *types.NotificationConfig   `json:"notifications"`
+	Widgets              []*types.WidgetConfig       `json:"widgets"`
+	DataRetention        *types.DataRetentionConfig  `json:"data_retention"`
+	Security             *types.SecurityConfig       `json:"security"`
+	Performance          *types.PerformanceConfig    `json:"performance"`
+	Integrations         []*types.IntegrationConfig  `json:"integrations"`
+	CustomBranding       *types.BrandingConfig       `json:"custom_branding"`
+	AccessControl        *types.AccessControlConfig  `json:"access_control"`
+	AuditSettings        *types.AuditConfig          `json:"audit_settings"`
+	BackupSettings       *types.BackupConfig         `json:"backup_settings"`
 }
 
 // NewAdvancedSOCDashboard creates a new advanced SOC dashboard
-func NewAdvancedSOCDashboard(config *DashboardConfig, logger *logrus.Logger) (*AdvancedSOCDashboard, error) {
+func NewAdvancedSOCDashboard(config *types.DashboardConfig, logger *logrus.Logger) (*types.AdvancedSOCDashboard, error) {
 	dashboard := &AdvancedSOCDashboard{
 		logger:           logger,
-		wsConnections:    make(map[string]*WebSocketConnection),
+		wsConnections:    make(map[string]*types.WebSocketConnection),
 		dashboardConfig:  config,
-		userPreferences:  make(map[string]*UserPreferences),
-		widgets:          make(map[string]*DashboardWidget),
-		dataStreams:      make(map[string]*DataStream),
+		userPreferences:  make(map[string]*types.UserPreferences),
+		widgets:          make(map[string]*types.DashboardWidget),
+		dataStreams:      make(map[string]*types.DataStream),
 		stats:            &DashboardStats{},
 	}
 	
@@ -384,7 +384,7 @@ func NewAdvancedSOCDashboard(config *DashboardConfig, logger *logrus.Logger) (*A
 }
 
 // ServeHTTP handles HTTP requests for the dashboard
-func (d *AdvancedSOCDashboard) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (d *types.AdvancedSOCDashboard) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/":
 		d.serveDashboard(w, r)
@@ -414,14 +414,14 @@ func (d *AdvancedSOCDashboard) ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
 // serveDashboard serves the main dashboard HTML
-func (d *AdvancedSOCDashboard) serveDashboard(w http.ResponseWriter, r *http.Request) {
+func (d *types.AdvancedSOCDashboard) serveDashboard(w http.ResponseWriter, r *http.Request) {
 	dashboardHTML := d.generateDashboardHTML()
 	w.Header().Set("Content-Type", "text/html")
 	w.Write([]byte(dashboardHTML))
 }
 
 // handleWebSocket handles WebSocket connections for real-time updates
-func (d *AdvancedSOCDashboard) handleWebSocket(w http.ResponseWriter, r *http.Request) {
+func (d *types.AdvancedSOCDashboard) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true // In production, implement proper origin checking
@@ -457,7 +457,7 @@ func (d *AdvancedSOCDashboard) handleWebSocket(w http.ResponseWriter, r *http.Re
 }
 
 // handleWebSocketConnection handles individual WebSocket connection
-func (d *AdvancedSOCDashboard) handleWebSocketConnection(wsConn *WebSocketConnection) {
+func (d *types.AdvancedSOCDashboard) handleWebSocketConnection(wsConn *types.WebSocketConnection) {
 	defer func() {
 		d.mutex.Lock()
 		delete(d.wsConnections, wsConn.ID)
@@ -495,7 +495,7 @@ func (d *AdvancedSOCDashboard) handleWebSocketConnection(wsConn *WebSocketConnec
 }
 
 // processWebSocketMessage processes incoming WebSocket messages
-func (d *AdvancedSOCDashboard) processWebSocketMessage(wsConn *WebSocketConnection, message map[string]interface{}) {
+func (d *types.AdvancedSOCDashboard) processWebSocketMessage(wsConn *types.WebSocketConnection, message map[string]interface{}) {
 	messageType, ok := message["type"].(string)
 	if !ok {
 		d.logger.Error("Invalid WebSocket message format")
@@ -531,7 +531,7 @@ func (d *AdvancedSOCDashboard) processWebSocketMessage(wsConn *WebSocketConnecti
 }
 
 // GetRealTimeMetrics returns current real-time security metrics
-func (d *AdvancedSOCDashboard) GetRealTimeMetrics() *SecurityMetrics {
+func (d *types.AdvancedSOCDashboard) GetRealTimeMetrics() *types.SecurityMetrics {
 	d.mutex.RLock()
 	defer d.mutex.RUnlock()
 	
@@ -555,7 +555,7 @@ func (d *AdvancedSOCDashboard) GetRealTimeMetrics() *SecurityMetrics {
 }
 
 // GetDashboardAnalytics returns comprehensive dashboard analytics
-func (d *AdvancedSOCDashboard) GetDashboardAnalytics(timeRange *TimeRange) (*DashboardAnalytics, error) {
+func (d *types.AdvancedSOCDashboard) GetDashboardAnalytics(timeRange *types.TimeRange) (*types.DashboardAnalytics, error) {
 	analytics := &DashboardAnalytics{
 		TimeRange:        timeRange,
 		GeneratedAt:      time.Now(),
@@ -568,7 +568,7 @@ func (d *AdvancedSOCDashboard) GetDashboardAnalytics(timeRange *TimeRange) (*Das
 		TrendAnalysis:    &TrendAnalysis{},
 		PredictiveInsights: &PredictiveInsights{},
 		AIInsights:       &AIInsights{},
-		Recommendations:  []*Recommendation{},
+		Recommendations:  []*types.Recommendation{},
 	}
 	
 	// Generate comprehensive analytics
@@ -638,9 +638,9 @@ func (d *AdvancedSOCDashboard) GetDashboardAnalytics(timeRange *TimeRange) (*Das
 }
 
 // BroadcastRealTimeUpdate broadcasts real-time updates to all connected clients
-func (d *AdvancedSOCDashboard) BroadcastRealTimeUpdate(updateType string, data interface{}) {
+func (d *types.AdvancedSOCDashboard) BroadcastRealTimeUpdate(updateType string, data interface{}) {
 	d.mutex.RLock()
-	connections := make([]*WebSocketConnection, 0, len(d.wsConnections))
+	connections := make([]*types.WebSocketConnection, 0, len(d.wsConnections))
 	for _, conn := range d.wsConnections {
 		connections = append(connections, conn)
 	}
@@ -667,7 +667,7 @@ func (d *AdvancedSOCDashboard) BroadcastRealTimeUpdate(updateType string, data i
 }
 
 // GenerateReport generates comprehensive security reports
-func (d *AdvancedSOCDashboard) GenerateReport(request *ReportRequest) (*SecurityReport, error) {
+func (d *types.AdvancedSOCDashboard) GenerateReport(request *types.ReportRequest) (*types.SecurityReport, error) {
 	report := &SecurityReport{
 		ID:          generateReportID(),
 		Type:        request.Type,
@@ -675,7 +675,7 @@ func (d *AdvancedSOCDashboard) GenerateReport(request *ReportRequest) (*Security
 		TimeRange:   request.TimeRange,
 		GeneratedAt: time.Now(),
 		GeneratedBy: request.RequestedBy,
-		Sections:    []*ReportSection{},
+		Sections:    []*types.ReportSection{},
 	}
 	
 	// Generate report sections based on request
@@ -744,7 +744,7 @@ func (d *AdvancedSOCDashboard) GenerateReport(request *ReportRequest) (*Security
 
 // Helper functions for calculations
 
-func (d *AdvancedSOCDashboard) calculateRealTimeMetrics() *RealTimeMetrics {
+func (d *types.AdvancedSOCDashboard) calculateRealTimeMetrics() *types.RealTimeMetrics {
 	// Implementation would calculate real-time metrics from data streams
 	return &RealTimeMetrics{
 		EventsPerSecond:   d.getEventsPerSecond(),
@@ -762,7 +762,7 @@ func (d *AdvancedSOCDashboard) calculateRealTimeMetrics() *RealTimeMetrics {
 	}
 }
 
-func (d *AdvancedSOCDashboard) calculateThreatMetrics() *ThreatMetrics {
+func (d *types.AdvancedSOCDashboard) calculateThreatMetrics() *types.ThreatMetrics {
 	// Implementation would calculate threat metrics
 	return &ThreatMetrics{
 		TotalThreats:      d.getTotalThreats(),
@@ -776,65 +776,65 @@ func (d *AdvancedSOCDashboard) calculateThreatMetrics() *ThreatMetrics {
 }
 
 // Placeholder implementations for metric calculations
-func (d *AdvancedSOCDashboard) getEventsPerSecond() float64 {
+func (d *types.AdvancedSOCDashboard) getEventsPerSecond() float64 {
 	// Implementation would calculate from real-time event stream
 	return 1250.5
 }
 
-func (d *AdvancedSOCDashboard) getAlertsPerMinute() float64 {
+func (d *types.AdvancedSOCDashboard) getAlertsPerMinute() float64 {
 	// Implementation would calculate from alert stream
 	return 15.2
 }
 
-func (d *AdvancedSOCDashboard) getThreatsBlocked() uint64 {
+func (d *types.AdvancedSOCDashboard) getThreatsBlocked() uint64 {
 	// Implementation would get from threat detection system
 	return 847
 }
 
-func (d *AdvancedSOCDashboard) getAttackAttempts() uint64 {
+func (d *types.AdvancedSOCDashboard) getAttackAttempts() uint64 {
 	// Implementation would get from attack detection system
 	return 1523
 }
 
-func (d *AdvancedSOCDashboard) getDataTransferred() uint64 {
+func (d *types.AdvancedSOCDashboard) getDataTransferred() uint64 {
 	// Implementation would get from network monitoring
 	return 2847593
 }
 
-func (d *AdvancedSOCDashboard) getActiveConnections() uint64 {
+func (d *types.AdvancedSOCDashboard) getActiveConnections() uint64 {
 	// Implementation would get from connection monitoring
 	return 342
 }
 
-func (d *AdvancedSOCDashboard) getGeolocationStats() map[string]uint64 {
+func (d *types.AdvancedSOCDashboard) getGeolocationStats() map[string]uint64 {
 	// Implementation would get geolocation statistics
 	return map[string]uint64{
 		"US": 45, "CN": 23, "RU": 18, "BR": 12, "IN": 8,
 	}
 }
 
-func (d *AdvancedSOCDashboard) getTopThreatTypes() map[string]uint64 {
+func (d *types.AdvancedSOCDashboard) getTopThreatTypes() map[string]uint64 {
 	// Implementation would get top threat types
 	return map[string]uint64{
 		"SQL Injection": 34, "XSS": 28, "CSRF": 15, "DDoS": 12, "Malware": 8,
 	}
 }
 
-func (d *AdvancedSOCDashboard) getTopAttackerIPs() map[string]uint64 {
+func (d *types.AdvancedSOCDashboard) getTopAttackerIPs() map[string]uint64 {
 	// Implementation would get top attacker IPs
 	return map[string]uint64{
 		"192.168.1.100": 23, "10.0.0.50": 18, "172.16.0.25": 12,
 	}
 }
 
-func (d *AdvancedSOCDashboard) getProtocolDistribution() map[string]uint64 {
+func (d *types.AdvancedSOCDashboard) getProtocolDistribution() map[string]uint64 {
 	// Implementation would get protocol distribution
 	return map[string]uint64{
 		"HTTP": 45, "HTTPS": 35, "SSH": 10, "FTP": 5, "Other": 5,
 	}
 }
 
-func (d *AdvancedSOCDashboard) getSystemHealth() *SystemHealth {
+func (d *types.AdvancedSOCDashboard) getSystemHealth() *types.SystemHealth {
 	// Implementation would get system health metrics
 	return &SystemHealth{
 		CPUUsage:    65.2,
@@ -846,50 +846,50 @@ func (d *AdvancedSOCDashboard) getSystemHealth() *SystemHealth {
 }
 
 // Additional placeholder implementations
-func (d *AdvancedSOCDashboard) getTotalThreats() uint64 { return 1247 }
-func (d *AdvancedSOCDashboard) getActiveThreats() uint64 { return 23 }
-func (d *AdvancedSOCDashboard) getMitigatedThreats() uint64 { return 1224 }
-func (d *AdvancedSOCDashboard) getThreatsByCategory() map[string]uint64 {
+func (d *types.AdvancedSOCDashboard) getTotalThreats() uint64 { return 1247 }
+func (d *types.AdvancedSOCDashboard) getActiveThreats() uint64 { return 23 }
+func (d *types.AdvancedSOCDashboard) getMitigatedThreats() uint64 { return 1224 }
+func (d *types.AdvancedSOCDashboard) getThreatsByCategory() map[string]uint64 {
 	return map[string]uint64{"Web": 45, "Network": 32, "Malware": 18, "Phishing": 12}
 }
-func (d *AdvancedSOCDashboard) getThreatsBySeverity() map[string]uint64 {
+func (d *types.AdvancedSOCDashboard) getThreatsBySeverity() map[string]uint64 {
 	return map[string]uint64{"Critical": 5, "High": 18, "Medium": 67, "Low": 123}
 }
-func (d *AdvancedSOCDashboard) getThreatsBySource() map[string]uint64 {
+func (d *types.AdvancedSOCDashboard) getThreatsBySource() map[string]uint64 {
 	return map[string]uint64{"External": 85, "Internal": 15}
 }
-func (d *AdvancedSOCDashboard) getThreatsByTarget() map[string]uint64 {
+func (d *types.AdvancedSOCDashboard) getThreatsByTarget() map[string]uint64 {
 	return map[string]uint64{"Web": 45, "Database": 25, "API": 20, "Other": 10}
 }
 
-func (d *AdvancedSOCDashboard) calculateVulnerabilityMetrics() *VulnerabilityMetrics {
+func (d *types.AdvancedSOCDashboard) calculateVulnerabilityMetrics() *types.VulnerabilityMetrics {
 	return &VulnerabilityMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculateComplianceMetrics() *ComplianceMetrics {
+func (d *types.AdvancedSOCDashboard) calculateComplianceMetrics() *types.ComplianceMetrics {
 	return &ComplianceMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculatePerformanceMetrics() *PerformanceMetrics {
+func (d *types.AdvancedSOCDashboard) calculatePerformanceMetrics() *types.PerformanceMetrics {
 	return &PerformanceMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculateOperationalMetrics() *OperationalMetrics {
+func (d *types.AdvancedSOCDashboard) calculateOperationalMetrics() *types.OperationalMetrics {
 	return &OperationalMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculateBusinessMetrics() *BusinessMetrics {
+func (d *types.AdvancedSOCDashboard) calculateBusinessMetrics() *types.BusinessMetrics {
 	return &BusinessMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculateUserMetrics() *UserMetrics {
+func (d *types.AdvancedSOCDashboard) calculateUserMetrics() *types.UserMetrics {
 	return &UserMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculateNetworkMetrics() *NetworkMetrics {
+func (d *types.AdvancedSOCDashboard) calculateNetworkMetrics() *types.NetworkMetrics {
 	return &NetworkMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculateAssetMetrics() *AssetMetrics {
+func (d *types.AdvancedSOCDashboard) calculateAssetMetrics() *types.AssetMetrics {
 	return &AssetMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculateIncidentMetrics() *IncidentMetrics {
+func (d *types.AdvancedSOCDashboard) calculateIncidentMetrics() *types.IncidentMetrics {
 	return &IncidentMetrics{}
 }
-func (d *AdvancedSOCDashboard) calculateResponseMetrics() *ResponseMetrics {
+func (d *types.AdvancedSOCDashboard) calculateResponseMetrics() *types.ResponseMetrics {
 	return &ResponseMetrics{}
 }
 
@@ -932,84 +932,84 @@ type IncidentMetrics struct{}
 type ResponseMetrics struct{}
 
 // Additional placeholder functions
-func (d *AdvancedSOCDashboard) loadDefaultWidgets() error { return nil }
-func (d *AdvancedSOCDashboard) startRealTimeProcessing() error { return nil }
-func (d *AdvancedSOCDashboard) generateDashboardHTML() string { return "<html>SOC Dashboard</html>" }
-func (d *AdvancedSOCDashboard) handleWidgetsAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) handleMetricsAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) handleAlertsAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) handleIncidentsAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) handleThreatsAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) handleAnalyticsAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) handleReportsAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) handleConfigAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) handlePreferencesAPI(w http.ResponseWriter, r *http.Request) {}
-func (d *AdvancedSOCDashboard) getDashboardState() interface{} { return nil }
-func (d *AdvancedSOCDashboard) handleSubscription(wsConn *WebSocketConnection, message map[string]interface{}) {}
-func (d *AdvancedSOCDashboard) handleUnsubscription(wsConn *WebSocketConnection, message map[string]interface{}) {}
-func (d *AdvancedSOCDashboard) handleWidgetAction(wsConn *WebSocketConnection, message map[string]interface{}) {}
-func (d *AdvancedSOCDashboard) handleFilterChange(wsConn *WebSocketConnection, message map[string]interface{}) {}
-func (d *AdvancedSOCDashboard) handleDashboardConfig(wsConn *WebSocketConnection, message map[string]interface{}) {}
+func (d *types.AdvancedSOCDashboard) loadDefaultWidgets() error { return nil }
+func (d *types.AdvancedSOCDashboard) startRealTimeProcessing() error { return nil }
+func (d *types.AdvancedSOCDashboard) generateDashboardHTML() string { return "<html>SOC Dashboard</html>" }
+func (d *types.AdvancedSOCDashboard) handleWidgetsAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) handleMetricsAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) handleAlertsAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) handleIncidentsAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) handleThreatsAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) handleAnalyticsAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) handleReportsAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) handleConfigAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) handlePreferencesAPI(w http.ResponseWriter, r *http.Request) {}
+func (d *types.AdvancedSOCDashboard) getDashboardState() interface{} { return nil }
+func (d *types.AdvancedSOCDashboard) handleSubscription(wsConn *types.WebSocketConnection, message map[string]interface{}) {}
+func (d *types.AdvancedSOCDashboard) handleUnsubscription(wsConn *types.WebSocketConnection, message map[string]interface{}) {}
+func (d *types.AdvancedSOCDashboard) handleWidgetAction(wsConn *types.WebSocketConnection, message map[string]interface{}) {}
+func (d *types.AdvancedSOCDashboard) handleFilterChange(wsConn *types.WebSocketConnection, message map[string]interface{}) {}
+func (d *types.AdvancedSOCDashboard) handleDashboardConfig(wsConn *types.WebSocketConnection, message map[string]interface{}) {}
 
 func generateConnectionID() string { return "conn_123" }
 func generateReportID() string { return "report_123" }
 
 // Component initialization functions
-func NewRealTimeEngine(config interface{}, logger *logrus.Logger) (*RealTimeEngine, error) {
+func NewRealTimeEngine(config interface{}, logger *logrus.Logger) (*types.RealTimeEngine, error) {
 	return &RealTimeEngine{}, nil
 }
-func NewAnalyticsEngine(config interface{}, logger *logrus.Logger) (*AnalyticsEngine, error) {
+func NewAnalyticsEngine(config interface{}, logger *logrus.Logger) (*types.AnalyticsEngine, error) {
 	return &AnalyticsEngine{}, nil
 }
-func NewVisualizationEngine(config interface{}, logger *logrus.Logger) (*VisualizationEngine, error) {
+func NewVisualizationEngine(config interface{}, logger *logrus.Logger) (*types.VisualizationEngine, error) {
 	return &VisualizationEngine{}, nil
 }
-func NewAlertManager(config interface{}, logger *logrus.Logger) (*AlertManager, error) {
+func NewAlertManager(config interface{}, logger *logrus.Logger) (*types.AlertManager, error) {
 	return &AlertManager{}, nil
 }
-func NewIncidentManager(config interface{}, logger *logrus.Logger) (*IncidentManager, error) {
+func NewIncidentManager(config interface{}, logger *logrus.Logger) (*types.IncidentManager, error) {
 	return &IncidentManager{}, nil
 }
-func NewThreatIntelligencePanel(config interface{}, logger *logrus.Logger) (*ThreatIntelligencePanel, error) {
+func NewThreatIntelligencePanel(config interface{}, logger *logrus.Logger) (*types.ThreatIntelligencePanel, error) {
 	return &ThreatIntelligencePanel{}, nil
 }
-func NewComplianceMonitor(config interface{}, logger *logrus.Logger) (*ComplianceMonitor, error) {
+func NewComplianceMonitor(config interface{}, logger *logrus.Logger) (*types.ComplianceMonitor, error) {
 	return &ComplianceMonitor{}, nil
 }
-func NewPerformanceMonitor(config interface{}, logger *logrus.Logger) (*PerformanceMonitor, error) {
+func NewPerformanceMonitor(config interface{}, logger *logrus.Logger) (*types.PerformanceMonitor, error) {
 	return &PerformanceMonitor{}, nil
 }
-func NewWorkflowEngine(config interface{}, logger *logrus.Logger) (*WorkflowEngine, error) {
+func NewWorkflowEngine(config interface{}, logger *logrus.Logger) (*types.WorkflowEngine, error) {
 	return &WorkflowEngine{}, nil
 }
-func NewCollaborationHub(config interface{}, logger *logrus.Logger) (*CollaborationHub, error) {
+func NewCollaborationHub(config interface{}, logger *logrus.Logger) (*types.CollaborationHub, error) {
 	return &CollaborationHub{}, nil
 }
-func NewAutomationEngine(config interface{}, logger *logrus.Logger) (*AutomationEngine, error) {
+func NewAutomationEngine(config interface{}, logger *logrus.Logger) (*types.AutomationEngine, error) {
 	return &AutomationEngine{}, nil
 }
-func NewReportingEngine(config interface{}, logger *logrus.Logger) (*ReportingEngine, error) {
+func NewReportingEngine(config interface{}, logger *logrus.Logger) (*types.ReportingEngine, error) {
 	return &ReportingEngine{}, nil
 }
-func NewCustomizationEngine(config interface{}, logger *logrus.Logger) (*CustomizationEngine, error) {
+func NewCustomizationEngine(config interface{}, logger *logrus.Logger) (*types.CustomizationEngine, error) {
 	return &CustomizationEngine{}, nil
 }
-func NewIntegrationHub(config interface{}, logger *logrus.Logger) (*IntegrationHub, error) {
+func NewIntegrationHub(config interface{}, logger *logrus.Logger) (*types.IntegrationHub, error) {
 	return &IntegrationHub{}, nil
 }
-func NewAIInsightsEngine(config interface{}, logger *logrus.Logger) (*AIInsightsEngine, error) {
+func NewAIInsightsEngine(config interface{}, logger *logrus.Logger) (*types.AIInsightsEngine, error) {
 	return &AIInsightsEngine{}, nil
 }
-func NewPredictiveAnalytics(config interface{}, logger *logrus.Logger) (*PredictiveAnalytics, error) {
+func NewPredictiveAnalytics(config interface{}, logger *logrus.Logger) (*types.PredictiveAnalytics, error) {
 	return &PredictiveAnalytics{}, nil
 }
-func NewAnomalyDetectionEngine(config interface{}, logger *logrus.Logger) (*AnomalyDetectionEngine, error) {
+func NewAnomalyDetectionEngine(config interface{}, logger *logrus.Logger) (*types.AnomalyDetectionEngine, error) {
 	return &AnomalyDetectionEngine{}, nil
 }
-func NewSecurityMetrics(config interface{}, logger *logrus.Logger) (*SecurityMetrics, error) {
+func NewSecurityMetrics(config interface{}, logger *logrus.Logger) (*types.SecurityMetrics, error) {
 	return &SecurityMetrics{}, nil
 }
-func NewKPICalculator(config interface{}, logger *logrus.Logger) (*KPICalculator, error) {
+func NewKPICalculator(config interface{}, logger *logrus.Logger) (*types.KPICalculator, error) {
 	return &KPICalculator{}, nil
 }
 
@@ -1050,18 +1050,18 @@ type AuditConfig struct{}
 type BackupConfig struct{}
 
 type DashboardAnalytics struct {
-	TimeRange           *TimeRange           `json:"time_range"`
+	TimeRange           *types.TimeRange           `json:"time_range"`
 	GeneratedAt         time.Time            `json:"generated_at"`
-	ThreatAnalysis      *ThreatAnalysis      `json:"threat_analysis"`
-	UserAnalysis        *UserAnalysis        `json:"user_analysis"`
-	NetworkAnalysis     *NetworkAnalysis     `json:"network_analysis"`
-	AssetAnalysis       *AssetAnalysis       `json:"asset_analysis"`
-	ComplianceAnalysis  *ComplianceAnalysis  `json:"compliance_analysis"`
-	PerformanceAnalysis *PerformanceAnalysis `json:"performance_analysis"`
-	TrendAnalysis       *TrendAnalysis       `json:"trend_analysis"`
-	PredictiveInsights  *PredictiveInsights  `json:"predictive_insights"`
-	AIInsights          *AIInsights          `json:"ai_insights"`
-	Recommendations     []*Recommendation    `json:"recommendations"`
+	ThreatAnalysis      *types.ThreatAnalysis      `json:"threat_analysis"`
+	UserAnalysis        *types.UserAnalysis        `json:"user_analysis"`
+	NetworkAnalysis     *types.NetworkAnalysis     `json:"network_analysis"`
+	AssetAnalysis       *types.AssetAnalysis       `json:"asset_analysis"`
+	ComplianceAnalysis  *types.ComplianceAnalysis  `json:"compliance_analysis"`
+	PerformanceAnalysis *types.PerformanceAnalysis `json:"performance_analysis"`
+	TrendAnalysis       *types.TrendAnalysis       `json:"trend_analysis"`
+	PredictiveInsights  *types.PredictiveInsights  `json:"predictive_insights"`
+	AIInsights          *types.AIInsights          `json:"ai_insights"`
+	Recommendations     []*types.Recommendation    `json:"recommendations"`
 }
 
 type TimeRange struct{}
@@ -1078,7 +1078,7 @@ type Recommendation struct{}
 type ReportRequest struct {
 	Type                     string     `json:"type"`
 	Title                    string     `json:"title"`
-	TimeRange                *TimeRange `json:"time_range"`
+	TimeRange                *types.TimeRange `json:"time_range"`
 	RequestedBy              string     `json:"requested_by"`
 	IncludeExecutiveSummary  bool       `json:"include_executive_summary"`
 	IncludeThreatAnalysis    bool       `json:"include_threat_analysis"`
@@ -1092,11 +1092,11 @@ type SecurityReport struct {
 	ID           string           `json:"id"`
 	Type         string           `json:"type"`
 	Title        string           `json:"title"`
-	TimeRange    *TimeRange       `json:"time_range"`
+	TimeRange    *types.TimeRange       `json:"time_range"`
 	GeneratedAt  time.Time        `json:"generated_at"`
 	GeneratedBy  string           `json:"generated_by"`
-	Sections     []*ReportSection `json:"sections"`
-	Artifacts    []*ReportArtifact `json:"artifacts"`
+	Sections     []*types.ReportSection `json:"sections"`
+	Artifacts    []*types.ReportArtifact `json:"artifacts"`
 	QualityScore float64          `json:"quality_score"`
 }
 
@@ -1104,57 +1104,57 @@ type ReportSection struct{}
 type ReportArtifact struct{}
 
 // Additional placeholder methods
-func (ae *AnalyticsEngine) AnalyzeThreats(timeRange *TimeRange) (*ThreatAnalysis, error) {
+func (ae *types.AnalyticsEngine) AnalyzeThreats(timeRange *types.TimeRange) (*types.ThreatAnalysis, error) {
 	return &ThreatAnalysis{}, nil
 }
-func (ae *AnalyticsEngine) AnalyzeUsers(timeRange *TimeRange) (*UserAnalysis, error) {
+func (ae *types.AnalyticsEngine) AnalyzeUsers(timeRange *types.TimeRange) (*types.UserAnalysis, error) {
 	return &UserAnalysis{}, nil
 }
-func (ae *AnalyticsEngine) AnalyzeNetwork(timeRange *TimeRange) (*NetworkAnalysis, error) {
+func (ae *types.AnalyticsEngine) AnalyzeNetwork(timeRange *types.TimeRange) (*types.NetworkAnalysis, error) {
 	return &NetworkAnalysis{}, nil
 }
-func (ae *AnalyticsEngine) AnalyzeAssets(timeRange *TimeRange) (*AssetAnalysis, error) {
+func (ae *types.AnalyticsEngine) AnalyzeAssets(timeRange *types.TimeRange) (*types.AssetAnalysis, error) {
 	return &AssetAnalysis{}, nil
 }
-func (ae *AnalyticsEngine) AnalyzeTrends(timeRange *TimeRange) (*TrendAnalysis, error) {
+func (ae *types.AnalyticsEngine) AnalyzeTrends(timeRange *types.TimeRange) (*types.TrendAnalysis, error) {
 	return &TrendAnalysis{}, nil
 }
-func (cm *ComplianceMonitor) AnalyzeCompliance(timeRange *TimeRange) (*ComplianceAnalysis, error) {
+func (cm *types.ComplianceMonitor) AnalyzeCompliance(timeRange *types.TimeRange) (*types.ComplianceAnalysis, error) {
 	return &ComplianceAnalysis{}, nil
 }
-func (pm *PerformanceMonitor) AnalyzePerformance(timeRange *TimeRange) (*PerformanceAnalysis, error) {
+func (pm *types.PerformanceMonitor) AnalyzePerformance(timeRange *types.TimeRange) (*types.PerformanceAnalysis, error) {
 	return &PerformanceAnalysis{}, nil
 }
-func (pa *PredictiveAnalytics) GenerateInsights(timeRange *TimeRange) (*PredictiveInsights, error) {
+func (pa *types.PredictiveAnalytics) GenerateInsights(timeRange *types.TimeRange) (*types.PredictiveInsights, error) {
 	return &PredictiveInsights{}, nil
 }
-func (aie *AIInsightsEngine) GenerateInsights(analytics *DashboardAnalytics) (*AIInsights, error) {
+func (aie *types.AIInsightsEngine) GenerateInsights(analytics *types.DashboardAnalytics) (*types.AIInsights, error) {
 	return &AIInsights{}, nil
 }
-func (d *AdvancedSOCDashboard) generateAnalyticsRecommendations(analytics *DashboardAnalytics) ([]*Recommendation, error) {
-	return []*Recommendation{}, nil
+func (d *types.AdvancedSOCDashboard) generateAnalyticsRecommendations(analytics *types.DashboardAnalytics) ([]*types.Recommendation, error) {
+	return []*types.Recommendation{}, nil
 }
-func (d *AdvancedSOCDashboard) generateExecutiveSummary(timeRange *TimeRange) (*ReportSection, error) {
+func (d *types.AdvancedSOCDashboard) generateExecutiveSummary(timeRange *types.TimeRange) (*types.ReportSection, error) {
 	return &ReportSection{}, nil
 }
-func (d *AdvancedSOCDashboard) generateThreatAnalysisSection(timeRange *TimeRange) (*ReportSection, error) {
+func (d *types.AdvancedSOCDashboard) generateThreatAnalysisSection(timeRange *types.TimeRange) (*types.ReportSection, error) {
 	return &ReportSection{}, nil
 }
-func (d *AdvancedSOCDashboard) generateIncidentSummarySection(timeRange *TimeRange) (*ReportSection, error) {
+func (d *types.AdvancedSOCDashboard) generateIncidentSummarySection(timeRange *types.TimeRange) (*types.ReportSection, error) {
 	return &ReportSection{}, nil
 }
-func (d *AdvancedSOCDashboard) generateComplianceSection(timeRange *TimeRange) (*ReportSection, error) {
+func (d *types.AdvancedSOCDashboard) generateComplianceSection(timeRange *types.TimeRange) (*types.ReportSection, error) {
 	return &ReportSection{}, nil
 }
-func (d *AdvancedSOCDashboard) generatePerformanceSection(timeRange *TimeRange) (*ReportSection, error) {
+func (d *types.AdvancedSOCDashboard) generatePerformanceSection(timeRange *types.TimeRange) (*types.ReportSection, error) {
 	return &ReportSection{}, nil
 }
-func (d *AdvancedSOCDashboard) generateRecommendationsSection(timeRange *TimeRange) (*ReportSection, error) {
+func (d *types.AdvancedSOCDashboard) generateRecommendationsSection(timeRange *types.TimeRange) (*types.ReportSection, error) {
 	return &ReportSection{}, nil
 }
-func (d *AdvancedSOCDashboard) generateReportArtifacts(report *SecurityReport) []*ReportArtifact {
-	return []*ReportArtifact{}
+func (d *types.AdvancedSOCDashboard) generateReportArtifacts(report *types.SecurityReport) []*types.ReportArtifact {
+	return []*types.ReportArtifact{}
 }
-func (d *AdvancedSOCDashboard) calculateReportQuality(report *SecurityReport) float64 {
+func (d *types.AdvancedSOCDashboard) calculateReportQuality(report *types.SecurityReport) float64 {
 	return 0.95
 }

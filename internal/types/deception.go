@@ -972,15 +972,6 @@ type RecommendationRanker struct {
 	Threshold   float64                  `json:"threshold"`
 }
 
-type BehaviorModel struct {
-	ID          string                   `json:"id"`
-	Type        string                   `json:"type"`
-	Algorithm   string                   `json:"algorithm"`
-	Features    []string                 `json:"features"`
-	Parameters  map[string]interface{}   `json:"parameters"`
-	Performance *ModelPerformance        `json:"performance"`
-}
-
 type PsychLearner struct {
 	Algorithm   string                   `json:"algorithm"`
 	Model       *BehaviorModel           `json:"model"`
@@ -1997,4 +1988,462 @@ type EmailTrapAnalytics struct {
 	TopSenders   map[string]int             `json:"top_senders"`
 	TopSubjects  map[string]int             `json:"top_subjects"`
 	LastUpdate   time.Time                  `json:"last_update"`
+}
+
+// Additional honeypot types
+type CredentialTrapSystem struct {
+	Credentials map[string]*TrapCredential   `json:"credentials"`
+	Monitor     *CredentialMonitor           `json:"monitor"`
+	Alerts      *CredentialAlerts            `json:"alerts"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type FileSystemDecoyEngine struct {
+	Files       map[string]*DecoyFile        `json:"files"`
+	Directories map[string]*DecoyDirectory   `json:"directories"`
+	Monitor     *FileSystemMonitor           `json:"monitor"`
+	Generator   *FileSystemGenerator         `json:"generator"`
+}
+
+type DatabaseDecoyEngine struct {
+	Databases   map[string]*DecoyDatabase    `json:"databases"`
+	Tables      map[string]*DecoyTable       `json:"tables"`
+	Records     []*DecoyRecord               `json:"records"`
+	Monitor     *DatabaseMonitor             `json:"monitor"`
+}
+
+type APIDecoyEngine struct {
+	Endpoints   map[string]*DecoyEndpoint    `json:"endpoints"`
+	Responses   map[string]*DecoyResponse    `json:"responses"`
+	Monitor     *APIMonitor                  `json:"monitor"`
+	Generator   *APIGenerator                `json:"generator"`
+}
+
+type IoTDecoyEngine struct {
+	Devices     map[string]*DecoyDevice      `json:"devices"`
+	Protocols   map[string]*DecoyProtocol    `json:"protocols"`
+	Monitor     *IoTMonitor                  `json:"monitor"`
+	Simulator   *IoTSimulator                `json:"simulator"`
+}
+
+type CloudDecoyEngine struct {
+	Instances   map[string]*DecoyInstance    `json:"instances"`
+	Services    map[string]*DecoyService     `json:"services"`
+	Monitor     *CloudMonitor                `json:"monitor"`
+	Orchestrator *CloudOrchestrator          `json:"orchestrator"`
+}
+
+type Honeypot struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Status      string                       `json:"status"`
+	Port        int                          `json:"port"`
+	Protocol    string                       `json:"protocol"`
+	Banner      string                       `json:"banner"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type Trap struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Target      string                       `json:"target"`
+	Active      bool                         `json:"active"`
+	Triggered   bool                         `json:"triggered"`
+	LastTrigger *time.Time                   `json:"last_trigger"`
+}
+
+type Decoy struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Content     string                       `json:"content"`
+	Mimics      string                       `json:"mimics"`
+	Believable  float64                      `json:"believable"`
+	Interactions int                         `json:"interactions"`
+}
+
+type AttackSession struct {
+	ID          string                       `json:"id"`
+	AttackerIP  string                       `json:"attacker_ip"`
+	StartTime   time.Time                    `json:"start_time"`
+	EndTime     *time.Time                   `json:"end_time"`
+	Commands    []string                     `json:"commands"`
+	Files       []string                     `json:"files"`
+	Duration    time.Duration                `json:"duration"`
+}
+
+// Support types for deception package
+type BehaviorModel struct {
+	ID          string                   `json:"id"`
+	Type        string                   `json:"type"`
+	Algorithm   string                   `json:"algorithm"`
+	Features    []string                 `json:"features"`
+	Parameters  map[string]interface{}   `json:"parameters"`
+	Performance *ModelPerformance        `json:"performance"`
+}
+
+type ModelPerformance struct {
+	Accuracy    float64                  `json:"accuracy"`
+	Precision   float64                  `json:"precision"`
+	Recall      float64                  `json:"recall"`
+	F1Score     float64                  `json:"f1_score"`
+	LastEval    time.Time                `json:"last_eval"`
+}
+
+type TrapCredential struct {
+	Username    string                   `json:"username"`
+	Password    string                   `json:"password"`
+	Domain      string                   `json:"domain"`
+	Type        string                   `json:"type"`
+	Honeypot    string                   `json:"honeypot"`
+	Created     time.Time                `json:"created"`
+}
+
+type CredentialMonitor struct {
+	Active      bool                     `json:"active"`
+	Attempts    []*LoginAttempt          `json:"attempts"`
+	Alerts      []*CredentialAlert       `json:"alerts"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type CredentialAlerts struct {
+	Rules       []*AlertRule             `json:"rules"`
+	Recipients  []string                 `json:"recipients"`
+	Channels    []string                 `json:"channels"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type DecoyFile struct {
+	Path        string                   `json:"path"`
+	Name        string                   `json:"name"`
+	Content     string                   `json:"content"`
+	Type        string                   `json:"type"`
+	Size        int64                    `json:"size"`
+	Modified    time.Time                `json:"modified"`
+}
+
+type DecoyDirectory struct {
+	Path        string                   `json:"path"`
+	Name        string                   `json:"name"`
+	Files       []*DecoyFile             `json:"files"`
+	Subdirs     []*DecoyDirectory        `json:"subdirs"`
+	Permissions string                   `json:"permissions"`
+}
+
+type FileSystemMonitor struct {
+	Watchers    []*FileWatcher           `json:"watchers"`
+	Events      []*FileEvent             `json:"events"`
+	Active      bool                     `json:"active"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type FileSystemGenerator struct {
+	Templates   map[string]*FileTemplate `json:"templates"`
+	Rules       []*GenerationRule        `json:"rules"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type DecoyDatabase struct {
+	Name        string                   `json:"name"`
+	Type        string                   `json:"type"`
+	Host        string                   `json:"host"`
+	Port        int                      `json:"port"`
+	Tables      []*DecoyTable            `json:"tables"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type DecoyTable struct {
+	Name        string                   `json:"name"`
+	Schema      map[string]string        `json:"schema"`
+	Records     []*DecoyRecord           `json:"records"`
+	Indexes     []string                 `json:"indexes"`
+}
+
+type DecoyRecord struct {
+	ID          string                   `json:"id"`
+	Data        map[string]interface{}   `json:"data"`
+	Realistic   bool                     `json:"realistic"`
+	Generated   time.Time                `json:"generated"`
+}
+
+type DatabaseMonitor struct {
+	Connections []*DBConnection          `json:"connections"`
+	Queries     []*DBQuery               `json:"queries"`
+	Active      bool                     `json:"active"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+// Additional support types
+type DecoyEndpoint struct {
+	Path        string                   `json:"path"`
+	Method      string                   `json:"method"`
+	Response    *DecoyResponse           `json:"response"`
+	Delay       time.Duration            `json:"delay"`
+	Realistic   bool                     `json:"realistic"`
+}
+
+type DecoyResponse struct {
+	Status      int                      `json:"status"`
+	Headers     map[string]string        `json:"headers"`
+	Body        string                   `json:"body"`
+	ContentType string                   `json:"content_type"`
+}
+
+type APIMonitor struct {
+	Requests    []*APIRequest            `json:"requests"`
+	Responses   []*APIResponse           `json:"responses"`
+	Active      bool                     `json:"active"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type APIGenerator struct {
+	Templates   map[string]*APITemplate  `json:"templates"`
+	Rules       []*APIRule               `json:"rules"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type DecoyDevice struct {
+	ID          string                   `json:"id"`
+	Type        string                   `json:"type"`
+	Model       string                   `json:"model"`
+	IP          string                   `json:"ip"`
+	MAC         string                   `json:"mac"`
+	Services    []*DecoyService          `json:"services"`
+}
+
+type DecoyProtocol struct {
+	Name        string                   `json:"name"`
+	Port        int                      `json:"port"`
+	Type        string                   `json:"type"`
+	Responses   map[string]string        `json:"responses"`
+	Active      bool                     `json:"active"`
+}
+
+type IoTMonitor struct {
+	Devices     []*IoTDevice             `json:"devices"`
+	Traffic     []*IoTTraffic            `json:"traffic"`
+	Active      bool                     `json:"active"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type IoTSimulator struct {
+	Devices     []*SimulatedDevice       `json:"devices"`
+	Protocols   []string                 `json:"protocols"`
+	Running     bool                     `json:"running"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type DecoyInstance struct {
+	ID          string                   `json:"id"`
+	Type        string                   `json:"type"`
+	Provider    string                   `json:"provider"`
+	Region      string                   `json:"region"`
+	Status      string                   `json:"status"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type DecoyService struct {
+	Name        string                   `json:"name"`
+	Type        string                   `json:"type"`
+	Port        int                      `json:"port"`
+	Endpoints   []*DecoyEndpoint         `json:"endpoints"`
+	Active      bool                     `json:"active"`
+}
+
+type CloudMonitor struct {
+	Instances   []*CloudInstance         `json:"instances"`
+	Services    []*CloudService          `json:"services"`
+	Events      []*CloudEvent            `json:"events"`
+	Active      bool                     `json:"active"`
+}
+
+type CloudOrchestrator struct {
+	Scheduler   *CloudScheduler          `json:"scheduler"`
+	Deployer    *CloudDeployer           `json:"deployer"`
+	Monitor     *CloudMonitor            `json:"monitor"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+// Basic support types
+type LoginAttempt struct {
+	Username    string                   `json:"username"`
+	Password    string                   `json:"password"`
+	IP          string                   `json:"ip"`
+	UserAgent   string                   `json:"user_agent"`
+	Success     bool                     `json:"success"`
+	Timestamp   time.Time                `json:"timestamp"`
+}
+
+type CredentialAlert struct {
+	Type        string                   `json:"type"`
+	Severity    string                   `json:"severity"`
+	Message     string                   `json:"message"`
+	Source      string                   `json:"source"`
+	Timestamp   time.Time                `json:"timestamp"`
+}
+
+type AlertRule struct {
+	ID          string                   `json:"id"`
+	Name        string                   `json:"name"`
+	Condition   string                   `json:"condition"`
+	Action      string                   `json:"action"`
+	Enabled     bool                     `json:"enabled"`
+}
+
+type FileWatcher struct {
+	Path        string                   `json:"path"`
+	Events      []string                 `json:"events"`
+	Active      bool                     `json:"active"`
+	LastEvent   *time.Time               `json:"last_event"`
+}
+
+type FileEvent struct {
+	Type        string                   `json:"type"`
+	Path        string                   `json:"path"`
+	User        string                   `json:"user"`
+	Process     string                   `json:"process"`
+	Timestamp   time.Time                `json:"timestamp"`
+}
+
+type FileTemplate struct {
+	Name        string                   `json:"name"`
+	Type        string                   `json:"type"`
+	Content     string                   `json:"content"`
+	Variables   map[string]string        `json:"variables"`
+}
+
+type DBConnection struct {
+	ID          string                   `json:"id"`
+	Host        string                   `json:"host"`
+	User        string                   `json:"user"`
+	Database    string                   `json:"database"`
+	Connected   time.Time                `json:"connected"`
+	LastQuery   *time.Time               `json:"last_query"`
+}
+
+type DBQuery struct {
+	Query       string                   `json:"query"`
+	Parameters  []interface{}            `json:"parameters"`
+	Duration    time.Duration            `json:"duration"`
+	Result      interface{}              `json:"result"`
+	Timestamp   time.Time                `json:"timestamp"`
+}
+
+type APIRequest struct {
+	Method      string                   `json:"method"`
+	URL         string                   `json:"url"`
+	Headers     map[string]string        `json:"headers"`
+	Body        string                   `json:"body"`
+	IP          string                   `json:"ip"`
+	Timestamp   time.Time                `json:"timestamp"`
+}
+
+type APIResponse struct {
+	Status      int                      `json:"status"`
+	Headers     map[string]string        `json:"headers"`
+	Body        string                   `json:"body"`
+	Duration    time.Duration            `json:"duration"`
+	Timestamp   time.Time                `json:"timestamp"`
+}
+
+type APITemplate struct {
+	Name        string                   `json:"name"`
+	Pattern     string                   `json:"pattern"`
+	Response    *DecoyResponse           `json:"response"`
+	Variables   map[string]string        `json:"variables"`
+}
+
+type APIRule struct {
+	Pattern     string                   `json:"pattern"`
+	Action      string                   `json:"action"`
+	Response    *DecoyResponse           `json:"response"`
+	Conditions  []string                 `json:"conditions"`
+}
+
+// Final support types
+type IoTDevice struct {
+	ID          string                   `json:"id"`
+	Type        string                   `json:"type"`
+	Model       string                   `json:"model"`
+	IP          string                   `json:"ip"`
+	MAC         string                   `json:"mac"`
+	Status      string                   `json:"status"`
+}
+
+type IoTTraffic struct {
+	Source      string                   `json:"source"`
+	Destination string                   `json:"destination"`
+	Protocol    string                   `json:"protocol"`
+	Port        int                      `json:"port"`
+	Data        []byte                   `json:"data"`
+	Timestamp   time.Time                `json:"timestamp"`
+}
+
+type SimulatedDevice struct {
+	Device      *IoTDevice               `json:"device"`
+	Behavior    *DeviceBehavior          `json:"behavior"`
+	Running     bool                     `json:"running"`
+	LastUpdate  time.Time                `json:"last_update"`
+}
+
+type DeviceBehavior struct {
+	Patterns    []string                 `json:"patterns"`
+	Responses   map[string]string        `json:"responses"`
+	Frequency   time.Duration            `json:"frequency"`
+	Realistic   bool                     `json:"realistic"`
+}
+
+type CloudInstance struct {
+	ID          string                   `json:"id"`
+	Type        string                   `json:"type"`
+	Provider    string                   `json:"provider"`
+	Region      string                   `json:"region"`
+	Status      string                   `json:"status"`
+	Created     time.Time                `json:"created"`
+}
+
+type CloudService struct {
+	Name        string                   `json:"name"`
+	Type        string                   `json:"type"`
+	Version     string                   `json:"version"`
+	Endpoints   []string                 `json:"endpoints"`
+	Status      string                   `json:"status"`
+}
+
+type CloudEvent struct {
+	Type        string                   `json:"type"`
+	Source      string                   `json:"source"`
+	Target      string                   `json:"target"`
+	Action      string                   `json:"action"`
+	Result      string                   `json:"result"`
+	Timestamp   time.Time                `json:"timestamp"`
+}
+
+type CloudScheduler struct {
+	Jobs        []*ScheduledJob          `json:"jobs"`
+	Running     bool                     `json:"running"`
+	NextRun     *time.Time               `json:"next_run"`
+	Config      map[string]interface{}   `json:"config"`
+}
+
+type CloudDeployer struct {
+	Templates   map[string]*DeployTemplate `json:"templates"`
+	Active      []*Deployment              `json:"active"`
+	History     []*Deployment              `json:"history"`
+	Config      map[string]interface{}     `json:"config"`
+}
+
+type ScheduledJob struct {
+	ID          string                   `json:"id"`
+	Name        string                   `json:"name"`
+	Schedule    string                   `json:"schedule"`
+	Action      string                   `json:"action"`
+	Enabled     bool                     `json:"enabled"`
+	LastRun     *time.Time               `json:"last_run"`
+}
+
+type DeployTemplate struct {
+	Name        string                   `json:"name"`
+	Type        string                   `json:"type"`
+	Config      map[string]interface{}   `json:"config"`
+	Resources   []string                 `json:"resources"`
 }

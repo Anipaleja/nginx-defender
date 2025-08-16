@@ -24,10 +24,16 @@ type TimeSeriesModel struct {
 	Name        string                 `json:"name"`
 	Type        string                 `json:"type"`
 	Parameters  map[string]interface{} `json:"parameters"`
-	Data        []*TimeSeriesPoint     `json:"data"`
-	Forecast    []*ForecastPoint       `json:"forecast"`
-	Accuracy    float64                `json:"accuracy"`
-	LastTrained time.Time              `json:"last_trained"`
+	Config      map[string]interface{} `json:"config"`
+}
+
+type GradientBoostingModel struct {
+	Trees        []*DecisionTree        `json:"trees"`
+	Parameters   map[string]interface{} `json:"parameters"`
+	Data         []*TimeSeriesPoint     `json:"data"`
+	Forecast     []*ForecastPoint       `json:"forecast"`
+	Accuracy     float64                `json:"accuracy"`
+	LastTrained  time.Time              `json:"last_trained"`
 }
 
 type AnomalyDetector struct {
@@ -625,14 +631,6 @@ type DeepLearningModel struct {
 	Config       map[string]interface{} `json:"config"`
 }
 
-type GradientBoostingModel struct {
-	Trees        []*DecisionTree        `json:"trees"`
-	LearningRate float64                `json:"learning_rate"`
-	MaxDepth     int                    `json:"max_depth"`
-	NumTrees     int                    `json:"num_trees"`
-	Config       map[string]interface{} `json:"config"`
-}
-
 type DecisionTree struct {
 	Root         *TreeNode              `json:"root"`
 	MaxDepth     int                    `json:"max_depth"`
@@ -649,91 +647,268 @@ type TreeNode struct {
 	IsLeaf       bool                   `json:"is_leaf"`
 }
 
-// Additional AI and ML types
-type AttentionMechanism struct {
-	Type        string                 `json:"type"`
-	Heads       int                    `json:"heads"`
-	Dimension   int                    `json:"dimension"`
-	Weights     [][]float64            `json:"weights"`
-	Config      map[string]interface{} `json:"config"`
+// Protection types
+type FingerprintEngine struct {
+	Collectors  map[string]*DataCollector  `json:"collectors"`
+	Analyzers   []*FingerprintAnalyzer     `json:"analyzers"`
+	Database    *FingerprintDatabase       `json:"database"`
+	Config      map[string]interface{}     `json:"config"`
 }
 
-type EmbeddingLayer struct {
-	VocabSize   int                    `json:"vocab_size"`
-	EmbedSize   int                    `json:"embed_size"`
-	Embeddings  [][]float64            `json:"embeddings"`
-	Trainable   bool                   `json:"trainable"`
-	Config      map[string]interface{} `json:"config"`
+type ChallengeSystem struct {
+	Types       map[string]*ChallengeType  `json:"types"`
+	Generator   *ChallengeGenerator        `json:"generator"`
+	Validator   *ChallengeValidator        `json:"validator"`
+	Store       *ChallengeStore            `json:"store"`
+}
+
+type DeviceIntelligence struct {
+	Fingerprints map[string]*DeviceFingerprint `json:"fingerprints"`
+	Classifier   *DeviceClassifier             `json:"classifier"`
+	Database     *DeviceDatabase               `json:"database"`
+	Updater      *DeviceUpdater                `json:"updater"`
+}
+
+type BiometricAnalyzer struct {
+	Keystroke   *KeystrokeAnalyzer         `json:"keystroke"`
+	Mouse       *MouseAnalyzer             `json:"mouse"`
+	Touch       *TouchAnalyzer             `json:"touch"`
+	Behavioral  *BehavioralAnalyzer        `json:"behavioral"`
+}
+
+type TemporalAnalyzer struct {
+	Patterns    []*TemporalPattern         `json:"patterns"`
+	Windows     []*TimeWindow              `json:"windows"`
+	Detector    *TemporalDetector          `json:"detector"`
+	Config      map[string]interface{}     `json:"config"`
+}
+
+type BotKnowledgeGraph struct {
+	Entities    map[string]*BotEntity      `json:"entities"`
+	Relations   []*BotRelation             `json:"relations"`
+	Rules       []*InferenceRule           `json:"rules"`
+	Reasoner    *GraphReasoner             `json:"reasoner"`
+}
+
+type BotProtectionStats struct {
+	TotalRequests   int64                  `json:"total_requests"`
+	BlockedBots     int64                  `json:"blocked_bots"`
+	ChallengesSent  int64                  `json:"challenges_sent"`
+	FalsePositives  int64                  `json:"false_positives"`
+	PerformanceMS   float64                `json:"performance_ms"`
+}
+
+// Missing support types
+type AdaptiveModel struct {
+	ID          string                     `json:"id"`
+	Type        string                     `json:"type"`
+	Algorithm   string                     `json:"algorithm"`
+	Parameters  map[string]interface{}     `json:"parameters"`
+	Performance *ModelPerformance          `json:"performance"`
+}
+
+type AdaptationRule struct {
+	ID          string                     `json:"id"`
+	Condition   string                     `json:"condition"`
+	Action      string                     `json:"action"`
+	Priority    int                        `json:"priority"`
+	Active      bool                       `json:"active"`
+}
+
+type PerformanceMonitor struct {
+	Metrics     map[string]float64         `json:"metrics"`
+	Thresholds  map[string]float64         `json:"thresholds"`
+	Alerts      []string                   `json:"alerts"`
+	History     []time.Time                `json:"history"`
+}
+
+type TransformerLayer struct {
+	Type        string                     `json:"type"`
+	Size        int                        `json:"size"`
+	Heads       int                        `json:"heads"`
+	Weights     [][]float64                `json:"weights"`
+	Config      map[string]interface{}     `json:"config"`
+}
+
+type AttentionHead struct {
+	ID          int                        `json:"id"`
+	Weights     [][]float64                `json:"weights"`
+	Dimension   int                        `json:"dimension"`
+	Active      bool                       `json:"active"`
+}
+
+type ModelValidator struct {
+	Tests       []string                   `json:"tests"`
+	Metrics     []string                   `json:"metrics"`
+	Thresholds  map[string]float64         `json:"thresholds"`
+	Results     map[string]interface{}     `json:"results"`
+}
+
+type AdaptiveEngine struct {
+	Models      []*AdaptiveModel           `json:"models"`
+	Rules       []*AdaptationRule          `json:"rules"`
+	Controller  *AdaptationController      `json:"controller"`
+	Monitor     *PerformanceMonitor        `json:"monitor"`
 }
 
 type TransformerModel struct {
-	Type        string                 `json:"type"`
-	Layers      int                    `json:"layers"`
-	Heads       int                    `json:"heads"`
-	Dimension   int                    `json:"dimension"`
-	Config      map[string]interface{} `json:"config"`
+	Architecture string                     `json:"architecture"`
+	Layers      []*TransformerLayer        `json:"layers"`
+	Attention   []*AttentionHead           `json:"attention"`
+	Config      map[string]interface{}     `json:"config"`
 }
 
 type ModelUpdater struct {
-	Strategy    string                 `json:"strategy"`
-	Frequency   string                 `json:"frequency"`
-	Threshold   float64                `json:"threshold"`
-	Config      map[string]interface{} `json:"config"`
+	Schedule    string                     `json:"schedule"`
+	Sources     []string                   `json:"sources"`
+	Validator   *ModelValidator            `json:"validator"`
+	Config      map[string]interface{}     `json:"config"`
 }
 
-// Challenge and protection types
-type CAPTCHAEngine struct {
-	Type        string                 `json:"type"`
-	Difficulty  int                    `json:"difficulty"`
-	Provider    string                 `json:"provider"`
-	Config      map[string]interface{} `json:"config"`
+// Additional support types for protection
+type DataCollector struct {
+	Type        string                     `json:"type"`
+	Source      string                     `json:"source"`
+	Active      bool                       `json:"active"`
+	Config      map[string]interface{}     `json:"config"`
 }
 
-type JavaScriptChallenge struct {
-	Code        string                 `json:"code"`
-	Timeout     int                    `json:"timeout"`
-	Expected    string                 `json:"expected"`
-	Config      map[string]interface{} `json:"config"`
+type FingerprintAnalyzer struct {
+	Algorithm   string                     `json:"algorithm"`
+	Features    []string                   `json:"features"`
+	Model       *AnalysisModel             `json:"model"`
+	Accuracy    float64                    `json:"accuracy"`
 }
 
-type ProofOfWorkChallenge struct {
-	Algorithm   string                 `json:"algorithm"`
-	Difficulty  int                    `json:"difficulty"`
-	Target      string                 `json:"target"`
-	Config      map[string]interface{} `json:"config"`
+type FingerprintDatabase struct {
+	Fingerprints map[string]*Fingerprint   `json:"fingerprints"`
+	Index       map[string][]string        `json:"index"`
+	Size        int                        `json:"size"`
+	Updated     time.Time                  `json:"updated"`
 }
 
-type BiometricChallenge struct {
-	Type        string                 `json:"type"`
-	Threshold   float64                `json:"threshold"`
-	Provider    string                 `json:"provider"`
-	Config      map[string]interface{} `json:"config"`
+type ChallengeGenerator struct {
+	Types       []string                   `json:"types"`
+	Difficulty  int                        `json:"difficulty"`
+	Templates   map[string]string          `json:"templates"`
+	Config      map[string]interface{}     `json:"config"`
 }
 
-type PuzzleChallenge struct {
-	Type        string                 `json:"type"`
-	Pieces      int                    `json:"pieces"`
-	TimeLimit   int                    `json:"time_limit"`
-	Config      map[string]interface{} `json:"config"`
+type ChallengeValidator struct {
+	Validators  map[string]*Validator      `json:"validators"`
+	Timeout     time.Duration              `json:"timeout"`
+	Retries     int                        `json:"retries"`
+	Config      map[string]interface{}     `json:"config"`
 }
 
-type GameBasedChallenge struct {
-	Game        string                 `json:"game"`
-	Level       int                    `json:"level"`
-	TimeLimit   int                    `json:"time_limit"`
-	Config      map[string]interface{} `json:"config"`
+type ChallengeStore struct {
+	Challenges  map[string]*Challenge      `json:"challenges"`
+	TTL         time.Duration              `json:"ttl"`
+	MaxSize     int                        `json:"max_size"`
+	Cleanup     time.Duration              `json:"cleanup"`
 }
 
-type InvisibleChallenge struct {
-	Type        string                 `json:"type"`
-	Hidden      bool                   `json:"hidden"`
-	Trigger     string                 `json:"trigger"`
-	Config      map[string]interface{} `json:"config"`
+type DeviceFingerprint struct {
+	ID          string                     `json:"id"`
+	Type        string                     `json:"type"`
+	Features    map[string]interface{}     `json:"features"`
+	Confidence  float64                    `json:"confidence"`
+	Created     time.Time                  `json:"created"`
 }
 
-type AdaptiveChallenge struct {
-	Strategy    string                 `json:"strategy"`
-	Difficulty  float64                `json:"difficulty"`
-	Adaptor     string                 `json:"adaptor"`
-	Config      map[string]interface{} `json:"config"`
+type DeviceClassifier struct {
+	Model       *ClassificationModel       `json:"model"`
+	Features    []string                   `json:"features"`
+	Classes     []string                   `json:"classes"`
+	Accuracy    float64                    `json:"accuracy"`
+}
+
+type DeviceDatabase struct {
+	Devices     map[string]*Device         `json:"devices"`
+	Categories  map[string][]string        `json:"categories"`
+	Updated     time.Time                  `json:"updated"`
+	Version     string                     `json:"version"`
+}
+
+type DeviceUpdater struct {
+	Source      string                     `json:"source"`
+	Schedule    time.Duration              `json:"schedule"`
+	LastUpdate  time.Time                  `json:"last_update"`
+	Active      bool                       `json:"active"`
+}
+
+// Analyzer types
+type KeystrokeAnalyzer struct {
+	Patterns    map[string]*KeystrokePattern `json:"patterns"`
+	Model       *BiometricModel              `json:"model"`
+	Threshold   float64                      `json:"threshold"`
+	Active      bool                         `json:"active"`
+}
+
+type MouseAnalyzer struct {
+	Patterns    map[string]*MousePattern     `json:"patterns"`
+	Model       *BiometricModel              `json:"model"`
+	Threshold   float64                      `json:"threshold"`
+	Active      bool                         `json:"active"`
+}
+
+type TouchAnalyzer struct {
+	Patterns    map[string]*TouchPattern     `json:"patterns"`
+	Model       *BiometricModel              `json:"model"`
+	Threshold   float64                      `json:"threshold"`
+	Active      bool                         `json:"active"`
+}
+
+type BehavioralAnalyzer struct {
+	Models      []*BehaviorModel             `json:"models"`
+	Detectors   []*BehaviorDetector          `json:"detectors"`
+	Baselines   []*BehaviorBaseline          `json:"baselines"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type TemporalDetector struct {
+	Windows     []*TimeWindow                `json:"windows"`
+	Patterns    []*TemporalPattern           `json:"patterns"`
+	Anomalies   []*TemporalAnomaly           `json:"anomalies"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type BotEntity struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Properties  map[string]interface{}       `json:"properties"`
+	Relations   []string                     `json:"relations"`
+}
+
+type Fingerprint struct {
+	ID          string                       `json:"id"`
+	Hash        string                       `json:"hash"`
+	Features    map[string]interface{}       `json:"features"`
+	Confidence  float64                      `json:"confidence"`
+	Created     time.Time                    `json:"created"`
+}
+
+type Validator struct {
+	Type        string                       `json:"type"`
+	Rules       []string                     `json:"rules"`
+	Config      map[string]interface{}       `json:"config"`
+	Active      bool                         `json:"active"`
+}
+
+type Challenge struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Content     string                       `json:"content"`
+	Solution    string                       `json:"solution"`
+	Difficulty  int                          `json:"difficulty"`
+	Created     time.Time                    `json:"created"`
+	Expires     time.Time                    `json:"expires"`
+}
+
+type Device struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Name        string                       `json:"name"`
+	Category    string                       `json:"category"`
+	Features    map[string]interface{}       `json:"features"`
 }

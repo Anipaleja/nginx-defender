@@ -21,25 +21,25 @@ import (
 // AdvancedBotProtection - The most sophisticated bot detection system
 // Surpasses all existing solutions with revolutionary multi-modal detection
 type AdvancedBotProtection struct {
-	fingerprintEngine    *FingerprintEngine
-	behaviorAnalyzer     *BehaviorAnalyzer
+	fingerprintEngine    *types.FingerprintEngine
+	behaviorAnalyzer     *types.BehaviorAnalyzer
 	mlClassifier         *MLBotClassifier
-	challengeSystem      *ChallengeSystem
-	reputationEngine     *ReputationEngine
-	deviceIntelligence   *DeviceIntelligence
-	biometricAnalyzer    *BiometricAnalyzer
-	networkAnalyzer      *NetworkAnalyzer
-	temporalAnalyzer     *TemporalAnalyzer
-	knowledgeGraph       *BotKnowledgeGraph
+	challengeSystem      *types.ChallengeSystem
+	reputationEngine     *types.ReputationEngine
+	deviceIntelligence   *types.DeviceIntelligence
+	biometricAnalyzer    *types.BiometricAnalyzer
+	networkAnalyzer      *types.NetworkAnalyzer
+	temporalAnalyzer     *types.TemporalAnalyzer
+	knowledgeGraph       *types.BotKnowledgeGraph
 	logger               *logrus.Logger
 	mutex                sync.RWMutex
 	
 	// Statistics and metrics
-	stats                *BotProtectionStats
+	stats                *types.BotProtectionStats
 	
 	// Real-time adaptation
-	adaptiveEngine       *AdaptiveEngine
-	feedbackLoop         *FeedbackLoop
+	adaptiveEngine       *types.AdaptiveEngine
+	feedbackLoop         *types.FeedbackLoop
 }
 
 // FingerprintEngine performs advanced device fingerprinting
@@ -80,44 +80,44 @@ type MLBotClassifier struct {
 
 // ChallengeSystem implements sophisticated challenge mechanisms
 type ChallengeSystem struct {
-	captchaEngine        *CAPTCHAEngine
-	jsChallenge          *JavaScriptChallenge
-	proofOfWork          *ProofOfWorkChallenge
-	biometricChallenge   *BiometricChallenge
-	puzzleChallenge      *PuzzleChallenge
-	gameChallenge        *GameBasedChallenge
-	invisibleChallenge   *InvisibleChallenge
-	adaptiveChallenge    *AdaptiveChallenge
+	captchaEngine        *types.CAPTCHAEngine
+	jsChallenge          *types.JavaScriptChallenge
+	proofOfWork          *types.ProofOfWorkChallenge
+	biometricChallenge   *types.BiometricChallenge
+	puzzleChallenge      *types.PuzzleChallenge
+	gameChallenge        *types.GameBasedChallenge
+	invisibleChallenge   *types.InvisibleChallenge
+	adaptiveChallenge    *types.AdaptiveChallenge
 }
 
 // ReputationEngine manages IP and device reputation
 type ReputationEngine struct {
-	ipReputation         *IPReputationSystem
-	deviceReputation     *DeviceReputationSystem
-	behaviorReputation   *BehaviorReputationSystem
-	globalReputation     *GlobalReputationSystem
-	consensusEngine      *ReputationConsensus
-	decayManager         *ReputationDecay
+	ipReputation         *types.IPReputationSystem
+	deviceReputation     *types.DeviceReputationSystem
+	behaviorReputation   *types.BehaviorReputationSystem
+	globalReputation     *types.GlobalReputationSystem
+	consensusEngine      *types.ReputationConsensus
+	decayManager         *types.ReputationDecay
 }
 
 // DeviceIntelligence provides deep device analysis
 type DeviceIntelligence struct {
-	hardwareProfiler     *HardwareProfiler
-	softwareProfiler     *SoftwareProfiler
-	environmentProfiler  *EnvironmentProfiler
-	virtualizationDetector *VirtualizationDetector
-	emulationDetector    *EmulationDetector
-	automationDetector   *AutomationDetector
+	hardwareProfiler     *types.HardwareProfiler
+	softwareProfiler     *types.SoftwareProfiler
+	environmentProfiler  *types.EnvironmentProfiler
+	virtualizationDetector *types.VirtualizationDetector
+	emulationDetector    *types.EmulationDetector
+	automationDetector   *types.AutomationDetector
 }
 
 // BiometricAnalyzer analyzes biometric patterns
 type BiometricAnalyzer struct {
-	keystrokeDynamics    *KeystrokeDynamics
-	mouseDynamics        *MouseDynamics
-	touchDynamics        *TouchDynamics
-	gazePrediction       *GazePrediction
-	voiceAnalysis        *VoiceAnalysis
-	behaviorBiometrics   *BehaviorBiometrics
+	keystrokeDynamics    *types.KeystrokeDynamics
+	mouseDynamics        *types.MouseDynamics
+	touchDynamics        *types.TouchDynamics
+	gazePrediction       *types.GazePrediction
+	voiceAnalysis        *types.VoiceAnalysis
+	behaviorBiometrics   *types.BehaviorBiometrics
 }
 
 // BotDetectionResult contains comprehensive bot analysis results
@@ -127,32 +127,32 @@ type BotDetectionResult struct {
 	BotType              string                  `json:"bot_type"`
 	BotCategory          string                  `json:"bot_category"`
 	RiskScore            float64                 `json:"risk_score"`
-	FingerprintAnalysis  *FingerprintAnalysis    `json:"fingerprint_analysis"`
-	BehaviorAnalysis     *BehaviorAnalysis       `json:"behavior_analysis"`
-	MLClassification     *MLClassification       `json:"ml_classification"`
-	ReputationAnalysis   *ReputationAnalysis     `json:"reputation_analysis"`
-	DeviceAnalysis       *DeviceAnalysis         `json:"device_analysis"`
-	BiometricAnalysis    *BiometricAnalysis      `json:"biometric_analysis"`
-	NetworkAnalysis      *NetworkAnalysis        `json:"network_analysis"`
-	TemporalAnalysis     *TemporalAnalysis       `json:"temporal_analysis"`
+	FingerprintAnalysis  *types.FingerprintAnalysis    `json:"fingerprint_analysis"`
+	BehaviorAnalysis     *types.BehaviorAnalysis       `json:"behavior_analysis"`
+	MLClassification     *types.MLClassification       `json:"ml_classification"`
+	ReputationAnalysis   *types.ReputationAnalysis     `json:"reputation_analysis"`
+	DeviceAnalysis       *types.DeviceAnalysis         `json:"device_analysis"`
+	BiometricAnalysis    *types.BiometricAnalysis      `json:"biometric_analysis"`
+	NetworkAnalysis      *types.NetworkAnalysis        `json:"network_analysis"`
+	TemporalAnalysis     *types.TemporalAnalysis       `json:"temporal_analysis"`
 	RecommendedAction    string                  `json:"recommended_action"`
 	ChallengeRequired    bool                    `json:"challenge_required"`
 	ChallengeType        string                  `json:"challenge_type"`
 	ProcessingTime       time.Duration           `json:"processing_time"`
 	DetectionMethods     []string                `json:"detection_methods"`
-	ExplanationChain     []*DetectionExplanation `json:"explanation_chain"`
+	ExplanationChain     []*types.DetectionExplanation `json:"explanation_chain"`
 }
 
 // FingerprintAnalysis contains device fingerprinting results
 type FingerprintAnalysis struct {
-	TLSFingerprint       *TLSFingerprint         `json:"tls_fingerprint"`
-	HTTPFingerprint      *HTTPFingerprint        `json:"http_fingerprint"`
-	BrowserFingerprint   *BrowserFingerprint     `json:"browser_fingerprint"`
-	CanvasFingerprint    *CanvasFingerprint      `json:"canvas_fingerprint"`
-	AudioFingerprint     *AudioFingerprint       `json:"audio_fingerprint"`
-	WebGLFingerprint     *WebGLFingerprint       `json:"webgl_fingerprint"`
-	FontFingerprint      *FontFingerprint        `json:"font_fingerprint"`
-	TimingFingerprint    *TimingFingerprint      `json:"timing_fingerprint"`
+	TLSFingerprint       *types.TLSFingerprint         `json:"tls_fingerprint"`
+	HTTPFingerprint      *types.HTTPFingerprint        `json:"http_fingerprint"`
+	BrowserFingerprint   *types.BrowserFingerprint     `json:"browser_fingerprint"`
+	CanvasFingerprint    *types.CanvasFingerprint      `json:"canvas_fingerprint"`
+	AudioFingerprint     *types.AudioFingerprint       `json:"audio_fingerprint"`
+	WebGLFingerprint     *types.WebGLFingerprint       `json:"webgl_fingerprint"`
+	FontFingerprint      *types.FontFingerprint        `json:"font_fingerprint"`
+	TimingFingerprint    *types.TimingFingerprint      `json:"timing_fingerprint"`
 	FingerprintEntropy   float64                 `json:"fingerprint_entropy"`
 	FingerprintStability float64                 `json:"fingerprint_stability"`
 	SuspiciousElements   []string                `json:"suspicious_elements"`
@@ -160,13 +160,13 @@ type FingerprintAnalysis struct {
 
 // BehaviorAnalysis contains behavior analysis results
 type BehaviorAnalysis struct {
-	MouseBehavior        *MouseBehavior          `json:"mouse_behavior"`
-	KeyboardBehavior     *KeyboardBehavior       `json:"keyboard_behavior"`
-	ScrollBehavior       *ScrollBehavior         `json:"scroll_behavior"`
-	ClickPatterns        *ClickPatterns          `json:"click_patterns"`
-	NavigationPatterns   *NavigationPatterns     `json:"navigation_patterns"`
-	InteractionMetrics   *InteractionMetrics     `json:"interaction_metrics"`
-	SessionMetrics       *SessionMetrics         `json:"session_metrics"`
+	MouseBehavior        *types.MouseBehavior          `json:"mouse_behavior"`
+	KeyboardBehavior     *types.KeyboardBehavior       `json:"keyboard_behavior"`
+	ScrollBehavior       *types.ScrollBehavior         `json:"scroll_behavior"`
+	ClickPatterns        *types.ClickPatterns          `json:"click_patterns"`
+	NavigationPatterns   *types.NavigationPatterns     `json:"navigation_patterns"`
+	InteractionMetrics   *types.InteractionMetrics     `json:"interaction_metrics"`
+	SessionMetrics       *types.SessionMetrics         `json:"session_metrics"`
 	AbnormalityScore     float64                 `json:"abnormality_score"`
 	HumanLikelihood      float64                 `json:"human_likelihood"`
 	BotIndicators        []string                `json:"bot_indicators"`
@@ -174,11 +174,11 @@ type BehaviorAnalysis struct {
 
 // MLClassification contains ML-based classification results
 type MLClassification struct {
-	EnsemblePrediction   *EnsemblePrediction     `json:"ensemble_prediction"`
-	DeepLearningResult   *DeepLearningResult     `json:"deep_learning_result"`
-	GradientBoostingResult *GradientBoostingResult `json:"gradient_boosting_result"`
-	NeuralNetworkResult  *NeuralNetworkResult    `json:"neural_network_result"`
-	TransformerResult    *TransformerResult      `json:"transformer_result"`
+	EnsemblePrediction   *types.EnsemblePrediction     `json:"ensemble_prediction"`
+	DeepLearningResult   *types.DeepLearningResult     `json:"deep_learning_result"`
+	GradientBoostingResult *types.GradientBoostingResult `json:"gradient_boosting_result"`
+	NeuralNetworkResult  *types.NeuralNetworkResult    `json:"neural_network_result"`
+	TransformerResult    *types.TransformerResult      `json:"transformer_result"`
 	FeatureImportance    map[string]float64      `json:"feature_importance"`
 	ModelConfidence      float64                 `json:"model_confidence"`
 	PredictionConsensus  float64                 `json:"prediction_consensus"`
@@ -202,11 +202,11 @@ type TLSFingerprint struct {
 type HTTPFingerprint struct {
 	HeaderOrder          []string            `json:"header_order"`
 	HeaderValues         map[string]string   `json:"header_values"`
-	UserAgent            *UserAgentAnalysis  `json:"user_agent"`
-	AcceptHeaders        *AcceptHeaders      `json:"accept_headers"`
+	UserAgent            *types.UserAgentAnalysis  `json:"user_agent"`
+	AcceptHeaders        *types.AcceptHeaders      `json:"accept_headers"`
 	EncodingPreferences  []string           `json:"encoding_preferences"`
 	LanguagePreferences  []string           `json:"language_preferences"`
-	ConnectionBehavior   *ConnectionBehavior `json:"connection_behavior"`
+	ConnectionBehavior   *types.ConnectionBehavior `json:"connection_behavior"`
 	HTTPVersion          string             `json:"http_version"`
 	Inconsistencies      []string           `json:"inconsistencies"`
 }
@@ -223,9 +223,9 @@ type BrowserFingerprint struct {
 	JavaEnabled          bool                   `json:"java_enabled"`
 	Plugins              []Plugin               `json:"plugins"`
 	MimeTypes            []MimeType             `json:"mime_types"`
-	TouchSupport         *TouchSupport          `json:"touch_support"`
-	WebRTCCapabilities   *WebRTCCapabilities    `json:"webrtc_capabilities"`
-	BatteryAPI           *BatteryInfo           `json:"battery_api"`
+	TouchSupport         *types.TouchSupport          `json:"touch_support"`
+	WebRTCCapabilities   *types.WebRTCCapabilities    `json:"webrtc_capabilities"`
+	BatteryAPI           *types.BatteryInfo           `json:"battery_api"`
 	DeviceMemory         float64                `json:"device_memory"`
 	HardwareConcurrency  int                    `json:"hardware_concurrency"`
 	DoNotTrack           string                 `json:"do_not_track"`
@@ -235,11 +235,11 @@ type BrowserFingerprint struct {
 // MouseBehavior contains mouse movement analysis
 type MouseBehavior struct {
 	Movements            []MouseMovement        `json:"movements"`
-	Velocity             *VelocityStats         `json:"velocity"`
-	Acceleration         *AccelerationStats     `json:"acceleration"`
-	Jerk                 *JerkStats            `json:"jerk"`
+	Velocity             *types.VelocityStats         `json:"velocity"`
+	Acceleration         *types.AccelerationStats     `json:"acceleration"`
+	Jerk                 *types.JerkStats            `json:"jerk"`
 	Pauses               []MousePause          `json:"pauses"`
-	ClickTiming          *ClickTiming          `json:"click_timing"`
+	ClickTiming          *types.ClickTiming          `json:"click_timing"`
 	ScrollSynchrony      float64               `json:"scroll_synchrony"`
 	TrajectoryEntropy    float64               `json:"trajectory_entropy"`
 	HumanLikeness        float64               `json:"human_likeness"`
@@ -248,13 +248,13 @@ type MouseBehavior struct {
 
 // KeyboardBehavior contains keyboard interaction analysis
 type KeyboardBehavior struct {
-	TypingRhythm         *TypingRhythm         `json:"typing_rhythm"`
-	KeystrokeDynamics    *KeystrokeDynamics    `json:"keystroke_dynamics"`
+	TypingRhythm         *types.TypingRhythm         `json:"typing_rhythm"`
+	KeystrokeDynamics    *types.KeystrokeDynamics    `json:"keystroke_dynamics"`
 	DwellTimes           []time.Duration       `json:"dwell_times"`
 	FlightTimes          []time.Duration       `json:"flight_times"`
 	TypingSpeed          float64               `json:"typing_speed"`
 	TypingConsistency    float64               `json:"typing_consistency"`
-	ErrorPatterns        *ErrorPatterns        `json:"error_patterns"`
+	ErrorPatterns        *types.ErrorPatterns        `json:"error_patterns"`
 	AutocompleteUsage    float64               `json:"autocomplete_usage"`
 	BiometricSignature   string                `json:"biometric_signature"`
 	HumanLikeness        float64               `json:"human_likeness"`
@@ -262,7 +262,7 @@ type KeyboardBehavior struct {
 }
 
 // NewAdvancedBotProtection creates a new advanced bot protection system
-func NewAdvancedBotProtection(config *BotProtectionConfig, logger *logrus.Logger) (*AdvancedBotProtection, error) {
+func NewAdvancedBotProtection(config *types.BotProtectionConfig, logger *logrus.Logger) (*types.AdvancedBotProtection, error) {
 	bp := &AdvancedBotProtection{
 		logger: logger,
 		stats:  &BotProtectionStats{},
@@ -357,7 +357,7 @@ func NewAdvancedBotProtection(config *BotProtectionConfig, logger *logrus.Logger
 }
 
 // DetectBot performs comprehensive bot detection analysis
-func (bp *AdvancedBotProtection) DetectBot(ctx context.Context, request *BotDetectionRequest) (*BotDetectionResult, error) {
+func (bp *types.AdvancedBotProtection) DetectBot(ctx context.Context, request *types.BotDetectionRequest) (*types.BotDetectionResult, error) {
 	startTime := time.Now()
 	
 	bp.mutex.RLock()
@@ -365,7 +365,7 @@ func (bp *AdvancedBotProtection) DetectBot(ctx context.Context, request *BotDete
 	
 	result := &BotDetectionResult{
 		DetectionMethods:  []string{},
-		ExplanationChain:  []*DetectionExplanation{},
+		ExplanationChain:  []*types.DetectionExplanation{},
 	}
 	
 	// 1. Device Fingerprinting Analysis
@@ -580,26 +580,26 @@ type BotDetectionRequest struct {
 	SessionID       string            `json:"session_id"`
 	
 	// TLS information
-	TLSInformation  *TLSInfo          `json:"tls_information"`
+	TLSInformation  *types.TLSInfo          `json:"tls_information"`
 	
 	// Client-side data
-	BrowserData     *BrowserData      `json:"browser_data"`
+	BrowserData     *types.BrowserData      `json:"browser_data"`
 	MouseEvents     []MouseEvent      `json:"mouse_events"`
 	KeyboardEvents  []KeyboardEvent   `json:"keyboard_events"`
 	TouchEvents     []TouchEvent      `json:"touch_events"`
 	ScrollEvents    []ScrollEvent     `json:"scroll_events"`
 	
 	// Device information
-	DeviceInfo      *DeviceInfo       `json:"device_info"`
+	DeviceInfo      *types.DeviceInfo       `json:"device_info"`
 	
 	// Behavioral context
-	BehaviorContext *BehaviorContext  `json:"behavior_context"`
+	BehaviorContext *types.BehaviorContext  `json:"behavior_context"`
 	
 	// Network context
-	NetworkContext  *NetworkContext   `json:"network_context"`
+	NetworkContext  *types.NetworkContext   `json:"network_context"`
 	
 	// Previous interactions
-	SessionHistory  []*SessionEvent   `json:"session_history"`
+	SessionHistory  []*types.SessionEvent   `json:"session_history"`
 }
 
 // TLSInfo contains TLS connection information
@@ -638,8 +638,8 @@ type BrowserData struct {
 	HardwareConcurrency  int         `json:"hardware_concurrency"`
 	MaxTouchPoints       int         `json:"max_touch_points"`
 	DoNotTrack           string      `json:"do_not_track"`
-	WebRTC               *WebRTCInfo `json:"webrtc"`
-	Battery              *BatteryInfo `json:"battery"`
+	WebRTC               *types.WebRTCInfo `json:"webrtc"`
+	Battery              *types.BatteryInfo `json:"battery"`
 }
 
 // FinalDecision represents the final bot detection decision
@@ -661,7 +661,7 @@ type DetectionExplanation struct {
 }
 
 // makeFinalDecision combines all analysis results into final decision
-func (bp *AdvancedBotProtection) makeFinalDecision(result *BotDetectionResult) *FinalDecision {
+func (bp *types.AdvancedBotProtection) makeFinalDecision(result *types.BotDetectionResult) *types.FinalDecision {
 	decision := &FinalDecision{
 		DecisionFactors: []string{},
 	}
@@ -712,7 +712,7 @@ func (bp *AdvancedBotProtection) makeFinalDecision(result *BotDetectionResult) *
 }
 
 // calculateRiskScore calculates overall risk score
-func (bp *AdvancedBotProtection) calculateRiskScore(result *BotDetectionResult) float64 {
+func (bp *types.AdvancedBotProtection) calculateRiskScore(result *types.BotDetectionResult) float64 {
 	riskFactors := []float64{}
 	
 	// Add various risk factors
@@ -752,7 +752,7 @@ func (bp *AdvancedBotProtection) calculateRiskScore(result *BotDetectionResult) 
 }
 
 // determineBotStatus determines if the request is from a bot
-func (bp *AdvancedBotProtection) determineBotStatus(confidence, riskScore float64, result *BotDetectionResult) bool {
+func (bp *types.AdvancedBotProtection) determineBotStatus(confidence, riskScore float64, result *types.BotDetectionResult) bool {
 	// Multiple criteria for bot determination
 	
 	// High confidence threshold
@@ -794,7 +794,7 @@ func (bp *AdvancedBotProtection) determineBotStatus(confidence, riskScore float6
 }
 
 // recommendAction recommends action based on decision
-func (bp *AdvancedBotProtection) recommendAction(decision *FinalDecision) string {
+func (bp *types.AdvancedBotProtection) recommendAction(decision *types.FinalDecision) string {
 	if decision.IsBot {
 		if decision.FinalConfidence > 0.95 {
 			return "block"
@@ -813,7 +813,7 @@ func (bp *AdvancedBotProtection) recommendAction(decision *FinalDecision) string
 }
 
 // Helper functions for evidence formatting
-func (bp *AdvancedBotProtection) formatMLEvidence(classification *MLClassification) []string {
+func (bp *types.AdvancedBotProtection) formatMLEvidence(classification *types.MLClassification) []string {
 	evidence := []string{}
 	
 	if classification.EnsemblePrediction != nil {
@@ -849,7 +849,7 @@ func (bp *AdvancedBotProtection) formatMLEvidence(classification *MLClassificati
 }
 
 // calculateFingerprintConfidence calculates confidence from fingerprint analysis
-func (bp *AdvancedBotProtection) calculateFingerprintConfidence(analysis *FingerprintAnalysis) float64 {
+func (bp *types.AdvancedBotProtection) calculateFingerprintConfidence(analysis *types.FingerprintAnalysis) float64 {
 	confidence := 0.0
 	
 	// High entropy indicates bot-like behavior
@@ -866,7 +866,7 @@ func (bp *AdvancedBotProtection) calculateFingerprintConfidence(analysis *Finger
 }
 
 // updateStats updates bot protection statistics
-func (bp *AdvancedBotProtection) updateStats(result *BotDetectionResult) {
+func (bp *types.AdvancedBotProtection) updateStats(result *types.BotDetectionResult) {
 	bp.stats.TotalRequests++
 	
 	if result.IsBot {
@@ -907,7 +907,7 @@ type BotProtectionStats struct {
 }
 
 // GetStats returns current bot protection statistics
-func (bp *AdvancedBotProtection) GetStats() *BotProtectionStats {
+func (bp *types.AdvancedBotProtection) GetStats() *types.BotProtectionStats {
 	bp.mutex.RLock()
 	defer bp.mutex.RUnlock()
 	
@@ -918,18 +918,18 @@ func (bp *AdvancedBotProtection) GetStats() *BotProtectionStats {
 
 // Configuration structures
 type BotProtectionConfig struct {
-	Fingerprinting     *FingerprintingConfig    `yaml:"fingerprinting"`
-	BehaviorAnalysis   *BehaviorAnalysisConfig  `yaml:"behavior_analysis"`
-	MachineLearning    *MachineLearningConfig   `yaml:"machine_learning"`
-	Challenges         *ChallengesConfig        `yaml:"challenges"`
-	Reputation         *ReputationConfig        `yaml:"reputation"`
-	DeviceIntelligence *DeviceIntelligenceConfig `yaml:"device_intelligence"`
-	Biometrics         *BiometricsConfig        `yaml:"biometrics"`
-	NetworkAnalysis    *NetworkAnalysisConfig   `yaml:"network_analysis"`
-	TemporalAnalysis   *TemporalAnalysisConfig  `yaml:"temporal_analysis"`
-	KnowledgeGraph     *KnowledgeGraphConfig    `yaml:"knowledge_graph"`
-	AdaptiveEngine     *AdaptiveEngineConfig    `yaml:"adaptive_engine"`
-	FeedbackLoop       *FeedbackLoopConfig      `yaml:"feedback_loop"`
+	Fingerprinting     *types.FingerprintingConfig    `yaml:"fingerprinting"`
+	BehaviorAnalysis   *types.BehaviorAnalysisConfig  `yaml:"behavior_analysis"`
+	MachineLearning    *types.MachineLearningConfig   `yaml:"machine_learning"`
+	Challenges         *types.ChallengesConfig        `yaml:"challenges"`
+	Reputation         *types.ReputationConfig        `yaml:"reputation"`
+	DeviceIntelligence *types.DeviceIntelligenceConfig `yaml:"device_intelligence"`
+	Biometrics         *types.BiometricsConfig        `yaml:"biometrics"`
+	NetworkAnalysis    *types.NetworkAnalysisConfig   `yaml:"network_analysis"`
+	TemporalAnalysis   *types.TemporalAnalysisConfig  `yaml:"temporal_analysis"`
+	KnowledgeGraph     *types.KnowledgeGraphConfig    `yaml:"knowledge_graph"`
+	AdaptiveEngine     *types.AdaptiveEngineConfig    `yaml:"adaptive_engine"`
+	FeedbackLoop       *types.FeedbackLoopConfig      `yaml:"feedback_loop"`
 }
 
 // Additional types and structures would be defined here...

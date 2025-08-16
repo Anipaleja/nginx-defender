@@ -692,3 +692,25 @@ func NewRecommendation(rType, priority, title, description string) *Recommendati
 func GenerateID() string {
 	return fmt.Sprintf("%d", time.Now().UnixNano())
 }
+
+// Additional AI types
+type AttentionMechanism struct {
+	Type        string                 `json:"type"`
+	Heads       int                    `json:"heads"`
+	Dimensions  int                    `json:"dimensions"`
+	Weights     [][]float64            `json:"weights"`
+}
+
+type EmbeddingLayer struct {
+	VocabSize   int                    `json:"vocab_size"`
+	EmbedSize   int                    `json:"embed_size"`
+	Embeddings  [][]float64            `json:"embeddings"`
+	Trainable   bool                   `json:"trainable"`
+}
+
+type ModelAggregator struct {
+	Strategy    string                 `json:"strategy"`
+	Models      []string               `json:"models"`
+	Weights     []float64              `json:"weights"`
+	Config      map[string]interface{} `json:"config"`
+}

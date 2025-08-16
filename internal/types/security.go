@@ -140,7 +140,7 @@ type TLSPattern struct {
 	Confidence  float64  `json:"confidence"`
 }
 
-type FingerprintDatabase struct {
+type SecurityFingerprintDatabase struct {
 	Fingerprints map[string]*ClientFingerprint `json:"fingerprints"`
 	LastUpdated  time.Time                     `json:"last_updated"`
 	Version      string                        `json:"version"`
@@ -183,15 +183,6 @@ type UAPattern struct {
 	Confidence  float64 `json:"confidence"`
 }
 
-type SecurityAnomaly struct {
-	Type        string                 `json:"type"`
-	Description string                 `json:"description"`
-	Severity    string                 `json:"severity"`
-	Score       float64                `json:"score"`
-	Evidence    map[string]interface{} `json:"evidence"`
-	Timestamp   time.Time              `json:"timestamp"`
-}
-
 type SecurityBehaviorProfile struct {
 	UserID          string                 `json:"user_id"`
 	SessionID       string                 `json:"session_id"`
@@ -199,7 +190,7 @@ type SecurityBehaviorProfile struct {
 	NavigationFlow  *NavigationFlow        `json:"navigation_flow"`
 	TimingProfile   *TimingProfile         `json:"timing_profile"`
 	InteractionData *InteractionData       `json:"interaction_data"`
-	Anomalies       []*SecurityAnomaly     `json:"anomalies"`
+	Anomalies       []*BehaviorAnomaly     `json:"anomalies"`
 	Score           float64                `json:"score"`
 	Classification  string                 `json:"classification"`
 	LastUpdated     time.Time              `json:"last_updated"`
@@ -294,16 +285,6 @@ type ChallengeResponse struct {
 }
 
 // Model and processing types
-type ModelPerformance struct {
-	Accuracy  float64 `json:"accuracy"`
-	Precision float64 `json:"precision"`
-	Recall    float64 `json:"recall"`
-	F1Score   float64 `json:"f1_score"`
-	AUC       float64 `json:"auc"`
-	MAE       float64 `json:"mae"`
-	RMSE      float64 `json:"rmse"`
-}
-
 type ProcessingRule struct {
 	ID          string                 `json:"id"`
 	Name        string                 `json:"name"`

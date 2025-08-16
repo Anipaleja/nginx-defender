@@ -1170,3 +1170,153 @@ type ChartTemplate struct {
 	Layout      map[string]interface{}       `json:"layout"`
 	DefaultOptions map[string]interface{}    `json:"default_options"`
 }
+
+// Additional hunting types
+type ReportingEngine struct {
+	Reports     map[string]*Report           `json:"reports"`
+	Templates   map[string]*ReportTemplate   `json:"templates"`
+	Scheduler   *ReportScheduler             `json:"scheduler"`
+	Exporter    *ReportExporter              `json:"exporter"`
+}
+
+type ThreatHunt struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Hypothesis  string                       `json:"hypothesis"`
+	Status      string                       `json:"status"`
+	Priority    string                       `json:"priority"`
+	Hunter      string                       `json:"hunter"`
+	StartTime   time.Time                    `json:"start_time"`
+	EndTime     *time.Time                   `json:"end_time"`
+	Results     []string                     `json:"results"`
+}
+
+type ThreatInvestigation struct {
+	ID          string                       `json:"id"`
+	HuntID      string                       `json:"hunt_id"`
+	Findings    []string                     `json:"findings"`
+	Evidence    []string                     `json:"evidence"`
+	Status      string                       `json:"status"`
+	Analyst     string                       `json:"analyst"`
+	Timeline    []time.Time                  `json:"timeline"`
+}
+
+type ThreatHuntingStats struct {
+	ActiveHunts     int                      `json:"active_hunts"`
+	CompletedHunts  int                      `json:"completed_hunts"`
+	TotalFindings   int                      `json:"total_findings"`
+	AverageTime     time.Duration            `json:"average_time"`
+}
+
+type MLHuntingEngine struct {
+	Models      map[string]*HuntingModel     `json:"models"`
+	Predictors  []*ThreatPredictor           `json:"predictors"`
+	Analytics   *HuntingAnalytics            `json:"analytics"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type AIHuntingAssistant struct {
+	NLP         *NLPProcessor                `json:"nlp"`
+	Recommender *HuntRecommender             `json:"recommender"`
+	AutoHunter  *AutomatedHunter             `json:"auto_hunter"`
+	Knowledge   *HuntingKnowledge            `json:"knowledge"`
+}
+
+type HuntStrategy struct {
+	ID          string                       `json:"id"`
+	Name        string                       `json:"name"`
+	Type        string                       `json:"type"`
+	Steps       []string                     `json:"steps"`
+	Tools       []string                     `json:"tools"`
+	Tactics     []string                     `json:"tactics"`
+}
+
+type IOCScoring struct {
+	Algorithm   string                       `json:"algorithm"`
+	Weights     map[string]float64           `json:"weights"`
+	Thresholds  map[string]float64           `json:"thresholds"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type IOCLifecycle struct {
+	Created     time.Time                    `json:"created"`
+	LastSeen    time.Time                    `json:"last_seen"`
+	Expiry      *time.Time                   `json:"expiry"`
+	Status      string                       `json:"status"`
+	Updates     []time.Time                  `json:"updates"`
+}
+
+type CustomIndicatorEngine struct {
+	Indicators  map[string]*CustomIndicator  `json:"indicators"`
+	Rules       []*IndicatorRule             `json:"rules"`
+	Matcher     *IndicatorMatcher            `json:"matcher"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+// Dashboard types
+type DashboardConfig struct {
+	Layout      string                       `json:"layout"`
+	Widgets     []string                     `json:"widgets"`
+	Refresh     time.Duration                `json:"refresh"`
+	Theme       string                       `json:"theme"`
+	Options     map[string]interface{}       `json:"options"`
+}
+
+type UserPreferences struct {
+	UserID      string                       `json:"user_id"`
+	Dashboard   *DashboardConfig             `json:"dashboard"`
+	Alerts      map[string]bool              `json:"alerts"`
+	Filters     map[string]string            `json:"filters"`
+	Language    string                       `json:"language"`
+}
+
+type DataStream struct {
+	ID          string                       `json:"id"`
+	Type        string                       `json:"type"`
+	Source      string                       `json:"source"`
+	Format      string                       `json:"format"`
+	Active      bool                         `json:"active"`
+	Rate        float64                      `json:"rate"`
+}
+
+type DashboardStats struct {
+	ActiveUsers     int                      `json:"active_users"`
+	TotalWidgets    int                      `json:"total_widgets"`
+	DataSources     int                      `json:"data_sources"`
+	ResponseTime    time.Duration            `json:"response_time"`
+}
+
+type AIInsightsEngine struct {
+	Models      []*InsightModel              `json:"models"`
+	Generators  []*InsightGenerator          `json:"generators"`
+	Correlator  *InsightCorrelator           `json:"correlator"`
+	Presenter   *InsightPresenter            `json:"presenter"`
+}
+
+type PredictiveAnalytics struct {
+	Predictors  []*ThreatPredictor           `json:"predictors"`
+	Forecasts   []*ThreatForecast            `json:"forecasts"`
+	Models      []*PredictiveModel           `json:"models"`
+	Accuracy    float64                      `json:"accuracy"`
+}
+
+type AnomalyDetectionEngine struct {
+	Detectors   []*AnomalyDetector           `json:"detectors"`
+	Baselines   []*AnomalyBaseline           `json:"baselines"`
+	Alerts      []*AnomalyAlert              `json:"alerts"`
+	Config      map[string]interface{}       `json:"config"`
+}
+
+type CustomizationEngine struct {
+	Templates   map[string]*DashboardTemplate `json:"templates"`
+	Themes      map[string]*DashboardTheme   `json:"themes"`
+	Widgets     map[string]*CustomWidget     `json:"widgets"`
+	Builder     *DashboardBuilder            `json:"builder"`
+}
+
+type IntegrationHub struct {
+	Connectors  map[string]*DataConnector    `json:"connectors"`
+	APIs        map[string]*APIConnector     `json:"apis"`
+	Webhooks    []*WebhookConnector          `json:"webhooks"`
+	Config      map[string]interface{}       `json:"config"`
+}
