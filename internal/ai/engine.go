@@ -188,12 +188,38 @@ type EngineStats struct {
 type TransformerModel struct {
 	modelPath     string
 	config        *TransformerConfig
-	tokenizer     *types.Tokenizer
-	attention     *types.AttentionMechanism
-	embeddings    *types.EmbeddingLayer
+	tokenizer     *Tokenizer
+	attention     *AttentionMechanism
+	embeddings    *EmbeddingLayer
 	accuracy      float64
 	version       string
 	mutex         sync.RWMutex
+}
+
+// Missing AI component types
+type Tokenizer struct {
+	Vocab    map[string]int `json:"vocab"`
+	MaxLen   int            `json:"max_len"`
+	PadToken string         `json:"pad_token"`
+}
+
+type AttentionMechanism struct {
+	NumHeads   int                    `json:"num_heads"`
+	HeadSize   int                    `json:"head_size"`
+	Weights    map[string]interface{} `json:"weights"`
+	Dropout    float64                `json:"dropout"`
+}
+
+type EmbeddingLayer struct {
+	VocabSize int                    `json:"vocab_size"`
+	EmbedSize int                    `json:"embed_size"`
+	Weights   map[string]interface{} `json:"weights"`
+}
+
+type ModelAggregator struct {
+	Strategy string                 `json:"strategy"`
+	Weights  map[string]float64     `json:"weights"`
+	Config   map[string]interface{} `json:"config"`
 }
 
 // TransformerConfig contains transformer model configuration
@@ -289,7 +315,7 @@ type FederatedLearningClient struct {
 	globalModel    Model
 	updateInterval time.Duration
 	privacyEngine  *PrivacyEngine
-	aggregator     *types.ModelAggregator
+	aggregator     *ModelAggregator
 	logger         *logrus.Logger
 }
 
@@ -622,4 +648,204 @@ type ThreatFeedConfig struct {
 	Format         string        `yaml:"format"`
 	UpdateInterval time.Duration `yaml:"update_interval"`
 	Priority       int           `yaml:"priority"`
+}
+
+// Constructor functions for missing types
+func NewTransformerModel(config *ModelConfig) (*TransformerModel, error) {
+	if config == nil {
+		return nil, fmt.Errorf("transformer model config cannot be nil")
+	}
+	
+	return &TransformerModel{
+		modelPath: config.ModelPath,
+		config: &TransformerConfig{
+			VocabSize:    10000,
+			HiddenSize:   768,
+			NumLayers:    12,
+			NumHeads:     12,
+			MaxSeqLength: 512,
+			DropoutRate:  0.1,
+			LearningRate: 0.001,
+			BatchSize:    config.BatchSize,
+		},
+		accuracy: 0.0,
+		version:  "1.0.0",
+	}, nil
+}
+
+func NewBehaviorAnalyzer(config *ModelConfig, logger *logrus.Logger) (*BehaviorAnalyzer, error) {
+	if config == nil {
+		return nil, fmt.Errorf("behavior analyzer config cannot be nil")
+	}
+	
+	return &BehaviorAnalyzer{
+		graphNN: &GraphNeuralNetwork{
+			nodes:      make(map[string]*BehaviorNode),
+			edges:      make(map[string][]*BehaviorEdge),
+			embeddings: make(map[string][]float64),
+		},
+		logger: logger,
+	}, nil
+}
+
+// Implement Model interface for TransformerModel
+func (tm *TransformerModel) Predict(input *InputVector) (*Prediction, error) {
+	tm.mutex.RLock()
+	defer tm.mutex.RUnlock()
+	
+	// Placeholder implementation
+	return &Prediction{
+		ThreatScore:    0.5,
+		Confidence:     0.8,
+		ThreatTypes:    []string{"unknown"},
+		ModelVersion:   tm.version,
+		ProcessingTime: time.Millisecond * 10,
+	}, nil
+}
+
+func (tm *TransformerModel) Update(trainingData []*TrainingExample) error {
+	tm.mutex.Lock()
+	defer tm.mutex.Unlock()
+	
+	// Placeholder implementation
+	return nil
+}
+
+func (tm *TransformerModel) GetAccuracy() float64 {
+	tm.mutex.RLock()
+	defer tm.mutex.RUnlock()
+	return tm.accuracy
+}
+
+func (tm *TransformerModel) GetVersion() string {
+	tm.mutex.RLock()
+	defer tm.mutex.RUnlock()
+	return tm.version
+}
+
+// Missing constructor functions
+func NewThreatIntelligence(config interface{}, logger *logrus.Logger) (*ThreatIntelligence, error) {
+	return &ThreatIntelligence{
+		feeds:  make(map[string]*ThreatFeed),
+		logger: logger,
+	}, nil
+}
+
+func NewFederatedLearningClient(config interface{}, logger *logrus.Logger) (*FederatedLearningClient, error) {
+	return &FederatedLearningClient{
+		logger: logger,
+	}, nil
+}
+
+// Missing methods for BehaviorAnalyzer
+func (ba *BehaviorAnalyzer) AnalyzeBehavior(ctx context.Context, data *BehaviorData) (*BehaviorAnalysisResult, error) {
+	if data == nil {
+		return nil, fmt.Errorf("behavior data cannot be nil")
+	}
+	
+	// Placeholder implementation
+	return &BehaviorAnalysisResult{
+		AnomalyScore:       0.5,
+		BehaviorPatterns:   []BehaviorPattern{},
+		SessionRisk:        0.3,
+		DeviceRisk:         0.2,
+		TemporalAnomalies:  []TemporalAnomaly{},
+		GraphAnalysis:      &GraphAnalysisResult{},
+	}, nil
+}
+
+// Missing methods for ThreatIntelligence
+func (ti *ThreatIntelligence) CheckIndicators(ctx context.Context, input *InputVector) (*ThreatIntelligenceResult, error) {
+	if input == nil {
+		return nil, fmt.Errorf("input vector cannot be nil")
+	}
+	
+	// Placeholder implementation
+	return &ThreatIntelligenceResult{
+		MatchedIndicators: []MatchedIndicator{},
+		ReputationScore:   0.8,
+		RiskLevel:         "low",
+	Sources:          []string{},
+	Correlations:     []ThreatCorrelation{},
+}, nil
+}
+
+// Missing AI analysis types
+type ThresholdHistory struct {
+	Values       []float64     `json:"values"`
+	Timestamps   []time.Time   `json:"timestamps"`
+	AverageValue float64       `json:"average_value"`
+	Variance     float64       `json:"variance"`
+}
+
+type TemporalPattern struct {
+	ID           string        `json:"id"`
+	PatternType  string        `json:"pattern_type"`
+	Duration     time.Duration `json:"duration"`
+	Frequency    float64       `json:"frequency"`
+	Confidence   float64       `json:"confidence"`
+}
+
+type SpatialPattern struct {
+	ID           string               `json:"id"`
+	Coordinates  [][]float64          `json:"coordinates"`
+	ClusterID    string               `json:"cluster_id"`
+	Density      float64              `json:"density"`
+	Boundaries   map[string]float64   `json:"boundaries"`
+}
+
+type FrequencyAnalysis struct {
+	Frequencies  map[string]int       `json:"frequencies"`
+	TopFrequent  []string             `json:"top_frequent"`
+	Distribution map[string]float64   `json:"distribution"`
+	Entropy      float64              `json:"entropy"`
+}
+
+type MemorySlot struct {
+	ID           string               `json:"id"`
+	Type         string               `json:"type"`
+	Data         map[string]interface{} `json:"data"`
+	Timestamp    time.Time            `json:"timestamp"`
+	Importance   float64              `json:"importance"`
+}
+
+type SecurityEntity struct {
+	ID           string               `json:"id"`
+	Type         string               `json:"type"`
+	Name         string               `json:"name"`
+	Properties   map[string]interface{} `json:"properties"`
+	Relationships []string            `json:"relationships"`
+}
+
+type ReasoningStep struct {
+	ID           string               `json:"id"`
+	Type         string               `json:"type"`
+	Input        map[string]interface{} `json:"input"`
+	Output       map[string]interface{} `json:"output"`
+	Confidence   float64              `json:"confidence"`
+	Reasoning    string               `json:"reasoning"`
+}
+
+// Missing constructor functions
+func NewAutoencoder() *Autoencoder {
+	return &Autoencoder{
+		latentDimension:         100,
+		reconstructionThreshold: 0.1,
+		trainingHistory:         []*types.TrainingPoint{},
+		version:                 "1.0.0",
+	}
+}
+
+func NewSemanticAnalyzer() *SemanticAnalyzer {
+	return &SemanticAnalyzer{
+		nlpProcessor:     &types.NLPProcessor{},
+		codeAnalyzer:     &types.CodeAnalyzer{},
+		syntaxParser:     &types.SyntaxParser{},
+		intentClassifier: &types.IntentClassifier{},
+		embeddings:       &types.SemanticEmbeddings{},
+	}
+}// Missing methods for FederatedLearningClient
+func (flc *FederatedLearningClient) SyncModels(ctx context.Context) error {
+	// Placeholder implementation
+	return nil
 }

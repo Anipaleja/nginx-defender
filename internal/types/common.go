@@ -1,20 +1,20 @@
 package types
 
 import (
-	"time"
 	"context"
 	"fmt"
+	"time"
 )
 
 // Common types used across all packages
 
 // Data structures
 type DataSource struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	Type        string            `json:"type"`
-	Connection  string            `json:"connection"`
-	Credentials map[string]string `json:"credentials"`
+	ID          string                 `json:"id"`
+	Name        string                 `json:"name"`
+	Type        string                 `json:"type"`
+	Connection  string                 `json:"connection"`
+	Credentials map[string]string      `json:"credentials"`
 	Config      map[string]interface{} `json:"config"`
 }
 
@@ -58,10 +58,10 @@ type InputVector struct {
 
 // AI and ML types
 type NeuralNetwork struct {
-	Layers     []*Layer      `json:"layers"`
-	Weights    [][]float64   `json:"weights"`
-	Biases     []float64     `json:"biases"`
-	Activation string        `json:"activation"`
+	Layers     []*Layer       `json:"layers"`
+	Weights    [][]float64    `json:"weights"`
+	Biases     []float64      `json:"biases"`
+	Activation string         `json:"activation"`
 	Config     *NetworkConfig `json:"config"`
 }
 
@@ -73,11 +73,11 @@ type Layer struct {
 }
 
 type NetworkConfig struct {
-	LearningRate  float64 `json:"learning_rate"`
-	BatchSize     int     `json:"batch_size"`
-	Epochs        int     `json:"epochs"`
-	Optimizer     string  `json:"optimizer"`
-	LossFunction  string  `json:"loss_function"`
+	LearningRate float64 `json:"learning_rate"`
+	BatchSize    int     `json:"batch_size"`
+	Epochs       int     `json:"epochs"`
+	Optimizer    string  `json:"optimizer"`
+	LossFunction string  `json:"loss_function"`
 }
 
 type TrainingPoint struct {
@@ -96,10 +96,10 @@ type Model interface {
 }
 
 type MetaLearner struct {
-	BaseModels []Model       `json:"base_models"`
-	Strategy   string        `json:"strategy"`
-	Weights    []float64     `json:"weights"`
-	Config     *MetaConfig   `json:"config"`
+	BaseModels []Model     `json:"base_models"`
+	Strategy   string      `json:"strategy"`
+	Weights    []float64   `json:"weights"`
+	Config     *MetaConfig `json:"config"`
 }
 
 type MetaConfig struct {
@@ -110,10 +110,10 @@ type MetaConfig struct {
 
 // Semantic Analysis types
 type NLPProcessor struct {
-	Tokenizer   *Tokenizer   `json:"tokenizer"`
-	Parser      *Parser      `json:"parser"`
-	Embeddings  *Embeddings  `json:"embeddings"`
-	Language    string       `json:"language"`
+	Tokenizer  *Tokenizer  `json:"tokenizer"`
+	Parser     *Parser     `json:"parser"`
+	Embeddings *Embeddings `json:"embeddings"`
+	Language   string      `json:"language"`
 }
 
 type Tokenizer struct {
@@ -123,9 +123,9 @@ type Tokenizer struct {
 }
 
 type Parser struct {
-	Grammar    map[string]interface{} `json:"grammar"`
-	Rules      []string               `json:"rules"`
-	Engine     string                 `json:"engine"`
+	Grammar map[string]interface{} `json:"grammar"`
+	Rules   []string               `json:"rules"`
+	Engine  string                 `json:"engine"`
 }
 
 type Embeddings struct {
@@ -135,9 +135,9 @@ type Embeddings struct {
 }
 
 type CodeAnalyzer struct {
-	Languages []string           `json:"languages"`
-	Patterns  map[string]*Regex  `json:"patterns"`
-	AST       *ASTParser         `json:"ast"`
+	Languages []string          `json:"languages"`
+	Patterns  map[string]*Regex `json:"patterns"`
+	AST       *ASTParser        `json:"ast"`
 }
 
 type Regex struct {
@@ -163,38 +163,38 @@ type IntentClassifier struct {
 }
 
 type SemanticEmbeddings struct {
-	Model     string              `json:"model"`
+	Model     string               `json:"model"`
 	Vectors   map[string][]float64 `json:"vectors"`
-	Dimension int                 `json:"dimension"`
+	Dimension int                  `json:"dimension"`
 }
 
 // Memory Network types
 type ExternalMemory struct {
-	Memory     [][]float64 `json:"memory"`
-	Size       int         `json:"size"`
-	Dimension  int         `json:"dimension"`
-	Usage      []float64   `json:"usage"`
+	Memory    [][]float64 `json:"memory"`
+	Size      int         `json:"size"`
+	Dimension int         `json:"dimension"`
+	Usage     []float64   `json:"usage"`
 }
 
 type MemoryController struct {
 	InputProcessor  *NeuralNetwork `json:"input_processor"`
 	OutputProcessor *NeuralNetwork `json:"output_processor"`
-	State          []float64      `json:"state"`
+	State           []float64      `json:"state"`
 }
 
 type ReadHead struct {
-	Weights    []float64 `json:"weights"`
-	KeyVector  []float64 `json:"key_vector"`
-	Strength   float64   `json:"strength"`
-	Focus      float64   `json:"focus"`
+	Weights   []float64 `json:"weights"`
+	KeyVector []float64 `json:"key_vector"`
+	Strength  float64   `json:"strength"`
+	Focus     float64   `json:"focus"`
 }
 
 type WriteHead struct {
-	Weights      []float64 `json:"weights"`
-	KeyVector    []float64 `json:"key_vector"`
-	Strength     float64   `json:"strength"`
-	EraseVector  []float64 `json:"erase_vector"`
-	AddVector    []float64 `json:"add_vector"`
+	Weights     []float64 `json:"weights"`
+	KeyVector   []float64 `json:"key_vector"`
+	Strength    float64   `json:"strength"`
+	EraseVector []float64 `json:"erase_vector"`
+	AddVector   []float64 `json:"add_vector"`
 }
 
 type NetworkState struct {
@@ -205,18 +205,18 @@ type NetworkState struct {
 
 // Quantum Computing types
 type QuantumCircuit struct {
-	Qubits    int                    `json:"qubits"`
-	Gates     []*QuantumGate         `json:"gates"`
-	Circuit   [][]complex128         `json:"circuit"`
-	Prepared  bool                   `json:"prepared"`
+	Qubits   int            `json:"qubits"`
+	Gates    []*QuantumGate `json:"gates"`
+	Circuit  [][]complex128 `json:"circuit"`
+	Prepared bool           `json:"prepared"`
 }
 
 type QuantumGate struct {
-	Type     string      `json:"type"`
-	Target   []int       `json:"target"`
-	Control  []int       `json:"control"`
-	Angle    float64     `json:"angle"`
-	Matrix   [][]complex128 `json:"matrix"`
+	Type    string         `json:"type"`
+	Target  []int          `json:"target"`
+	Control []int          `json:"control"`
+	Angle   float64        `json:"angle"`
+	Matrix  [][]complex128 `json:"matrix"`
 }
 
 type QuantumState struct {
@@ -232,9 +232,9 @@ type QuantumEntanglement struct {
 }
 
 type QuantumSuperposition struct {
-	States      []*QuantumState `json:"states"`
-	Weights     []complex128    `json:"weights"`
-	Coherence   float64         `json:"coherence"`
+	States    []*QuantumState `json:"states"`
+	Weights   []complex128    `json:"weights"`
+	Coherence float64         `json:"coherence"`
 }
 
 type QuantumMeasurement struct {
@@ -245,25 +245,25 @@ type QuantumMeasurement struct {
 
 // Security types
 type SecurityEntity struct {
-	ID           string                 `json:"id"`
-	Type         string                 `json:"type"`
-	Name         string                 `json:"name"`
-	Description  string                 `json:"description"`
-	Attributes   map[string]interface{} `json:"attributes"`
-	Confidence   float64                `json:"confidence"`
-	Source       string                 `json:"source"`
-	CreatedAt    time.Time              `json:"created_at"`
-	UpdatedAt    time.Time              `json:"updated_at"`
+	ID          string                 `json:"id"`
+	Type        string                 `json:"type"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Attributes  map[string]interface{} `json:"attributes"`
+	Confidence  float64                `json:"confidence"`
+	Source      string                 `json:"source"`
+	CreatedAt   time.Time              `json:"created_at"`
+	UpdatedAt   time.Time              `json:"updated_at"`
 }
 
 type SecurityRelationship struct {
-	ID          string    `json:"id"`
-	Type        string    `json:"type"`
-	Source      string    `json:"source"`
-	Target      string    `json:"target"`
-	Weight      float64   `json:"weight"`
-	Confidence  float64   `json:"confidence"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID         string    `json:"id"`
+	Type       string    `json:"type"`
+	Source     string    `json:"source"`
+	Target     string    `json:"target"`
+	Weight     float64   `json:"weight"`
+	Confidence float64   `json:"confidence"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 type KnowledgeReasoning struct {
@@ -274,17 +274,17 @@ type KnowledgeReasoning struct {
 }
 
 type InferenceEngine struct {
-	Type       string                 `json:"type"`
-	Rules      map[string]interface{} `json:"rules"`
-	Algorithm  string                 `json:"algorithm"`
-	Config     map[string]interface{} `json:"config"`
+	Type      string                 `json:"type"`
+	Rules     map[string]interface{} `json:"rules"`
+	Algorithm string                 `json:"algorithm"`
+	Config    map[string]interface{} `json:"config"`
 }
 
 type CyberSecurityOntology struct {
-	Classes      map[string]*OntologyClass    `json:"classes"`
-	Properties   map[string]*OntologyProperty `json:"properties"`
-	Instances    map[string]*OntologyInstance `json:"instances"`
-	Namespaces   map[string]string            `json:"namespaces"`
+	Classes    map[string]*OntologyClass    `json:"classes"`
+	Properties map[string]*OntologyProperty `json:"properties"`
+	Instances  map[string]*OntologyInstance `json:"instances"`
+	Namespaces map[string]string            `json:"namespaces"`
 }
 
 type OntologyClass struct {
@@ -312,32 +312,32 @@ type OntologyInstance struct {
 
 // Stream Processing types
 type StreamProcessor struct {
-	BufferSize  int                    `json:"buffer_size"`
-	Processors  []*Processor           `json:"processors"`
-	Pipeline    *ProcessingPipeline    `json:"pipeline"`
-	Config      *StreamConfig          `json:"config"`
+	BufferSize int                 `json:"buffer_size"`
+	Processors []*Processor        `json:"processors"`
+	Pipeline   *ProcessingPipeline `json:"pipeline"`
+	Config     *StreamConfig       `json:"config"`
 }
 
 type Processor struct {
-	ID       string                 `json:"id"`
-	Type     string                 `json:"type"`
+	ID       string                        `json:"id"`
+	Type     string                        `json:"type"`
 	Function func(interface{}) interface{} `json:"-"`
-	Config   map[string]interface{} `json:"config"`
+	Config   map[string]interface{}        `json:"config"`
 }
 
 type ProcessingPipeline struct {
-	Stages    []*ProcessingStage     `json:"stages"`
-	Config    *PipelineConfig        `json:"config"`
-	Metrics   *PipelineMetrics       `json:"metrics"`
+	Stages  []*ProcessingStage `json:"stages"`
+	Config  *PipelineConfig    `json:"config"`
+	Metrics *PipelineMetrics   `json:"metrics"`
 }
 
 type ProcessingStage struct {
-	ID         string      `json:"id"`
-	Name       string      `json:"name"`
-	Processor  *Processor  `json:"processor"`
-	Input      chan interface{} `json:"-"`
-	Output     chan interface{} `json:"-"`
-	Config     *StageConfig `json:"config"`
+	ID        string           `json:"id"`
+	Name      string           `json:"name"`
+	Processor *Processor       `json:"processor"`
+	Input     chan interface{} `json:"-"`
+	Output    chan interface{} `json:"-"`
+	Config    *StageConfig     `json:"config"`
 }
 
 type PipelineConfig struct {
@@ -348,59 +348,59 @@ type PipelineConfig struct {
 }
 
 type PipelineMetrics struct {
-	Throughput   float64   `json:"throughput"`
-	Latency      time.Duration `json:"latency"`
-	ErrorRate    float64   `json:"error_rate"`
-	ProcessedCount uint64  `json:"processed_count"`
-	LastUpdate   time.Time `json:"last_update"`
+	Throughput     float64       `json:"throughput"`
+	Latency        time.Duration `json:"latency"`
+	ErrorRate      float64       `json:"error_rate"`
+	ProcessedCount uint64        `json:"processed_count"`
+	LastUpdate     time.Time     `json:"last_update"`
 }
 
 type StageConfig struct {
-	Parallel   bool          `json:"parallel"`
-	Workers    int           `json:"workers"`
-	Timeout    time.Duration `json:"timeout"`
-	Retries    int           `json:"retries"`
+	Parallel bool          `json:"parallel"`
+	Workers  int           `json:"workers"`
+	Timeout  time.Duration `json:"timeout"`
+	Retries  int           `json:"retries"`
 }
 
 type StreamConfig struct {
-	BatchSize    int           `json:"batch_size"`
+	BatchSize     int           `json:"batch_size"`
 	FlushInterval time.Duration `json:"flush_interval"`
-	Compression  bool          `json:"compression"`
-	Encryption   bool          `json:"encryption"`
+	Compression   bool          `json:"compression"`
+	Encryption    bool          `json:"encryption"`
 }
 
 type IncrementalModel struct {
-	BaseModel    Model         `json:"base_model"`
-	UpdateRate   float64       `json:"update_rate"`
-	BufferSize   int           `json:"buffer_size"`
-	LastUpdate   time.Time     `json:"last_update"`
+	BaseModel  Model     `json:"base_model"`
+	UpdateRate float64   `json:"update_rate"`
+	BufferSize int       `json:"buffer_size"`
+	LastUpdate time.Time `json:"last_update"`
 }
 
 type CircularBuffer struct {
-	Data     []interface{} `json:"data"`
-	Size     int           `json:"size"`
-	Head     int           `json:"head"`
-	Tail     int           `json:"tail"`
-	Full     bool          `json:"full"`
+	Data []interface{} `json:"data"`
+	Size int           `json:"size"`
+	Head int           `json:"head"`
+	Tail int           `json:"tail"`
+	Full bool          `json:"full"`
 }
 
 type ThresholdHistory struct {
-	History    []float64 `json:"history"`
-	MaxSize    int       `json:"max_size"`
-	Average    float64   `json:"average"`
-	Variance   float64   `json:"variance"`
-	Trend      string    `json:"trend"`
+	History  []float64 `json:"history"`
+	MaxSize  int       `json:"max_size"`
+	Average  float64   `json:"average"`
+	Variance float64   `json:"variance"`
+	Trend    string    `json:"trend"`
 }
 
 // Threat Intelligence types
 type ThreatActor struct {
-	Name          string    `json:"name"`
-	Aliases       []string  `json:"aliases"`
-	Attribution   string    `json:"attribution"`
-	Motivation    []string  `json:"motivation"`
-	Capabilities  []string  `json:"capabilities"`
-	FirstSeen     time.Time `json:"first_seen"`
-	LastActivity  time.Time `json:"last_activity"`
+	Name         string    `json:"name"`
+	Aliases      []string  `json:"aliases"`
+	Attribution  string    `json:"attribution"`
+	Motivation   []string  `json:"motivation"`
+	Capabilities []string  `json:"capabilities"`
+	FirstSeen    time.Time `json:"first_seen"`
+	LastActivity time.Time `json:"last_activity"`
 }
 
 type TTP struct {
@@ -414,68 +414,68 @@ type TTP struct {
 }
 
 type IOC struct {
-	Type        string    `json:"type"`
-	Value       string    `json:"value"`
-	Confidence  float64   `json:"confidence"`
-	FirstSeen   time.Time `json:"first_seen"`
-	LastSeen    time.Time `json:"last_seen"`
-	Source      string    `json:"source"`
-	Tags        []string  `json:"tags"`
+	Type       string    `json:"type"`
+	Value      string    `json:"value"`
+	Confidence float64   `json:"confidence"`
+	FirstSeen  time.Time `json:"first_seen"`
+	LastSeen   time.Time `json:"last_seen"`
+	Source     string    `json:"source"`
+	Tags       []string  `json:"tags"`
 }
 
 type GeopoliticalInfo struct {
-	OriginCountry    string   `json:"origin_country"`
-	TargetCountries  []string `json:"target_countries"`
+	OriginCountry        string   `json:"origin_country"`
+	TargetCountries      []string `json:"target_countries"`
 	GeopoliticalTensions []string `json:"geopolitical_tensions"`
-	EconomicFactors  []string `json:"economic_factors"`
-	CyberWarfare     bool     `json:"cyber_warfare"`
+	EconomicFactors      []string `json:"economic_factors"`
+	CyberWarfare         bool     `json:"cyber_warfare"`
 }
 
 type Recommendation struct {
-	ID          string                 `json:"id"`
-	Type        string                 `json:"type"`
-	Priority    string                 `json:"priority"`
-	Title       string                 `json:"title"`
-	Description string                 `json:"description"`
-	Actions     []string               `json:"actions"`
-	Rationale   string                 `json:"rationale"`
-	Evidence    []string               `json:"evidence"`
-	Confidence  float64                `json:"confidence"`
-	Impact      string                 `json:"impact"`
-	Effort      string                 `json:"effort"`
-	Timeline    string                 `json:"timeline"`
-	Resources   []string               `json:"resources"`
-	Dependencies []string              `json:"dependencies"`
-	Risks       []string               `json:"risks"`
-	Benefits    []string               `json:"benefits"`
-	Metadata    map[string]interface{} `json:"metadata"`
-	CreatedAt   time.Time              `json:"created_at"`
-	ExpiresAt   *time.Time             `json:"expires_at"`
+	ID           string                 `json:"id"`
+	Type         string                 `json:"type"`
+	Priority     string                 `json:"priority"`
+	Title        string                 `json:"title"`
+	Description  string                 `json:"description"`
+	Actions      []string               `json:"actions"`
+	Rationale    string                 `json:"rationale"`
+	Evidence     []string               `json:"evidence"`
+	Confidence   float64                `json:"confidence"`
+	Impact       string                 `json:"impact"`
+	Effort       string                 `json:"effort"`
+	Timeline     string                 `json:"timeline"`
+	Resources    []string               `json:"resources"`
+	Dependencies []string               `json:"dependencies"`
+	Risks        []string               `json:"risks"`
+	Benefits     []string               `json:"benefits"`
+	Metadata     map[string]interface{} `json:"metadata"`
+	CreatedAt    time.Time              `json:"created_at"`
+	ExpiresAt    *time.Time             `json:"expires_at"`
 }
 
 // Additional types for missing structures
 type TemporalPattern struct {
-	Pattern     string    `json:"pattern"`
-	Period      time.Duration `json:"period"`
-	Frequency   float64   `json:"frequency"`
-	Confidence  float64   `json:"confidence"`
-	StartTime   time.Time `json:"start_time"`
-	EndTime     time.Time `json:"end_time"`
+	Pattern    string        `json:"pattern"`
+	Period     time.Duration `json:"period"`
+	Frequency  float64       `json:"frequency"`
+	Confidence float64       `json:"confidence"`
+	StartTime  time.Time     `json:"start_time"`
+	EndTime    time.Time     `json:"end_time"`
 }
 
 type SpatialPattern struct {
-	Pattern    string              `json:"pattern"`
-	Locations  []*GeoLocation      `json:"locations"`
-	Radius     float64             `json:"radius"`
-	Confidence float64             `json:"confidence"`
+	Pattern    string                 `json:"pattern"`
+	Locations  []*GeoLocation         `json:"locations"`
+	Radius     float64                `json:"radius"`
+	Confidence float64                `json:"confidence"`
 	Metadata   map[string]interface{} `json:"metadata"`
 }
 
 type FrequencyAnalysis struct {
-	Frequencies map[float64]float64 `json:"frequencies"`
-	DominantFreq float64            `json:"dominant_frequency"`
-	PowerSpectrum []float64         `json:"power_spectrum"`
-	Bandwidth    float64            `json:"bandwidth"`
+	Frequencies   map[float64]float64 `json:"frequencies"`
+	DominantFreq  float64             `json:"dominant_frequency"`
+	PowerSpectrum []float64           `json:"power_spectrum"`
+	Bandwidth     float64             `json:"bandwidth"`
 }
 
 type MemorySlot struct {
@@ -560,18 +560,18 @@ type ServerConfig struct {
 }
 
 type TLSConfig struct {
-	Enabled  bool   `yaml:"enabled"`
-	CertFile string `yaml:"cert_file"`
-	KeyFile  string `yaml:"key_file"`
+	Enabled    bool   `yaml:"enabled"`
+	CertFile   string `yaml:"cert_file"`
+	KeyFile    string `yaml:"key_file"`
 	MinVersion string `yaml:"min_version"`
 	MaxVersion string `yaml:"max_version"`
 }
 
 type SecurityConfig struct {
-	Authentication *AuthConfig      `yaml:"authentication"`
-	Authorization  *AuthzConfig     `yaml:"authorization"`
+	Authentication *AuthConfig       `yaml:"authentication"`
+	Authorization  *AuthzConfig      `yaml:"authorization"`
 	Encryption     *EncryptionConfig `yaml:"encryption"`
-	RateLimit      *RateLimitConfig `yaml:"rate_limit"`
+	RateLimit      *RateLimitConfig  `yaml:"rate_limit"`
 }
 
 type AuthConfig struct {
@@ -608,10 +608,10 @@ type AIConfig struct {
 }
 
 type ModelConfig struct {
-	Type       string            `yaml:"type"`
-	Path       string            `yaml:"path"`
+	Type       string                 `yaml:"type"`
+	Path       string                 `yaml:"path"`
 	Parameters map[string]interface{} `yaml:"parameters"`
-	Enabled    bool              `yaml:"enabled"`
+	Enabled    bool                   `yaml:"enabled"`
 }
 
 type DatabaseConfig struct {
@@ -639,8 +639,8 @@ type LoggingConfig struct {
 
 // Error types
 type SecurityError struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
+	Code    string                 `json:"code"`
+	Message string                 `json:"message"`
 	Details map[string]interface{} `json:"details"`
 }
 
@@ -649,9 +649,9 @@ func (e *SecurityError) Error() string {
 }
 
 type AIError struct {
-	Model   string `json:"model"`
-	Phase   string `json:"phase"`
-	Message string `json:"message"`
+	Model   string                 `json:"model"`
+	Phase   string                 `json:"phase"`
+	Message string                 `json:"message"`
 	Details map[string]interface{} `json:"details"`
 }
 
@@ -695,22 +695,22 @@ func GenerateID() string {
 
 // Additional AI types
 type AttentionMechanism struct {
-	Type        string                 `json:"type"`
-	Heads       int                    `json:"heads"`
-	Dimensions  int                    `json:"dimensions"`
-	Weights     [][]float64            `json:"weights"`
+	Type       string      `json:"type"`
+	Heads      int         `json:"heads"`
+	Dimensions int         `json:"dimensions"`
+	Weights    [][]float64 `json:"weights"`
 }
 
 type EmbeddingLayer struct {
-	VocabSize   int                    `json:"vocab_size"`
-	EmbedSize   int                    `json:"embed_size"`
-	Embeddings  [][]float64            `json:"embeddings"`
-	Trainable   bool                   `json:"trainable"`
+	VocabSize  int         `json:"vocab_size"`
+	EmbedSize  int         `json:"embed_size"`
+	Embeddings [][]float64 `json:"embeddings"`
+	Trainable  bool        `json:"trainable"`
 }
 
 type ModelAggregator struct {
-	Strategy    string                 `json:"strategy"`
-	Models      []string               `json:"models"`
-	Weights     []float64              `json:"weights"`
-	Config      map[string]interface{} `json:"config"`
+	Strategy string                 `json:"strategy"`
+	Models   []string               `json:"models"`
+	Weights  []float64              `json:"weights"`
+	Config   map[string]interface{} `json:"config"`
 }
