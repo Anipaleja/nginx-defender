@@ -1054,43 +1054,43 @@ type RealTimeEngine struct {
 }
 
 type AnalyticsEngine struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Analyzers  []string               `json:"analyzers"`
-	Models     []string               `json:"models"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"`
+	Analyzers []string               `json:"analyzers"`
+	Models    []string               `json:"models"`
+	Config    map[string]interface{} `json:"config"`
+	Status    string                 `json:"status"`
+	Created   time.Time              `json:"created"`
 }
 
 type AlertManager struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Alerts     []string               `json:"alerts"`
-	Rules      []string               `json:"rules"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Alerts  []string               `json:"alerts"`
+	Rules   []string               `json:"rules"`
+	Config  map[string]interface{} `json:"config"`
+	Status  string                 `json:"status"`
+	Created time.Time              `json:"created"`
 }
 
 type IncidentManager struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Incidents  []string               `json:"incidents"`
-	Workflows  []string               `json:"workflows"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"`
+	Incidents []string               `json:"incidents"`
+	Workflows []string               `json:"workflows"`
+	Config    map[string]interface{} `json:"config"`
+	Status    string                 `json:"status"`
+	Created   time.Time              `json:"created"`
 }
 
 type ThreatIntelligencePanel struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Feeds      []string               `json:"feeds"`
-	Sources    []string               `json:"sources"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Feeds   []string               `json:"feeds"`
+	Sources []string               `json:"sources"`
+	Config  map[string]interface{} `json:"config"`
+	Status  string                 `json:"status"`
+	Created time.Time              `json:"created"`
 }
 
 type ComplianceMonitor struct {
@@ -1104,112 +1104,183 @@ type ComplianceMonitor struct {
 }
 
 type CollaborationHub struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Users      []string               `json:"users"`
-	Teams      []string               `json:"teams"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Users   []string               `json:"users"`
+	Teams   []string               `json:"teams"`
+	Config  map[string]interface{} `json:"config"`
+	Status  string                 `json:"status"`
+	Created time.Time              `json:"created"`
 }
 
 type SecurityMetrics struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Metrics    []string               `json:"metrics"`
-	KPIs       []string               `json:"kpis"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Metrics []string               `json:"metrics"`
+	KPIs    []string               `json:"kpis"`
+	Config  map[string]interface{} `json:"config"`
+	Status  string                 `json:"status"`
+	Created time.Time              `json:"created"`
 }
 
 type KPICalculator struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	KPIs       []string               `json:"kpis"`
-	Formulas   []string               `json:"formulas"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID       string                 `json:"id"`
+	Type     string                 `json:"type"`
+	KPIs     []string               `json:"kpis"`
+	Formulas []string               `json:"formulas"`
+	Config   map[string]interface{} `json:"config"`
+	Status   string                 `json:"status"`
+	Created  time.Time              `json:"created"`
 }
 
 type MapRenderer struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Maps       []string               `json:"maps"`
-	Layers     []string               `json:"layers"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Maps    []string               `json:"maps"`
+	Layers  []string               `json:"layers"`
+	Config  map[string]interface{} `json:"config"`
+	Status  string                 `json:"status"`
+	Created time.Time              `json:"created"`
 }
 
 // Missing dashboard rendering types
 type GraphRenderer struct {
-	Enabled         bool                  `yaml:"enabled"`
-	Type            string                `yaml:"type"`
-	Layout          string                `yaml:"layout"`
-	InteractionMode string                `yaml:"interaction_mode"`
+	Enabled         bool   `yaml:"enabled"`
+	Type            string `yaml:"type"`
+	Layout          string `yaml:"layout"`
+	InteractionMode string `yaml:"interaction_mode"`
 }
 
 type HeatmapRenderer struct {
-	Enabled         bool                  `yaml:"enabled"`
-	ColorScheme     string                `yaml:"color_scheme"`
-	Resolution      string                `yaml:"resolution"`
-	Aggregation     string                `yaml:"aggregation"`
+	Enabled     bool   `yaml:"enabled"`
+	ColorScheme string `yaml:"color_scheme"`
+	Resolution  string `yaml:"resolution"`
+	Aggregation string `yaml:"aggregation"`
 }
 
 type TimelineRenderer struct {
-	Enabled         bool                  `yaml:"enabled"`
-	ZoomLevel       string                `yaml:"zoom_level"`
-	TimeRange       string                `yaml:"time_range"`
-	EventTypes      []string              `yaml:"event_types"`
+	Enabled    bool     `yaml:"enabled"`
+	ZoomLevel  string   `yaml:"zoom_level"`
+	TimeRange  string   `yaml:"time_range"`
+	EventTypes []string `yaml:"event_types"`
 }
 
 type NetworkRenderer struct {
-	Enabled         bool                  `yaml:"enabled"`
-	Layout          string                `yaml:"layout"`
-	NodeStyle       string                `yaml:"node_style"`
-	EdgeStyle       string                `yaml:"edge_style"`
+	Enabled   bool   `yaml:"enabled"`
+	Layout    string `yaml:"layout"`
+	NodeStyle string `yaml:"node_style"`
+	EdgeStyle string `yaml:"edge_style"`
 }
 
 type FlowRenderer struct {
-	Enabled         bool                  `yaml:"enabled"`
-	Direction       string                `yaml:"direction"`
-	AnimationSpeed  string                `yaml:"animation_speed"`
-	FlowTypes       []string              `yaml:"flow_types"`
+	Enabled        bool     `yaml:"enabled"`
+	Direction      string   `yaml:"direction"`
+	AnimationSpeed string   `yaml:"animation_speed"`
+	FlowTypes      []string `yaml:"flow_types"`
 }
 
 type DashboardRenderer struct {
-	Enabled         bool                  `yaml:"enabled"`
-	Theme           string                `yaml:"theme"`
-	Layout          string                `yaml:"layout"`
-	RefreshRate     time.Duration         `yaml:"refresh_rate"`
+	Enabled     bool          `yaml:"enabled"`
+	Theme       string        `yaml:"theme"`
+	Layout      string        `yaml:"layout"`
+	RefreshRate time.Duration `yaml:"refresh_rate"`
 }
 
 type ReportRenderer struct {
-	Enabled         bool                  `yaml:"enabled"`
-	Format          string                `yaml:"format"`
-	Template        string                `yaml:"template"`
-	OutputPath      string                `yaml:"output_path"`
+	Enabled    bool   `yaml:"enabled"`
+	Format     string `yaml:"format"`
+	Template   string `yaml:"template"`
+	OutputPath string `yaml:"output_path"`
 }
 
 type InteractivityEngine struct {
-	Enabled         bool                  `yaml:"enabled"`
-	Features        []string              `yaml:"features"`
-	EventHandlers   map[string]string     `yaml:"event_handlers"`
-	ResponseTime    time.Duration         `yaml:"response_time"`
+	Enabled       bool              `yaml:"enabled"`
+	Features      []string          `yaml:"features"`
+	EventHandlers map[string]string `yaml:"event_handlers"`
+	ResponseTime  time.Duration     `yaml:"response_time"`
 }
 
 type AnimationEngine struct {
-	Enabled         bool                  `yaml:"enabled"`
-	FrameRate       int                   `yaml:"frame_rate"`
-	Transitions     []string              `yaml:"transitions"`
-	Performance     string                `yaml:"performance"`
+	Enabled     bool     `yaml:"enabled"`
+	FrameRate   int      `yaml:"frame_rate"`
+	Transitions []string `yaml:"transitions"`
+	Performance string   `yaml:"performance"`
 }
 
 type ResponsiveEngine struct {
-	Enabled         bool                  `yaml:"enabled"`
-	Breakpoints     map[string]int        `yaml:"breakpoints"`
-	AdaptiveMode    string                `yaml:"adaptive_mode"`
-	MobileOptimized bool                  `yaml:"mobile_optimized"`
+	Enabled         bool           `yaml:"enabled"`
+	Breakpoints     map[string]int `yaml:"breakpoints"`
+	AdaptiveMode    string         `yaml:"adaptive_mode"`
+	MobileOptimized bool           `yaml:"mobile_optimized"`
+}
+
+// Missing alert management types
+type AlertProcessor struct {
+	Enabled         bool                   `yaml:"enabled"`
+	ProcessingRules []string               `yaml:"processing_rules"`
+	FilterCriteria  map[string]interface{} `yaml:"filter_criteria"`
+	OutputChannels  []string               `yaml:"output_channels"`
+}
+
+type AlertPrioritizer struct {
+	Enabled         bool               `yaml:"enabled"`
+	PriorityRules   []string           `yaml:"priority_rules"`
+	SeverityMapping map[string]int     `yaml:"severity_mapping"`
+	BusinessImpact  map[string]float64 `yaml:"business_impact"`
+}
+
+type AlertCorrelator struct {
+	Enabled             bool          `yaml:"enabled"`
+	CorrelationRules    []string      `yaml:"correlation_rules"`
+	TimeWindow          time.Duration `yaml:"time_window"`
+	SimilarityThreshold float64       `yaml:"similarity_threshold"`
+}
+
+type AlertDeduplicator struct {
+	Enabled        bool          `yaml:"enabled"`
+	DedupeWindow   time.Duration `yaml:"dedupe_window"`
+	MatchingFields []string      `yaml:"matching_fields"`
+	HashAlgorithm  string        `yaml:"hash_algorithm"`
+}
+
+type EscalationEngine struct {
+	Enabled         bool                     `yaml:"enabled"`
+	EscalationRules []string                 `yaml:"escalation_rules"`
+	TimeThresholds  map[string]time.Duration `yaml:"time_thresholds"`
+	NotifyChain     []string                 `yaml:"notify_chain"`
+}
+
+type NotificationEngine struct {
+	Enabled      bool              `yaml:"enabled"`
+	Channels     []string          `yaml:"channels"`
+	Templates    map[string]string `yaml:"templates"`
+	RateLimiting bool              `yaml:"rate_limiting"`
+}
+
+type AlertAcknowledger struct {
+	Enabled         bool          `yaml:"enabled"`
+	AutoAck         bool          `yaml:"auto_ack"`
+	AckTimeout      time.Duration `yaml:"ack_timeout"`
+	RequireComments bool          `yaml:"require_comments"`
+}
+
+type AlertResolver struct {
+	Enabled         bool     `yaml:"enabled"`
+	AutoResolve     bool     `yaml:"auto_resolve"`
+	ResolutionRules []string `yaml:"resolution_rules"`
+	FollowUpActions []string `yaml:"followup_actions"`
+}
+
+type FalsePositiveDetector struct {
+	Enabled             bool    `yaml:"enabled"`
+	MLModel             string  `yaml:"ml_model"`
+	ConfidenceThreshold float64 `yaml:"confidence_threshold"`
+	LearningMode        string  `yaml:"learning_mode"`
+}
+
+type AlertEnrichment struct {
+	Enabled         bool          `yaml:"enabled"`
+	DataSources     []string      `yaml:"data_sources"`
+	EnrichmentRules []string      `yaml:"enrichment_rules"`
+	CacheTimeout    time.Duration `yaml:"cache_timeout"`
 }

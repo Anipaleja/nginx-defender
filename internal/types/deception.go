@@ -1992,54 +1992,54 @@ type EmailTrapAnalytics struct {
 
 // Advanced honeypot and deception types
 type DeceptionEngine struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Strategy   string                 `json:"strategy"`
-	Targets    []string               `json:"targets"`
-	Rules      []string               `json:"rules"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID       string                 `json:"id"`
+	Type     string                 `json:"type"`
+	Strategy string                 `json:"strategy"`
+	Targets  []string               `json:"targets"`
+	Rules    []string               `json:"rules"`
+	Config   map[string]interface{} `json:"config"`
+	Status   string                 `json:"status"`
+	Created  time.Time              `json:"created"`
 }
 
 type HoneypotOrchestrator struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Honeypots  []string               `json:"honeypots"`
-	Strategy   string                 `json:"strategy"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"`
+	Honeypots []string               `json:"honeypots"`
+	Strategy  string                 `json:"strategy"`
+	Config    map[string]interface{} `json:"config"`
+	Status    string                 `json:"status"`
+	Created   time.Time              `json:"created"`
 }
 
 type TrapManager struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Traps      []string               `json:"traps"`
-	Rules      []string               `json:"rules"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Traps   []string               `json:"traps"`
+	Rules   []string               `json:"rules"`
+	Config  map[string]interface{} `json:"config"`
+	Status  string                 `json:"status"`
+	Created time.Time              `json:"created"`
 }
 
 type BaitSystem struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Baits      []string               `json:"baits"`
-	Targets    []string               `json:"targets"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Baits   []string               `json:"baits"`
+	Targets []string               `json:"targets"`
+	Config  map[string]interface{} `json:"config"`
+	Status  string                 `json:"status"`
+	Created time.Time              `json:"created"`
 }
 
 type BehaviorProfiler struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Profiles   []string               `json:"profiles"`
-	Rules      []string               `json:"rules"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID       string                 `json:"id"`
+	Type     string                 `json:"type"`
+	Profiles []string               `json:"profiles"`
+	Rules    []string               `json:"rules"`
+	Config   map[string]interface{} `json:"config"`
+	Status   string                 `json:"status"`
+	Created  time.Time              `json:"created"`
 }
 
 type ThreatIntelligenceCollector struct {
@@ -2053,121 +2053,196 @@ type ThreatIntelligenceCollector struct {
 }
 
 type AdaptiveDecoySystem struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Decoys     []string               `json:"decoys"`
-	Algorithm  string                 `json:"algorithm"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"`
+	Decoys    []string               `json:"decoys"`
+	Algorithm string                 `json:"algorithm"`
+	Config    map[string]interface{} `json:"config"`
+	Status    string                 `json:"status"`
+	Created   time.Time              `json:"created"`
 }
 
 type SocialEngineeringTraps struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Traps      []string               `json:"traps"`
-	Scenarios  []string               `json:"scenarios"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"`
+	Traps     []string               `json:"traps"`
+	Scenarios []string               `json:"scenarios"`
+	Config    map[string]interface{} `json:"config"`
+	Status    string                 `json:"status"`
+	Created   time.Time              `json:"created"`
 }
 
 type NetworkDeceptionEngine struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Networks   []string               `json:"networks"`
-	Services   []string               `json:"services"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID       string                 `json:"id"`
+	Type     string                 `json:"type"`
+	Networks []string               `json:"networks"`
+	Services []string               `json:"services"`
+	Config   map[string]interface{} `json:"config"`
+	Status   string                 `json:"status"`
+	Created  time.Time              `json:"created"`
 }
 
 type DataDeceptionEngine struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Data       []string               `json:"data"`
-	Files      []string               `json:"files"`
-	Config     map[string]interface{} `json:"config"`
-	Status     string                 `json:"status"`
-	Created    time.Time              `json:"created"`
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Data    []string               `json:"data"`
+	Files   []string               `json:"files"`
+	Config  map[string]interface{} `json:"config"`
+	Status  string                 `json:"status"`
+	Created time.Time              `json:"created"`
 }
 
 // Missing honeypot types
 type CredentialTrapSystem struct {
-	Enabled         bool                  `yaml:"enabled"`
-	TrapTypes       []string              `yaml:"trap_types"`
-	DecoyCredentials map[string]string    `yaml:"decoy_credentials"`
-	AlertThreshold  int                   `yaml:"alert_threshold"`
+	Enabled          bool              `yaml:"enabled"`
+	TrapTypes        []string          `yaml:"trap_types"`
+	DecoyCredentials map[string]string `yaml:"decoy_credentials"`
+	AlertThreshold   int               `yaml:"alert_threshold"`
 }
 
 type FileSystemDecoyEngine struct {
-	Enabled         bool                  `yaml:"enabled"`
-	DecoyFiles      []string              `yaml:"decoy_files"`
-	HoneypotDirs    []string              `yaml:"honeypot_dirs"`
-	MonitoringLevel string                `yaml:"monitoring_level"`
+	Enabled         bool     `yaml:"enabled"`
+	DecoyFiles      []string `yaml:"decoy_files"`
+	HoneypotDirs    []string `yaml:"honeypot_dirs"`
+	MonitoringLevel string   `yaml:"monitoring_level"`
 }
 
 type DatabaseDecoyEngine struct {
-	Enabled         bool                  `yaml:"enabled"`
-	FakeSchemas     []string              `yaml:"fake_schemas"`
-	TrapQueries     []string              `yaml:"trap_queries"`
-	ResponseDelay   time.Duration         `yaml:"response_delay"`
+	Enabled       bool          `yaml:"enabled"`
+	FakeSchemas   []string      `yaml:"fake_schemas"`
+	TrapQueries   []string      `yaml:"trap_queries"`
+	ResponseDelay time.Duration `yaml:"response_delay"`
 }
 
 type APIDecoyEngine struct {
-	Enabled         bool                  `yaml:"enabled"`
-	FakeEndpoints   []string              `yaml:"fake_endpoints"`
-	ResponseTemplates map[string]string   `yaml:"response_templates"`
-	RateLimiting    bool                  `yaml:"rate_limiting"`
+	Enabled           bool              `yaml:"enabled"`
+	FakeEndpoints     []string          `yaml:"fake_endpoints"`
+	ResponseTemplates map[string]string `yaml:"response_templates"`
+	RateLimiting      bool              `yaml:"rate_limiting"`
 }
 
 type IoTDecoyEngine struct {
-	Enabled         bool                  `yaml:"enabled"`
-	DeviceTypes     []string              `yaml:"device_types"`
-	Protocols       []string              `yaml:"protocols"`
-	VulnerabilityDB []string              `yaml:"vulnerability_db"`
+	Enabled         bool     `yaml:"enabled"`
+	DeviceTypes     []string `yaml:"device_types"`
+	Protocols       []string `yaml:"protocols"`
+	VulnerabilityDB []string `yaml:"vulnerability_db"`
 }
 
 type CloudDecoyEngine struct {
-	Enabled         bool                  `yaml:"enabled"`
-	ServiceTypes    []string              `yaml:"service_types"`
-	FakeResources   []string              `yaml:"fake_resources"`
-	MetricsEnabled  bool                  `yaml:"metrics_enabled"`
+	Enabled        bool     `yaml:"enabled"`
+	ServiceTypes   []string `yaml:"service_types"`
+	FakeResources  []string `yaml:"fake_resources"`
+	MetricsEnabled bool     `yaml:"metrics_enabled"`
 }
 
 type Honeypot struct {
-	ID              string                `json:"id"`
-	Name            string                `json:"name"`
-	Type            string                `json:"type"`
-	Status          string                `json:"status"`
-	Configuration   map[string]interface{} `json:"configuration"`
-	LastActivity    time.Time             `json:"last_activity"`
+	ID            string                 `json:"id"`
+	Name          string                 `json:"name"`
+	Type          string                 `json:"type"`
+	Status        string                 `json:"status"`
+	Configuration map[string]interface{} `json:"configuration"`
+	LastActivity  time.Time              `json:"last_activity"`
 }
 
 type Trap struct {
-	ID              string                `json:"id"`
-	Name            string                `json:"name"`
-	Type            string                `json:"type"`
-	Target          string                `json:"target"`
-	Triggered       bool                  `json:"triggered"`
-	TriggerCount    int                   `json:"trigger_count"`
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	Target       string `json:"target"`
+	Triggered    bool   `json:"triggered"`
+	TriggerCount int    `json:"trigger_count"`
 }
 
 type Decoy struct {
-	ID              string                `json:"id"`
-	Name            string                `json:"name"`
-	Type            string                `json:"type"`
-	Data            map[string]interface{} `json:"data"`
-	Interactions    int                   `json:"interactions"`
-	LastAccessed    time.Time             `json:"last_accessed"`
+	ID           string                 `json:"id"`
+	Name         string                 `json:"name"`
+	Type         string                 `json:"type"`
+	Data         map[string]interface{} `json:"data"`
+	Interactions int                    `json:"interactions"`
+	LastAccessed time.Time              `json:"last_accessed"`
 }
 
 type AttackSession struct {
-	ID              string                `json:"id"`
-	SourceIP        string                `json:"source_ip"`
-	TargetHoneypot  string                `json:"target_honeypot"`
-	StartTime       time.Time             `json:"start_time"`
-	EndTime         time.Time             `json:"end_time"`
-	Actions         []string              `json:"actions"`
-	Severity        string                `json:"severity"`
+	ID             string    `json:"id"`
+	SourceIP       string    `json:"source_ip"`
+	TargetHoneypot string    `json:"target_honeypot"`
+	StartTime      time.Time `json:"start_time"`
+	EndTime        time.Time `json:"end_time"`
+	Actions        []string  `json:"actions"`
+	Severity       string    `json:"severity"`
+}
+
+// Missing honeypot analytics and AI types
+type HoneypotInteraction struct {
+	ID              string                 `json:"id"`
+	HoneypotID      string                 `json:"honeypot_id"`
+	SourceIP        string                 `json:"source_ip"`
+	InteractionType string                 `json:"interaction_type"`
+	Timestamp       time.Time              `json:"timestamp"`
+	Duration        time.Duration          `json:"duration"`
+	Data            map[string]interface{} `json:"data"`
+}
+
+type AttackPatternAnalyzer struct {
+	Enabled        bool          `yaml:"enabled"`
+	PatternDB      []string      `yaml:"pattern_db"`
+	MLModel        string        `yaml:"ml_model"`
+	UpdateInterval time.Duration `yaml:"update_interval"`
+}
+
+type HoneypotStats struct {
+	TotalInteractions int            `json:"total_interactions"`
+	UniqueAttackers   int            `json:"unique_attackers"`
+	AttackTypes       map[string]int `json:"attack_types"`
+	GeographicData    map[string]int `json:"geographic_data"`
+	LastUpdated       time.Time      `json:"last_updated"`
+}
+
+type HoneypotAIEngine struct {
+	Enabled            bool    `yaml:"enabled"`
+	ModelType          string  `yaml:"model_type"`
+	LearningMode       string  `yaml:"learning_mode"`
+	PredictionAccuracy float64 `yaml:"prediction_accuracy"`
+}
+
+type AdaptiveLearningSystem struct {
+	Enabled         bool          `yaml:"enabled"`
+	LearningRate    float64       `yaml:"learning_rate"`
+	AdaptationSpeed string        `yaml:"adaptation_speed"`
+	ModelUpdateFreq time.Duration `yaml:"model_update_freq"`
+}
+
+type PredictiveDeceptionEngine struct {
+	Enabled             bool    `yaml:"enabled"`
+	PredictionModel     string  `yaml:"prediction_model"`
+	ConfidenceThreshold float64 `yaml:"confidence_threshold"`
+	ResponseStrategy    string  `yaml:"response_strategy"`
+}
+
+type FileTrapManager struct {
+	Enabled        bool     `yaml:"enabled"`
+	TrapTypes      []string `yaml:"trap_types"`
+	MonitoredPaths []string `yaml:"monitored_paths"`
+	AlertThreshold int      `yaml:"alert_threshold"`
+}
+
+type AuthenticationTrapManager struct {
+	Enabled       bool              `yaml:"enabled"`
+	AuthMethods   []string          `yaml:"auth_methods"`
+	HoneyCreds    map[string]string `yaml:"honey_creds"`
+	LockoutPolicy string            `yaml:"lockout_policy"`
+}
+
+type APITrapManager struct {
+	Enabled        bool                     `yaml:"enabled"`
+	TrapEndpoints  []string                 `yaml:"trap_endpoints"`
+	ResponseDelays map[string]time.Duration `yaml:"response_delays"`
+	LoggingLevel   string                   `yaml:"logging_level"`
+}
+
+type DatabaseTrapManager struct {
+	Enabled         bool     `yaml:"enabled"`
+	TrapTables      []string `yaml:"trap_tables"`
+	QueryMonitoring bool     `yaml:"query_monitoring"`
+	AlertOnAccess   bool     `yaml:"alert_on_access"`
 }

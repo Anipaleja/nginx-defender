@@ -4417,31 +4417,33 @@ type HypothesisGeneratorConfig struct {
 }
 
 // Missing method for HypothesisGenerator
-func (hg *HypothesisGenerator) GenerateHypothesis(data map[string]interface{}) (*Hypothesis, error) {
-	if data == nil {
-		return nil, fmt.Errorf("data cannot be nil")
+func (hg *HypothesisGenerator) GenerateHypothesis(ctx context.Context, request interface{}) (*ThreatHypothesis, error) {
+	if request == nil {
+		return nil, fmt.Errorf("request cannot be nil")
 	}
-	
-	// Placeholder implementation
-	return &Hypothesis{
-		ID:          "hyp_" + time.Now().Format("20060102150405"),
-		Title:       "Generated Hypothesis",
-		Description: "Auto-generated hypothesis based on data analysis",
-		Priority:    "medium",
-		Status:      "draft",
-		Created:     time.Now(),
-	}, nil
-}
 
-// Missing hypothesis type
+	// Placeholder implementation
+	return &ThreatHypothesis{
+		ID:         "hyp_" + time.Now().Format("20060102150405"),
+		Text:       "Generated threat hypothesis based on data analysis",
+		Category:   "automated",
+		Confidence: 0.7,
+		Evidence:   []string{},
+		Status:     "draft",
+		Priority:   "medium",
+		Hunter:     "ai_system",
+		Created:    time.Now(),
+		Updated:    time.Now(),
+	}, nil
+} // Missing hypothesis type
 type Hypothesis struct {
-	ID          string                 `json:"id"`
-	Title       string                 `json:"title"`
-	Description string                 `json:"description"`
-	Priority    string                 `json:"priority"`
-	Status      string                 `json:"status"`
-	Evidence    []string               `json:"evidence"`
-	Confidence  float64                `json:"confidence"`
-	Created     time.Time              `json:"created"`
-	Updated     time.Time              `json:"updated"`
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Priority    string    `json:"priority"`
+	Status      string    `json:"status"`
+	Evidence    []string  `json:"evidence"`
+	Confidence  float64   `json:"confidence"`
+	Created     time.Time `json:"created"`
+	Updated     time.Time `json:"updated"`
 }

@@ -478,14 +478,14 @@ type HealthAlert struct {
 
 // Bot protection and challenge types
 type FeedbackLoop struct {
-	ID          string                 `json:"id"`
-	Type        string                 `json:"type"`
-	Source      string                 `json:"source"`
-	Target      string                 `json:"target"`
-	Data        map[string]interface{} `json:"data"`
-	Confidence  float64                `json:"confidence"`
-	Action      string                 `json:"action"`
-	Timestamp   time.Time              `json:"timestamp"`
+	ID         string                 `json:"id"`
+	Type       string                 `json:"type"`
+	Source     string                 `json:"source"`
+	Target     string                 `json:"target"`
+	Data       map[string]interface{} `json:"data"`
+	Confidence float64                `json:"confidence"`
+	Action     string                 `json:"action"`
+	Timestamp  time.Time              `json:"timestamp"`
 }
 
 type CAPTCHAEngine struct {
@@ -499,13 +499,13 @@ type CAPTCHAEngine struct {
 }
 
 type JavaScriptChallenge struct {
-	ID          string                 `json:"id"`
-	Type        string                 `json:"type"`
-	Code        string                 `json:"code"`
-	Complexity  int                    `json:"complexity"`
-	Timeout     time.Duration          `json:"timeout"`
-	Expected    string                 `json:"expected"`
-	Status      string                 `json:"status"`
+	ID         string        `json:"id"`
+	Type       string        `json:"type"`
+	Code       string        `json:"code"`
+	Complexity int           `json:"complexity"`
+	Timeout    time.Duration `json:"timeout"`
+	Expected   string        `json:"expected"`
+	Status     string        `json:"status"`
 }
 
 type ProofOfWorkChallenge struct {
@@ -537,22 +537,22 @@ type PuzzleChallenge struct {
 }
 
 type GameBasedChallenge struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Game       string                 `json:"game"`
-	Level      int                    `json:"level"`
-	Objective  string                 `json:"objective"`
-	Data       map[string]interface{} `json:"data"`
-	Status     string                 `json:"status"`
+	ID        string                 `json:"id"`
+	Type      string                 `json:"type"`
+	Game      string                 `json:"game"`
+	Level     int                    `json:"level"`
+	Objective string                 `json:"objective"`
+	Data      map[string]interface{} `json:"data"`
+	Status    string                 `json:"status"`
 }
 
 type InvisibleChallenge struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Method     string                 `json:"method"`
-	Hidden     bool                   `json:"hidden"`
-	Data       map[string]interface{} `json:"data"`
-	Status     string                 `json:"status"`
+	ID     string                 `json:"id"`
+	Type   string                 `json:"type"`
+	Method string                 `json:"method"`
+	Hidden bool                   `json:"hidden"`
+	Data   map[string]interface{} `json:"data"`
+	Status string                 `json:"status"`
 }
 
 type AdaptiveChallenge struct {
@@ -565,282 +565,486 @@ type AdaptiveChallenge struct {
 }
 
 type IPReputationSystem struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Provider   string                 `json:"provider"`
-	Sources    []string               `json:"sources"`
-	Cache      map[string]interface{} `json:"cache"`
-	TTL        time.Duration          `json:"ttl"`
-	Status     string                 `json:"status"`
+	ID       string                 `json:"id"`
+	Type     string                 `json:"type"`
+	Provider string                 `json:"provider"`
+	Sources  []string               `json:"sources"`
+	Cache    map[string]interface{} `json:"cache"`
+	TTL      time.Duration          `json:"ttl"`
+	Status   string                 `json:"status"`
 }
 
 // Missing types for BotProtectionEngine
 type AntiAutomationSuite struct {
-	Enabled               bool                  `yaml:"enabled"`
-	DetectionMethods      []string              `yaml:"detection_methods"`
-	PreventionActions     []string              `yaml:"prevention_actions"`
-	Threshold             float64               `yaml:"threshold"`
+	Enabled           bool     `yaml:"enabled"`
+	DetectionMethods  []string `yaml:"detection_methods"`
+	PreventionActions []string `yaml:"prevention_actions"`
+	Threshold         float64  `yaml:"threshold"`
 }
 
 type ChallengeOrchestrator struct {
-	Enabled               bool                  `yaml:"enabled"`
-	ChallengeTypes        []string              `yaml:"challenge_types"`
-	DifficultyAdjustment  bool                  `yaml:"difficulty_adjustment"`
-	SuccessThreshold      float64               `yaml:"success_threshold"`
+	Enabled              bool     `yaml:"enabled"`
+	ChallengeTypes       []string `yaml:"challenge_types"`
+	DifficultyAdjustment bool     `yaml:"difficulty_adjustment"`
+	SuccessThreshold     float64  `yaml:"success_threshold"`
 }
 
 type BehaviorEngine struct {
-	Enabled               bool                  `yaml:"enabled"`
-	AnalysisMode          string                `yaml:"analysis_mode"`
-	LearningEnabled       bool                  `yaml:"learning_enabled"`
-	UpdateInterval        time.Duration         `yaml:"update_interval"`
+	Enabled         bool          `yaml:"enabled"`
+	AnalysisMode    string        `yaml:"analysis_mode"`
+	LearningEnabled bool          `yaml:"learning_enabled"`
+	UpdateInterval  time.Duration `yaml:"update_interval"`
 }
 
 type FingerprintSuite struct {
-	Enabled               bool                  `yaml:"enabled"`
-	FingerprintMethods    []string              `yaml:"fingerprint_methods"`
-	PersistenceLevel      string                `yaml:"persistence_level"`
-	AntiEvasion          bool                  `yaml:"anti_evasion"`
+	Enabled            bool     `yaml:"enabled"`
+	FingerprintMethods []string `yaml:"fingerprint_methods"`
+	PersistenceLevel   string   `yaml:"persistence_level"`
+	AntiEvasion        bool     `yaml:"anti_evasion"`
 }
 
 // Advanced Bot Detection and Mitigation
 type BotProtectionEngine struct {
-	Enabled                    bool                       `yaml:"enabled"`
-	StrictMode                bool                       `yaml:"strict_mode"`
-	AntiAutomationSuite       *AntiAutomationSuite       `yaml:"anti_automation_suite"`
-	ChallengeOrchestrator     *ChallengeOrchestrator     `yaml:"challenge_orchestrator"`
-	BehaviorEngine            *BehaviorEngine            `yaml:"behavior_engine"`
-	FingerprintSuite          *FingerprintSuite          `yaml:"fingerprint_suite"`
-	ReputationEngine          *ReputationEngine          `yaml:"reputation_engine"`
-	DeviceProfilingSystem     *DeviceProfilingSystem     `yaml:"device_profiling_system"`
+	Enabled               bool                   `yaml:"enabled"`
+	StrictMode            bool                   `yaml:"strict_mode"`
+	AntiAutomationSuite   *AntiAutomationSuite   `yaml:"anti_automation_suite"`
+	ChallengeOrchestrator *ChallengeOrchestrator `yaml:"challenge_orchestrator"`
+	BehaviorEngine        *BehaviorEngine        `yaml:"behavior_engine"`
+	FingerprintSuite      *FingerprintSuite      `yaml:"fingerprint_suite"`
+	ReputationEngine      *ReputationEngine      `yaml:"reputation_engine"`
+	DeviceProfilingSystem *DeviceProfilingSystem `yaml:"device_profiling_system"`
 }
 
 // Device Profiling and Analysis
 type DeviceProfilingSystem struct {
-	HardwareProfiler          *HardwareProfiler          `yaml:"hardware_profiler"`
-	SoftwareProfiler          *SoftwareProfiler          `yaml:"software_profiler"`
-	EnvironmentProfiler       *EnvironmentProfiler       `yaml:"environment_profiler"`
-	VirtualizationDetector    *VirtualizationDetector    `yaml:"virtualization_detector"`
-	EmulationDetector         *EmulationDetector         `yaml:"emulation_detector"`
+	HardwareProfiler       *HardwareProfiler       `yaml:"hardware_profiler"`
+	SoftwareProfiler       *SoftwareProfiler       `yaml:"software_profiler"`
+	EnvironmentProfiler    *EnvironmentProfiler    `yaml:"environment_profiler"`
+	VirtualizationDetector *VirtualizationDetector `yaml:"virtualization_detector"`
+	EmulationDetector      *EmulationDetector      `yaml:"emulation_detector"`
 }
 
 type HardwareProfiler struct {
-	Enabled               bool                  `yaml:"enabled"`
-	CPUProfiling          bool                  `yaml:"cpu_profiling"`
-	GPUProfiling          bool                  `yaml:"gpu_profiling"`
-	MemoryProfiling       bool                  `yaml:"memory_profiling"`
-	StorageProfiling      bool                  `yaml:"storage_profiling"`
+	Enabled          bool `yaml:"enabled"`
+	CPUProfiling     bool `yaml:"cpu_profiling"`
+	GPUProfiling     bool `yaml:"gpu_profiling"`
+	MemoryProfiling  bool `yaml:"memory_profiling"`
+	StorageProfiling bool `yaml:"storage_profiling"`
 }
 
 type SoftwareProfiler struct {
-	Enabled               bool                  `yaml:"enabled"`
-	OSDetection           bool                  `yaml:"os_detection"`
-	BrowserProfiling      bool                  `yaml:"browser_profiling"`
-	PluginDetection       bool                  `yaml:"plugin_detection"`
-	ExtensionAnalysis     bool                  `yaml:"extension_analysis"`
+	Enabled           bool `yaml:"enabled"`
+	OSDetection       bool `yaml:"os_detection"`
+	BrowserProfiling  bool `yaml:"browser_profiling"`
+	PluginDetection   bool `yaml:"plugin_detection"`
+	ExtensionAnalysis bool `yaml:"extension_analysis"`
 }
 
 type EnvironmentProfiler struct {
-	Enabled               bool                  `yaml:"enabled"`
-	TimezoneAnalysis      bool                  `yaml:"timezone_analysis"`
-	LanguageDetection     bool                  `yaml:"language_detection"`
-	NetworkProfiling      bool                  `yaml:"network_profiling"`
-	LocationAnalysis      bool                  `yaml:"location_analysis"`
+	Enabled           bool `yaml:"enabled"`
+	TimezoneAnalysis  bool `yaml:"timezone_analysis"`
+	LanguageDetection bool `yaml:"language_detection"`
+	NetworkProfiling  bool `yaml:"network_profiling"`
+	LocationAnalysis  bool `yaml:"location_analysis"`
 }
 
 type VirtualizationDetector struct {
-	Enabled               bool                  `yaml:"enabled"`
-	VMDetection           bool                  `yaml:"vm_detection"`
-	ContainerDetection    bool                  `yaml:"container_detection"`
-	SandboxDetection      bool                  `yaml:"sandbox_detection"`
-	EmulatorDetection     bool                  `yaml:"emulator_detection"`
+	Enabled            bool `yaml:"enabled"`
+	VMDetection        bool `yaml:"vm_detection"`
+	ContainerDetection bool `yaml:"container_detection"`
+	SandboxDetection   bool `yaml:"sandbox_detection"`
+	EmulatorDetection  bool `yaml:"emulator_detection"`
 }
 
 type EmulationDetector struct {
-	Enabled               bool                  `yaml:"enabled"`
-	HeadlessDetection     bool                  `yaml:"headless_detection"`
-	AutomationDetection   bool                  `yaml:"automation_detection"`
-	ScriptingDetection    bool                  `yaml:"scripting_detection"`
-	BotFrameworkDetection bool                  `yaml:"bot_framework_detection"`
+	Enabled               bool `yaml:"enabled"`
+	HeadlessDetection     bool `yaml:"headless_detection"`
+	AutomationDetection   bool `yaml:"automation_detection"`
+	ScriptingDetection    bool `yaml:"scripting_detection"`
+	BotFrameworkDetection bool `yaml:"bot_framework_detection"`
 }
 
 // Supporting Types
 type DeviceScoring struct {
-	Algorithm             string                `yaml:"algorithm"`
-	Factors               []string              `yaml:"factors"`
-	Weights               map[string]float64    `yaml:"weights"`
+	Algorithm string             `yaml:"algorithm"`
+	Factors   []string           `yaml:"factors"`
+	Weights   map[string]float64 `yaml:"weights"`
 }
 
 type TrustProfile struct {
-	DeviceID              string                `yaml:"device_id"`
-	TrustScore            float64               `yaml:"trust_score"`
-	LastSeen              time.Time             `yaml:"last_seen"`
-	VerificationLevel     string                `yaml:"verification_level"`
+	DeviceID          string    `yaml:"device_id"`
+	TrustScore        float64   `yaml:"trust_score"`
+	LastSeen          time.Time `yaml:"last_seen"`
+	VerificationLevel string    `yaml:"verification_level"`
 }
 
 type ReputationDatabase struct {
-	Type                  string                `yaml:"type"`
-	ConnectionString      string                `yaml:"connection_string"`
-	CacheSize             int                   `yaml:"cache_size"`
+	Type             string `yaml:"type"`
+	ConnectionString string `yaml:"connection_string"`
+	CacheSize        int    `yaml:"cache_size"`
 }
 
 type BehaviorScoring struct {
-	Algorithm             string                `yaml:"algorithm"`
-	Factors               []string              `yaml:"factors"`
-	Weights               map[string]float64    `yaml:"weights"`
+	Algorithm string             `yaml:"algorithm"`
+	Factors   []string           `yaml:"factors"`
+	Weights   map[string]float64 `yaml:"weights"`
 }
 
 type PatternAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	Algorithms            []string              `yaml:"algorithms"`
-	WindowSize            time.Duration         `yaml:"window_size"`
+	Enabled    bool          `yaml:"enabled"`
+	Algorithms []string      `yaml:"algorithms"`
+	WindowSize time.Duration `yaml:"window_size"`
 }
 
 type AnomalyDetection struct {
-	Enabled               bool                  `yaml:"enabled"`
-	Threshold             float64               `yaml:"threshold"`
-	SensitivityLevel      string                `yaml:"sensitivity_level"`
+	Enabled          bool    `yaml:"enabled"`
+	Threshold        float64 `yaml:"threshold"`
+	SensitivityLevel string  `yaml:"sensitivity_level"`
 }
 
 // Missing reputation system component types
 type DeviceReputationSystem struct {
-	Enabled               bool                  `yaml:"enabled"`
-	DeviceScoring         *DeviceScoring        `yaml:"device_scoring"`
-	TrustProfiles         map[string]*TrustProfile `yaml:"trust_profiles"`
-	ReputationDatabase    *ReputationDatabase   `yaml:"reputation_database"`
+	Enabled            bool                     `yaml:"enabled"`
+	DeviceScoring      *DeviceScoring           `yaml:"device_scoring"`
+	TrustProfiles      map[string]*TrustProfile `yaml:"trust_profiles"`
+	ReputationDatabase *ReputationDatabase      `yaml:"reputation_database"`
 }
 
 type BehaviorReputationSystem struct {
-	Enabled                bool                   `yaml:"enabled"`
-	BehaviorScoring        *BehaviorScoring       `yaml:"behavior_scoring"`
-	PatternAnalysis        *PatternAnalysis       `yaml:"pattern_analysis"`
-	AnomalyDetection       *AnomalyDetection      `yaml:"anomaly_detection"`
+	Enabled          bool              `yaml:"enabled"`
+	BehaviorScoring  *BehaviorScoring  `yaml:"behavior_scoring"`
+	PatternAnalysis  *PatternAnalysis  `yaml:"pattern_analysis"`
+	AnomalyDetection *AnomalyDetection `yaml:"anomaly_detection"`
 }
 
 type GlobalReputationSystem struct {
-	Enabled                bool                   `yaml:"enabled"`
-	FeedSources            []string               `yaml:"feed_sources"`
-	LocalOverrides         map[string]float64     `yaml:"local_overrides"`
-	SyncInterval           time.Duration          `yaml:"sync_interval"`
+	Enabled        bool               `yaml:"enabled"`
+	FeedSources    []string           `yaml:"feed_sources"`
+	LocalOverrides map[string]float64 `yaml:"local_overrides"`
+	SyncInterval   time.Duration      `yaml:"sync_interval"`
 }
 
 type ReputationConsensus struct {
-	Enabled                bool                   `yaml:"enabled"`
-	Algorithm              string                 `yaml:"algorithm"`
-	MinimumSources         int                    `yaml:"minimum_sources"`
-	WeightingStrategy      string                 `yaml:"weighting_strategy"`
+	Enabled           bool   `yaml:"enabled"`
+	Algorithm         string `yaml:"algorithm"`
+	MinimumSources    int    `yaml:"minimum_sources"`
+	WeightingStrategy string `yaml:"weighting_strategy"`
 }
 
 type ReputationDecay struct {
-	Enabled                bool                   `yaml:"enabled"`
-	DecayRate              float64                `yaml:"decay_rate"`
-	MinimumScore           float64                `yaml:"minimum_score"`
-	RefreshInterval        time.Duration          `yaml:"refresh_interval"`
+	Enabled         bool          `yaml:"enabled"`
+	DecayRate       float64       `yaml:"decay_rate"`
+	MinimumScore    float64       `yaml:"minimum_score"`
+	RefreshInterval time.Duration `yaml:"refresh_interval"`
 }
 
 // Missing automation and dynamics detection types
 type AutomationDetector struct {
-	Enabled               bool                  `yaml:"enabled"`
-	DetectionMethods      []string              `yaml:"detection_methods"`
-	Sensitivity           string                `yaml:"sensitivity"`
-	BypassDetection       bool                  `yaml:"bypass_detection"`
+	Enabled          bool     `yaml:"enabled"`
+	DetectionMethods []string `yaml:"detection_methods"`
+	Sensitivity      string   `yaml:"sensitivity"`
+	BypassDetection  bool     `yaml:"bypass_detection"`
 }
 
 type KeystrokeDynamics struct {
-	Enabled               bool                  `yaml:"enabled"`
-	AnalysisWindow        time.Duration         `yaml:"analysis_window"`
-	MinSamples            int                   `yaml:"min_samples"`
-	Threshold             float64               `yaml:"threshold"`
+	Enabled        bool          `yaml:"enabled"`
+	AnalysisWindow time.Duration `yaml:"analysis_window"`
+	MinSamples     int           `yaml:"min_samples"`
+	Threshold      float64       `yaml:"threshold"`
 }
 
 type MouseDynamics struct {
-	Enabled               bool                  `yaml:"enabled"`
-	TrackingPrecision     string                `yaml:"tracking_precision"`
-	SamplingRate          time.Duration         `yaml:"sampling_rate"`
-	PatternAnalysis       bool                  `yaml:"pattern_analysis"`
+	Enabled           bool          `yaml:"enabled"`
+	TrackingPrecision string        `yaml:"tracking_precision"`
+	SamplingRate      time.Duration `yaml:"sampling_rate"`
+	PatternAnalysis   bool          `yaml:"pattern_analysis"`
 }
 
 type TouchDynamics struct {
-	Enabled               bool                  `yaml:"enabled"`
-	PressureAnalysis      bool                  `yaml:"pressure_analysis"`
-	GestureRecognition    bool                  `yaml:"gesture_recognition"`
-	MultiTouchSupport     bool                  `yaml:"multi_touch_support"`
+	Enabled            bool `yaml:"enabled"`
+	PressureAnalysis   bool `yaml:"pressure_analysis"`
+	GestureRecognition bool `yaml:"gesture_recognition"`
+	MultiTouchSupport  bool `yaml:"multi_touch_support"`
 }
 
 type GazePrediction struct {
-	Enabled               bool                  `yaml:"enabled"`
-	CalibrationRequired   bool                  `yaml:"calibration_required"`
-	AccuracyThreshold     float64               `yaml:"accuracy_threshold"`
-	TrackingMode          string                `yaml:"tracking_mode"`
+	Enabled             bool    `yaml:"enabled"`
+	CalibrationRequired bool    `yaml:"calibration_required"`
+	AccuracyThreshold   float64 `yaml:"accuracy_threshold"`
+	TrackingMode        string  `yaml:"tracking_mode"`
 }
 
 // Additional biometric and analysis types
 type VoiceAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	RecognitionMode       string                `yaml:"recognition_mode"`
-	SampleDuration        time.Duration         `yaml:"sample_duration"`
-	AccuracyThreshold     float64               `yaml:"accuracy_threshold"`
+	Enabled           bool          `yaml:"enabled"`
+	RecognitionMode   string        `yaml:"recognition_mode"`
+	SampleDuration    time.Duration `yaml:"sample_duration"`
+	AccuracyThreshold float64       `yaml:"accuracy_threshold"`
 }
 
 type BehaviorBiometrics struct {
-	Enabled               bool                  `yaml:"enabled"`
-	BiometricTypes        []string              `yaml:"biometric_types"`
-	FusionMode            string                `yaml:"fusion_mode"`
-	ConfidenceThreshold   float64               `yaml:"confidence_threshold"`
+	Enabled             bool     `yaml:"enabled"`
+	BiometricTypes      []string `yaml:"biometric_types"`
+	FusionMode          string   `yaml:"fusion_mode"`
+	ConfidenceThreshold float64  `yaml:"confidence_threshold"`
 }
 
 type FingerprintAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	AnalysisDepth         string                `yaml:"analysis_depth"`
-	ComparisonAlgorithm   string                `yaml:"comparison_algorithm"`
-	UpdateFrequency       time.Duration         `yaml:"update_frequency"`
+	Enabled             bool          `yaml:"enabled"`
+	AnalysisDepth       string        `yaml:"analysis_depth"`
+	ComparisonAlgorithm string        `yaml:"comparison_algorithm"`
+	UpdateFrequency     time.Duration `yaml:"update_frequency"`
 }
 
 type BehaviorAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	PatternDetection      bool                  `yaml:"pattern_detection"`
-	AnomalyDetection      bool                  `yaml:"anomaly_detection"`
-	LearningMode          string                `yaml:"learning_mode"`
+	Enabled          bool   `yaml:"enabled"`
+	PatternDetection bool   `yaml:"pattern_detection"`
+	AnomalyDetection bool   `yaml:"anomaly_detection"`
+	LearningMode     string `yaml:"learning_mode"`
 }
 
 type MLClassification struct {
-	Enabled               bool                  `yaml:"enabled"`
-	ModelType             string                `yaml:"model_type"`
-	TrainingMode          string                `yaml:"training_mode"`
-	FeatureExtraction     []string              `yaml:"feature_extraction"`
+	Enabled           bool     `yaml:"enabled"`
+	ModelType         string   `yaml:"model_type"`
+	TrainingMode      string   `yaml:"training_mode"`
+	FeatureExtraction []string `yaml:"feature_extraction"`
 }
 
 type ReputationAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	DataSources           []string              `yaml:"data_sources"`
-	WeightingStrategy     string                `yaml:"weighting_strategy"`
-	UpdateInterval        time.Duration         `yaml:"update_interval"`
+	Enabled           bool          `yaml:"enabled"`
+	DataSources       []string      `yaml:"data_sources"`
+	WeightingStrategy string        `yaml:"weighting_strategy"`
+	UpdateInterval    time.Duration `yaml:"update_interval"`
 }
 
 type DeviceAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	ProfilingDepth        string                `yaml:"profiling_depth"`
-	ComparisonMode        string                `yaml:"comparison_mode"`
-	StorageMethod         string                `yaml:"storage_method"`
+	Enabled        bool   `yaml:"enabled"`
+	ProfilingDepth string `yaml:"profiling_depth"`
+	ComparisonMode string `yaml:"comparison_mode"`
+	StorageMethod  string `yaml:"storage_method"`
 }
 
 type BiometricAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	BiometricMethods      []string              `yaml:"biometric_methods"`
-	FalsePositiveRate     float64               `yaml:"false_positive_rate"`
-	AdaptiveLearning      bool                  `yaml:"adaptive_learning"`
+	Enabled           bool     `yaml:"enabled"`
+	BiometricMethods  []string `yaml:"biometric_methods"`
+	FalsePositiveRate float64  `yaml:"false_positive_rate"`
+	AdaptiveLearning  bool     `yaml:"adaptive_learning"`
 }
 
 type NetworkAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	TrafficProfiling      bool                  `yaml:"traffic_profiling"`
-	ProtocolAnalysis      bool                  `yaml:"protocol_analysis"`
-	FlowAnalysis          bool                  `yaml:"flow_analysis"`
+	Enabled          bool `yaml:"enabled"`
+	TrafficProfiling bool `yaml:"traffic_profiling"`
+	ProtocolAnalysis bool `yaml:"protocol_analysis"`
+	FlowAnalysis     bool `yaml:"flow_analysis"`
 }
 
 type TemporalAnalysis struct {
-	Enabled               bool                  `yaml:"enabled"`
-	WindowSize            time.Duration         `yaml:"window_size"`
-	PatternDetection      bool                  `yaml:"pattern_detection"`
-	TrendAnalysis         bool                  `yaml:"trend_analysis"`
+	Enabled          bool          `yaml:"enabled"`
+	WindowSize       time.Duration `yaml:"window_size"`
+	PatternDetection bool          `yaml:"pattern_detection"`
+	TrendAnalysis    bool          `yaml:"trend_analysis"`
+}
+
+// Additional fingerprinting and behavior types
+type DetectionExplanation struct {
+	Method     string                 `json:"method"`
+	Confidence float64                `json:"confidence"`
+	Reasoning  string                 `json:"reasoning"`
+	Evidence   map[string]interface{} `json:"evidence"`
+}
+
+type TLSFingerprint struct {
+	Version       string   `json:"version"`
+	CipherSuites  []string `json:"cipher_suites"`
+	Extensions    []string `json:"extensions"`
+	SignatureAlgs []string `json:"signature_algorithms"`
+}
+
+type HTTPFingerprint struct {
+	UserAgent      string            `json:"user_agent"`
+	Headers        map[string]string `json:"headers"`
+	AcceptEncoding string            `json:"accept_encoding"`
+	AcceptLanguage string            `json:"accept_language"`
+}
+
+type BrowserFingerprint struct {
+	Name             string   `json:"name"`
+	Version          string   `json:"version"`
+	Platform         string   `json:"platform"`
+	Plugins          []string `json:"plugins"`
+	ScreenResolution string   `json:"screen_resolution"`
+}
+
+type FontFingerprint struct {
+	AvailableFonts  []string           `json:"available_fonts"`
+	RenderingEngine string             `json:"rendering_engine"`
+	FontMetrics     map[string]float64 `json:"font_metrics"`
+}
+
+type TimingFingerprint struct {
+	DNSTime      time.Duration `json:"dns_time"`
+	ConnectTime  time.Duration `json:"connect_time"`
+	TLSTime      time.Duration `json:"tls_time"`
+	ResponseTime time.Duration `json:"response_time"`
+}
+
+type MouseBehavior struct {
+	MovementPattern string  `json:"movement_pattern"`
+	ClickFrequency  float64 `json:"click_frequency"`
+	Velocity        float64 `json:"velocity"`
+	Acceleration    float64 `json:"acceleration"`
+}
+
+type KeyboardBehavior struct {
+	TypingSpeed float64       `json:"typing_speed"`
+	DwellTime   time.Duration `json:"dwell_time"`
+	FlightTime  time.Duration `json:"flight_time"`
+	Rhythm      []float64     `json:"rhythm"`
+}
+
+type ScrollBehavior struct {
+	ScrollSpeed   float64 `json:"scroll_speed"`
+	ScrollPattern string  `json:"scroll_pattern"`
+	Direction     string  `json:"direction"`
+	Frequency     float64 `json:"frequency"`
+}
+
+type ClickPatterns struct {
+	ClickRate       float64       `json:"click_rate"`
+	DoubleClickTime time.Duration `json:"double_click_time"`
+	ClickPressure   float64       `json:"click_pressure"`
+	ClickAccuracy   float64       `json:"click_accuracy"`
+}
+
+// Additional navigation and interaction types
+type NavigationPatterns struct {
+	PageSequence  []string        `json:"page_sequence"`
+	DwellTimes    []time.Duration `json:"dwell_times"`
+	BacktrackRate float64         `json:"backtrack_rate"`
+	DepthScore    float64         `json:"depth_score"`
+}
+
+type InteractionMetrics struct {
+	ClickRate        float64       `json:"click_rate"`
+	HoverTime        time.Duration `json:"hover_time"`
+	FocusChanges     int           `json:"focus_changes"`
+	FormInteractions int           `json:"form_interactions"`
+}
+
+type SessionMetrics struct {
+	Duration    time.Duration `json:"duration"`
+	PageViews   int           `json:"page_views"`
+	UniquePages int           `json:"unique_pages"`
+	BounceRate  float64       `json:"bounce_rate"`
+}
+
+// ML and AI prediction types
+type EnsemblePrediction struct {
+	Predictions   map[string]float64 `json:"predictions"`
+	WeightedScore float64            `json:"weighted_score"`
+	Confidence    float64            `json:"confidence"`
+	ModelVersions map[string]string  `json:"model_versions"`
+}
+
+type DeepLearningResult struct {
+	Prediction        float64              `json:"prediction"`
+	Layers            []string             `json:"layers"`
+	ActivationMap     map[string][]float64 `json:"activation_map"`
+	FeatureImportance map[string]float64   `json:"feature_importance"`
+}
+
+type GradientBoostingResult struct {
+	Prediction    float64            `json:"prediction"`
+	TreeCount     int                `json:"tree_count"`
+	FeatureScores map[string]float64 `json:"feature_scores"`
+	SplitPoints   []float64          `json:"split_points"`
+}
+
+type NeuralNetworkResult struct {
+	Prediction   float64     `json:"prediction"`
+	NetworkDepth int         `json:"network_depth"`
+	Neurons      []int       `json:"neurons"`
+	Weights      [][]float64 `json:"weights"`
+}
+
+type TransformerResult struct {
+	Prediction       float64              `json:"prediction"`
+	AttentionWeights map[string][]float64 `json:"attention_weights"`
+	TokenEmbeddings  [][]float64          `json:"token_embeddings"`
+	SequenceLength   int                  `json:"sequence_length"`
+}
+
+// HTTP analysis types
+type UserAgentAnalysis struct {
+	Browser    string  `json:"browser"`
+	Version    string  `json:"version"`
+	OS         string  `json:"os"`
+	Suspicious bool    `json:"suspicious"`
+	Entropy    float64 `json:"entropy"`
+}
+
+type AcceptHeaders struct {
+	Language    string `json:"language"`
+	Encoding    string `json:"encoding"`
+	ContentType string `json:"content_type"`
+	Charset     string `json:"charset"`
+}
+
+// Additional behavioral and technical types
+type ConnectionBehavior struct {
+	ConnectTime   time.Duration `json:"connect_time"`
+	KeepAlive     bool          `json:"keep_alive"`
+	RequestRate   float64       `json:"request_rate"`
+	SessionLength time.Duration `json:"session_length"`
+}
+
+type Plugin struct {
+	Name      string   `json:"name"`
+	Version   string   `json:"version"`
+	Enabled   bool     `json:"enabled"`
+	MimeTypes []string `json:"mime_types"`
+}
+
+type MimeType struct {
+	Type       string            `json:"type"`
+	Subtype    string            `json:"subtype"`
+	Parameters map[string]string `json:"parameters"`
+}
+
+type TouchSupport struct {
+	Enabled         bool `json:"enabled"`
+	MaxPoints       int  `json:"max_points"`
+	PressureSupport bool `json:"pressure_support"`
+}
+
+type WebRTCCapabilities struct {
+	Supported  bool     `json:"supported"`
+	Codecs     []string `json:"codecs"`
+	Extensions []string `json:"extensions"`
+}
+
+type BatteryInfo struct {
+	Charging      bool    `json:"charging"`
+	Level         float64 `json:"level"`
+	DischargeTime float64 `json:"discharge_time"`
+}
+
+type VelocityStats struct {
+	Average float64 `json:"average"`
+	Maximum float64 `json:"maximum"`
+	Minimum float64 `json:"minimum"`
+	StdDev  float64 `json:"std_dev"`
+}
+
+type AccelerationStats struct {
+	Average float64 `json:"average"`
+	Maximum float64 `json:"maximum"`
+	Minimum float64 `json:"minimum"`
+	Peaks   int     `json:"peaks"`
+}
+
+type JerkStats struct {
+	Average    float64 `json:"average"`
+	Frequency  float64 `json:"frequency"`
+	Smoothness float64 `json:"smoothness"`
 }

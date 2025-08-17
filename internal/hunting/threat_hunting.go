@@ -491,7 +491,7 @@ func (th *AdvancedThreatHunter) StartThreatHunt(ctx context.Context, request *Th
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate hypothesis: %w", err)
 		}
-		hunt.Hypothesis = hypothesis
+		hunt.Hypothesis = convertTypesHypothesis(hypothesis)
 	}
 
 	// Determine hunting strategy
@@ -501,8 +501,8 @@ func (th *AdvancedThreatHunter) StartThreatHunt(ctx context.Context, request *Th
 	}
 	hunt.Strategy = strategy
 
-	// Initialize hunting workflow
-	workflow, err := th.huntingWorkflow.InitializeWorkflow(ctx, hunt)
+	// Initialize hunting workflow (for later use)
+	_, err = th.huntingWorkflow.InitializeWorkflow(ctx, hunt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize workflow: %w", err)
 	}
@@ -763,7 +763,11 @@ func (th *AdvancedThreatHunter) executeHuntPhase(ctx context.Context, hunt *Thre
 
 // GenerateHypothesis generates a threat hunting hypothesis
 func (th *AdvancedThreatHunter) GenerateHypothesis(ctx context.Context, request *HypothesisRequest) (*ThreatHypothesis, error) {
-	return th.hypothesisGenerator.GenerateHypothesis(ctx, request)
+	typesHypothesis, err := th.hypothesisGenerator.GenerateHypothesis(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	return convertTypesHypothesis(typesHypothesis), nil
 }
 
 // StartInvestigation initiates a threat investigation
@@ -1204,6 +1208,24 @@ type HuntingWorkflow struct{}
 type ThreatKnowledgeBase struct{}
 type CollaborationEngine struct{}
 type AutomationEngine struct{}
+
+// Conversion function for hypothesis types
+func convertTypesHypothesis(th *types.ThreatHypothesis) *ThreatHypothesis {
+	if th == nil {
+		return nil
+	}
+
+	return &ThreatHypothesis{
+		ID:                th.ID,
+		Statement:         th.Text, // Map Text to Statement
+		Rationale:         "Generated hypothesis",
+		Assumptions:       []string{},
+		TestableQuestions: []string{},
+		Confidence:        th.Confidence,
+		Probability:       0.5,
+	}
+}
+
 type VisualizationEngine struct{}
 type ReportingEngine struct{}
 type MLHuntingEngine struct{}
