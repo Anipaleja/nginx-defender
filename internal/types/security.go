@@ -1048,3 +1048,51 @@ type JerkStats struct {
 	Frequency  float64 `json:"frequency"`
 	Smoothness float64 `json:"smoothness"`
 }
+
+// Additional missing protection types
+type MousePause struct {
+	Duration  time.Duration `json:"duration"`
+	Position  [2]int        `json:"position"`
+	Timestamp time.Time     `json:"timestamp"`
+	Context   string        `json:"context"`
+}
+
+type ClickTiming struct {
+	PressTime    time.Duration `json:"press_time"`
+	ReleaseTime  time.Duration `json:"release_time"`
+	DoubleClick  bool          `json:"double_click"`
+	ClickContext string        `json:"click_context"`
+}
+
+type ErrorPatterns struct {
+	Code      int                    `json:"code"`
+	Message   string                 `json:"message"`
+	Frequency int                    `json:"frequency"`
+	Context   map[string]interface{} `json:"context"`
+	Timestamp time.Time              `json:"timestamp"`
+}
+
+type TLSInfo struct {
+	Version     string   `json:"version"`
+	CipherSuite string   `json:"cipher_suite"`
+	Protocol    string   `json:"protocol"`
+	Extensions  []string `json:"extensions"`
+	Fingerprint string   `json:"fingerprint"`
+}
+
+type BrowserData struct {
+	Name       string                 `json:"name"`
+	Version    string                 `json:"version"`
+	UserAgent  string                 `json:"user_agent"`
+	Features   map[string]interface{} `json:"features"`
+	Extensions []string               `json:"extensions"`
+}
+
+type MouseEvent struct {
+	Type      string    `json:"type"`
+	X         int       `json:"x"`
+	Y         int       `json:"y"`
+	Button    int       `json:"button"`
+	Timestamp time.Time `json:"timestamp"`
+	Pressure  float64   `json:"pressure"`
+}

@@ -1,0 +1,74 @@
+# nginx-defender v2.0 Demo Configuration
+# Simplified configuration for demonstration
+
+# Web server configuration
+server:
+  bind_address: "127.0.0.1"
+  port: 8080
+  tls:
+    enabled: false
+
+# Logging configuration
+logs:
+  level: "info"
+  format: "text"
+  output: "stdout"
+
+# Log monitoring configuration (using test files)
+monitoring:
+  nginx_logs:
+    - path: "/tmp/nginx-logs/access.log"
+      format: "combined"
+      enabled: true
+  
+  custom_logs: []
+  apache_logs: []
+
+# Simplified threat detection
+detection:
+  # Disable ML for demo
+  ml_detection:
+    enabled: false
+  
+  # Basic rate limiting
+  rate_limiting:
+    enabled: true
+    window_size: 60
+    max_requests: 10
+    
+  # Pattern matching
+  pattern_matching:
+    enabled: true
+    
+  # GeoIP disabled for demo
+  geoip:
+    enabled: false
+
+# Firewall configuration
+firewall:
+  enabled: true
+  mode: "log"  # log mode for demo (instead of actual blocking)
+  
+# Metrics
+metrics:
+  enabled: true
+  port: 9090
+
+# Notifications disabled for demo
+notifications:
+  slack:
+    enabled: false
+  email:
+    enabled: false
+  webhook:
+    enabled: false
+
+# Honeypot system
+honeypot:
+  enabled: true
+  bind_address: "127.0.0.1"
+  ports: [8888, 9999]
+  
+# Clustering disabled for demo
+clustering:
+  enabled: false

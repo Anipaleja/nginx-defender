@@ -2246,3 +2246,402 @@ type DatabaseTrapManager struct {
 	QueryMonitoring bool     `yaml:"query_monitoring"`
 	AlertOnAccess   bool     `yaml:"alert_on_access"`
 }
+
+// Additional trap manager types
+type SSHTrapManager struct {
+	Enabled      bool     `yaml:"enabled"`
+	TrapPorts    []int    `yaml:"trap_ports"`
+	FakeServices []string `yaml:"fake_services"`
+	AuthMethods  []string `yaml:"auth_methods"`
+}
+
+type FTPTrapManager struct {
+	Enabled         bool     `yaml:"enabled"`
+	TrapPorts       []int    `yaml:"trap_ports"`
+	FakeDirectories []string `yaml:"fake_directories"`
+	AllowAnonymous  bool     `yaml:"allow_anonymous"`
+}
+
+type SMBTrapManager struct {
+	Enabled    bool     `yaml:"enabled"`
+	TrapShares []string `yaml:"trap_shares"`
+	FakeFiles  []string `yaml:"fake_files"`
+	AccessLogs bool     `yaml:"access_logs"`
+}
+
+type RDPTrapManager struct {
+	Enabled        bool          `yaml:"enabled"`
+	TrapPorts      []int         `yaml:"trap_ports"`
+	FakeDesktops   []string      `yaml:"fake_desktops"`
+	SessionTimeout time.Duration `yaml:"session_timeout"`
+}
+
+type CustomTrapManager struct {
+	Enabled       bool                   `yaml:"enabled"`
+	TrapConfigs   map[string]interface{} `yaml:"trap_configs"`
+	CustomRules   []string               `yaml:"custom_rules"`
+	FlexiblePorts []int                  `yaml:"flexible_ports"`
+}
+
+// Bait generator types
+type BaitContentGenerator struct {
+	Enabled         bool          `yaml:"enabled"`
+	ContentTypes    []string      `yaml:"content_types"`
+	GenerationRules []string      `yaml:"generation_rules"`
+	UpdateFrequency time.Duration `yaml:"update_frequency"`
+}
+
+type DocumentBaitGenerator struct {
+	Enabled          bool     `yaml:"enabled"`
+	DocumentTypes    []string `yaml:"document_types"`
+	Templates        []string `yaml:"templates"`
+	RealisticContent bool     `yaml:"realistic_content"`
+}
+
+type CodebaseBaitGenerator struct {
+	Enabled           bool     `yaml:"enabled"`
+	Languages         []string `yaml:"languages"`
+	ProjectTypes      []string `yaml:"project_types"`
+	VulnerabilityCode bool     `yaml:"vulnerability_code"`
+}
+
+type DataBaitGenerator struct {
+	Enabled     bool     `yaml:"enabled"`
+	DataTypes   []string `yaml:"data_types"`
+	FakeRecords int      `yaml:"fake_records"`
+	SchemaTypes []string `yaml:"schema_types"`
+}
+
+type CredentialBaitGenerator struct {
+	Enabled         bool          `yaml:"enabled"`
+	CredentialTypes []string      `yaml:"credential_types"`
+	Complexity      string        `yaml:"complexity"`
+	RotationPolicy  time.Duration `yaml:"rotation_policy"`
+}
+
+// Additional bait generator types
+type ConfigBaitGenerator struct {
+	ConfigType    string            `json:"config_type"`
+	Template      string            `json:"template"`
+	Variables     map[string]string `json:"variables"`
+	Sensitivity   float64           `json:"sensitivity"`
+	LastGenerated time.Time         `json:"last_generated"`
+}
+
+type LogBaitGenerator struct {
+	LogType       string    `json:"log_type"`
+	Format        string    `json:"format"`
+	Frequency     int       `json:"frequency"`
+	Rotation      bool      `json:"rotation"`
+	LastGenerated time.Time `json:"last_generated"`
+}
+
+type BackupBaitGenerator struct {
+	BackupType    string    `json:"backup_type"`
+	Compression   string    `json:"compression"`
+	Encryption    bool      `json:"encryption"`
+	Size          int64     `json:"size"`
+	LastGenerated time.Time `json:"last_generated"`
+}
+
+type SecretBaitGenerator struct {
+	SecretType    string    `json:"secret_type"`
+	Complexity    int       `json:"complexity"`
+	Obfuscation   bool      `json:"obfuscation"`
+	Honeypot      bool      `json:"honeypot"`
+	LastGenerated time.Time `json:"last_generated"`
+}
+
+type PersonalDataBaitGenerator struct {
+	DataType      string    `json:"data_type"`
+	Country       string    `json:"country"`
+	Format        string    `json:"format"`
+	Realistic     bool      `json:"realistic"`
+	LastGenerated time.Time `json:"last_generated"`
+}
+
+// Advanced analysis types
+type RealTimeInteractionAnalyzer struct {
+	SessionID string               `json:"session_id"`
+	StartTime time.Time            `json:"start_time"`
+	Commands  []Command            `json:"commands"`
+	Patterns  []InteractionPattern `json:"patterns"`
+	RiskScore float64              `json:"risk_score"`
+	Alerts    []Alert              `json:"alerts"`
+}
+
+type IntentAnalyzer struct {
+	Intent      string   `json:"intent"`
+	Confidence  float64  `json:"confidence"`
+	Indicators  []string `json:"indicators"`
+	ThreatLevel string   `json:"threat_level"`
+	Actions     []Action `json:"actions"`
+}
+
+type SkillLevelAnalyzer struct {
+	SkillLevel string           `json:"skill_level"`
+	Confidence float64          `json:"confidence"`
+	Indicators []SkillIndicator `json:"indicators"`
+	Tools      []Tool           `json:"tools"`
+	Techniques []Technique      `json:"techniques"`
+}
+
+type ToolAnalyzer struct {
+	DetectedTools []DetectedTool  `json:"detected_tools"`
+	Signatures    []ToolSignature `json:"signatures"`
+	Confidence    float64         `json:"confidence"`
+	ThreatLevel   string          `json:"threat_level"`
+}
+
+// Supporting types for analysis
+type Command struct {
+	Command   string    `json:"command"`
+	Args      []string  `json:"args"`
+	Timestamp time.Time `json:"timestamp"`
+	Success   bool      `json:"success"`
+	Output    string    `json:"output"`
+	RiskScore float64   `json:"risk_score"`
+}
+
+type InteractionPattern struct {
+	Pattern   string    `json:"pattern"`
+	Frequency int       `json:"frequency"`
+	LastSeen  time.Time `json:"last_seen"`
+	RiskLevel string    `json:"risk_level"`
+}
+
+type Alert struct {
+	ID        string    `json:"id"`
+	Type      string    `json:"type"`
+	Severity  string    `json:"severity"`
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp"`
+	Resolved  bool      `json:"resolved"`
+}
+
+type SkillIndicator struct {
+	Indicator string  `json:"indicator"`
+	Score     float64 `json:"score"`
+	Category  string  `json:"category"`
+	Evidence  string  `json:"evidence"`
+}
+
+type Tool struct {
+	Name       string   `json:"name"`
+	Version    string   `json:"version"`
+	Category   string   `json:"category"`
+	Signatures []string `json:"signatures"`
+}
+
+type Technique struct {
+	ID         string   `json:"id"`
+	Name       string   `json:"name"`
+	Category   string   `json:"category"`
+	Indicators []string `json:"indicators"`
+}
+
+type DetectedTool struct {
+	Name       string    `json:"name"`
+	Version    string    `json:"version"`
+	Confidence float64   `json:"confidence"`
+	FirstSeen  time.Time `json:"first_seen"`
+	LastSeen   time.Time `json:"last_seen"`
+}
+
+type ToolSignature struct {
+	Signature  string  `json:"signature"`
+	Tool       string  `json:"tool"`
+	Confidence float64 `json:"confidence"`
+	Pattern    string  `json:"pattern"`
+}
+
+type TacticAnalyzer struct {
+	DetectedTactics []DetectedTactic  `json:"detected_tactics"`
+	Signatures      []TacticSignature `json:"signatures"`
+	Confidence      float64           `json:"confidence"`
+	ThreatLevel     string            `json:"threat_level"`
+}
+
+type DetectedTactic struct {
+	Name       string    `json:"name"`
+	Category   string    `json:"category"`
+	Confidence float64   `json:"confidence"`
+	FirstSeen  time.Time `json:"first_seen"`
+	LastSeen   time.Time `json:"last_seen"`
+}
+
+type TacticSignature struct {
+	Signature  string  `json:"signature"`
+	Tactic     string  `json:"tactic"`
+	Confidence float64 `json:"confidence"`
+	Pattern    string  `json:"pattern"`
+}
+
+// TimelineAnalyzer analyzes attack timelines and sequences
+type TimelineAnalyzer struct {
+	SequenceDetector *SequenceDetector `json:"sequence_detector"`
+	TimelineBuilder  *TimelineBuilder  `json:"timeline_builder"`
+	ProgressTracker  *ProgressTracker  `json:"progress_tracker"`
+	PhaseClassifier  *PhaseClassifier  `json:"phase_classifier"`
+}
+
+type SequenceDetector struct {
+	Algorithm string                 `json:"algorithm"`
+	Config    map[string]interface{} `json:"config"`
+}
+
+type ProgressTracker struct {
+	Stages     []string `json:"stages"`
+	Thresholds []int    `json:"thresholds"`
+}
+
+type PhaseClassifier struct {
+	Phases     []string `json:"phases"`
+	Indicators []string `json:"indicators"`
+}
+
+// Honeypot Core Types
+type HoneypotProfile struct {
+	ID          string                 `json:"id"`
+	Name        string                 `json:"name"`
+	Type        string                 `json:"type"`
+	Description string                 `json:"description"`
+	Attributes  map[string]interface{} `json:"attributes"`
+}
+
+type HoneypotConfig struct {
+	ID           string                 `json:"id"`
+	Name         string                 `json:"name"`
+	Settings     map[string]interface{} `json:"settings"`
+	Resources    map[string]string      `json:"resources"`
+	Capabilities []string               `json:"capabilities"`
+}
+
+type DeploymentInfo struct {
+	Environment string                 `json:"environment"`
+	Location    string                 `json:"location"`
+	Network     string                 `json:"network"`
+	Resources   map[string]interface{} `json:"resources"`
+	Status      string                 `json:"status"`
+	DeployedAt  string                 `json:"deployed_at"`
+}
+
+type HoneypotService struct {
+	ID       string                 `json:"id"`
+	Name     string                 `json:"name"`
+	Type     string                 `json:"type"`
+	Port     int                    `json:"port"`
+	Protocol string                 `json:"protocol"`
+	Config   map[string]interface{} `json:"config"`
+	Status   string                 `json:"status"`
+}
+
+type SyntheticVulnerability struct {
+	ID          string                 `json:"id"`
+	CVE         string                 `json:"cve"`
+	Type        string                 `json:"type"`
+	Severity    string                 `json:"severity"`
+	Description string                 `json:"description"`
+	Exploit     map[string]interface{} `json:"exploit"`
+}
+
+type BaitContent struct {
+	ID       string                 `json:"id"`
+	Type     string                 `json:"type"`
+	Content  string                 `json:"content"`
+	Metadata map[string]interface{} `json:"metadata"`
+}
+
+type TrapConfiguration struct {
+	ID      string                 `json:"id"`
+	Type    string                 `json:"type"`
+	Trigger string                 `json:"trigger"`
+	Action  string                 `json:"action"`
+	Config  map[string]interface{} `json:"config"`
+}
+
+type NetworkProfile struct {
+	Interfaces []string `json:"interfaces"`
+	Protocols  []string `json:"protocols"`
+	Services   []string `json:"services"`
+	Topology   string   `json:"topology"`
+}
+
+type SystemProfile struct {
+	OS           string   `json:"os"`
+	Version      string   `json:"version"`
+	Architecture string   `json:"architecture"`
+	Services     []string `json:"services"`
+}
+
+type ApplicationProfile struct {
+	Applications []string               `json:"applications"`
+	Versions     map[string]string      `json:"versions"`
+	Config       map[string]interface{} `json:"config"`
+}
+
+type SecurityProfile struct {
+	Controls   []string               `json:"controls"`
+	Policies   []string               `json:"policies"`
+	Monitoring bool                   `json:"monitoring"`
+	Config     map[string]interface{} `json:"config"`
+}
+
+type DeceptionLayer struct {
+	ID     string                 `json:"id"`
+	Type   string                 `json:"type"`
+	Level  int                    `json:"level"`
+	Config map[string]interface{} `json:"config"`
+	Active bool                   `json:"active"`
+}
+
+type AdaptiveBehavior struct {
+	Enabled    bool                   `json:"enabled"`
+	Learning   bool                   `json:"learning"`
+	Adaptation string                 `json:"adaptation"`
+	Parameters map[string]interface{} `json:"parameters"`
+}
+
+type LearningModel struct {
+	Type        string                 `json:"type"`
+	Algorithm   string                 `json:"algorithm"`
+	Parameters  map[string]interface{} `json:"parameters"`
+	Accuracy    float64                `json:"accuracy"`
+	LastTrained string                 `json:"last_trained"`
+}
+
+type HoneypotMetrics struct {
+	Interactions   uint64  `json:"interactions"`
+	Attacks        uint64  `json:"attacks"`
+	Effectiveness  float64 `json:"effectiveness"`
+	Accuracy       float64 `json:"accuracy"`
+	FalsePositives uint64  `json:"false_positives"`
+}
+
+// Honeypot Alert and Logging Types
+type HoneypotAlert struct {
+	ID        string                 `json:"id"`
+	Severity  string                 `json:"severity"`
+	Type      string                 `json:"type"`
+	Message   string                 `json:"message"`
+	Source    string                 `json:"source"`
+	Timestamp string                 `json:"timestamp"`
+	Metadata  map[string]interface{} `json:"metadata"`
+}
+
+type HoneypotLogEntry struct {
+	ID        string                 `json:"id"`
+	Timestamp string                 `json:"timestamp"`
+	Level     string                 `json:"level"`
+	Component string                 `json:"component"`
+	Message   string                 `json:"message"`
+	Data      map[string]interface{} `json:"data"`
+}
+
+type CollectedIntelligence struct {
+	ThreatActors []string               `json:"threat_actors"`
+	TTPs         []string               `json:"ttps"`
+	IOCs         []string               `json:"iocs"`
+	Campaigns    []string               `json:"campaigns"`
+	Metadata     map[string]interface{} `json:"metadata"`
+}

@@ -11,6 +11,87 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Local type definitions
+type IncidentProcessor struct {
+	Active bool `json:"active"`
+}
+
+type IncidentTracker struct {
+	Count int `json:"count"`
+}
+
+type IncidentWorkflowManager struct {
+	Workflows []string `json:"workflows"`
+}
+
+type ResponseOrchestrator struct {
+	Active bool `json:"active"`
+}
+
+type IncidentTimelineBuilder struct {
+	Events []string `json:"events"`
+}
+
+type ImpactAssessor struct {
+	Score float64 `json:"score"`
+}
+
+type CommunicationManager struct {
+	Channels []string `json:"channels"`
+}
+
+type DocumentationEngine struct {
+	Docs []string `json:"docs"`
+}
+
+type LessonsLearnedEngine struct {
+	Lessons []string `json:"lessons"`
+}
+
+type IncidentReportGenerator struct {
+	Reports []string `json:"reports"`
+}
+
+type ThreatActorMetrics struct {
+	Count int `json:"count"`
+}
+
+type CampaignMetrics struct {
+	Count int `json:"count"`
+}
+
+type TTPMetrics struct {
+	Count int `json:"count"`
+}
+
+type IOCMetrics struct {
+	Count int `json:"count"`
+}
+
+type DetectionMetrics struct {
+	Count int `json:"count"`
+}
+
+type ResponseMetrics struct {
+	Time float64 `json:"time"`
+}
+
+type ThreatTrendAnalysis struct {
+	Trends []string `json:"trends"`
+}
+
+type RiskScoreMetrics struct {
+	Score float64 `json:"score"`
+}
+
+type IncidentManager struct {
+	Active bool `json:"active"`
+}
+
+type PerformanceAnalysis struct {
+	Score float64 `json:"score"`
+}
+
 // AdvancedSOCDashboard - The most sophisticated Security Operations Center dashboard
 // Revolutionizes security monitoring with real-time AI-powered analytics and visualization
 type AdvancedSOCDashboard struct {
@@ -72,31 +153,31 @@ type AnalyticsEngine struct {
 	timeSeriesAnalyzer     *types.TimeSeriesAnalyzer
 	statisticalAnalyzer    *types.StatisticalAnalyzer
 	correlationAnalyzer    *types.CorrelationAnalyzer
-	trendAnalyzer          *TrendAnalyzer
-	patternRecognition     *PatternRecognition
-	behaviorAnalyzer       *BehaviorAnalyzer
-	networkAnalyzer        *NetworkAnalyzer
-	userAnalyzer           *UserAnalyzer
-	assetAnalyzer          *AssetAnalyzer
-	threatAnalyzer         *ThreatAnalyzer
-	complianceAnalyzer     *ComplianceAnalyzer
-	businessImpactAnalyzer *BusinessImpactAnalyzer
+	trendAnalyzer          *types.TrendAnalyzer
+	patternRecognition     *types.PatternRecognition
+	behaviorAnalyzer       *types.BehaviorAnalyzer
+	networkAnalyzer        *types.NetworkAnalyzer
+	userAnalyzer           *types.UserAnalyzer
+	assetAnalyzer          *types.AssetAnalyzer
+	threatAnalyzer         *types.ThreatAnalyzer
+	complianceAnalyzer     *types.ComplianceAnalyzer
+	businessImpactAnalyzer *types.BusinessImpactAnalyzer
 }
 
 // VisualizationEngine creates interactive visualizations
 type VisualizationEngine struct {
-	chartRenderer       *ChartRenderer
-	mapRenderer         *MapRenderer
-	graphRenderer       *GraphRenderer
-	heatmapRenderer     *HeatmapRenderer
-	timelineRenderer    *TimelineRenderer
-	networkRenderer     *NetworkRenderer
-	flowRenderer        *FlowRenderer
-	dashboardRenderer   *DashboardRenderer
-	reportRenderer      *ReportRenderer
-	interactivityEngine *InteractivityEngine
-	animationEngine     *AnimationEngine
-	responsiveEngine    *ResponsiveEngine
+	chartRenderer       *types.ChartRenderer
+	mapRenderer         *types.MapRenderer
+	graphRenderer       *types.GraphRenderer
+	heatmapRenderer     *types.HeatmapRenderer
+	timelineRenderer    *types.TimelineRenderer
+	networkRenderer     *types.NetworkRenderer
+	flowRenderer        *types.FlowRenderer
+	dashboardRenderer   *types.DashboardRenderer
+	reportRenderer      *types.ReportRenderer
+	interactivityEngine *types.InteractivityEngine
+	animationEngine     *types.AnimationEngine
+	responsiveEngine    *types.ResponsiveEngine
 }
 
 // AlertManager handles security alerts and notifications
@@ -114,7 +195,8 @@ type AlertManager struct {
 }
 
 // IncidentManager handles security incidents
-type IncidentManager struct {
+// IncidentResponseManager handles security incidents
+type IncidentResponseManager struct {
 	incidentProcessor    *IncidentProcessor
 	incidentTracker      *IncidentTracker
 	workflowManager      *IncidentWorkflowManager
@@ -202,20 +284,37 @@ type ThreatMetrics struct {
 
 // DashboardConfig contains dashboard configuration
 type DashboardConfig struct {
-	Theme           string               `json:"theme"`
-	Layout          string               `json:"layout"`
-	RefreshInterval time.Duration        `json:"refresh_interval"`
-	AutoSave        bool                 `json:"auto_save"`
-	Notifications   *NotificationConfig  `json:"notifications"`
-	Widgets         []*WidgetConfig      `json:"widgets"`
-	DataRetention   *DataRetentionConfig `json:"data_retention"`
-	Security        *SecurityConfig      `json:"security"`
-	Performance     *PerformanceConfig   `json:"performance"`
-	Integrations    []*IntegrationConfig `json:"integrations"`
-	CustomBranding  *BrandingConfig      `json:"custom_branding"`
-	AccessControl   *AccessControlConfig `json:"access_control"`
-	AuditSettings   *AuditConfig         `json:"audit_settings"`
-	BackupSettings  *BackupConfig        `json:"backup_settings"`
+	Theme               string               `json:"theme"`
+	Layout              string               `json:"layout"`
+	RefreshInterval     time.Duration        `json:"refresh_interval"`
+	AutoSave            bool                 `json:"auto_save"`
+	Notifications       *NotificationConfig  `json:"notifications"`
+	Widgets             []*WidgetConfig      `json:"widgets"`
+	DataRetention       *DataRetentionConfig `json:"data_retention"`
+	Security            *SecurityConfig      `json:"security"`
+	Performance         *PerformanceConfig   `json:"performance"`
+	Integrations        []*IntegrationConfig `json:"integrations"`
+	CustomBranding      *BrandingConfig      `json:"custom_branding"`
+	AccessControl       *AccessControlConfig `json:"access_control"`
+	RealTime            interface{}          `json:"real_time"`
+	Analytics           interface{}          `json:"analytics"`
+	Visualization       interface{}          `json:"visualization"`
+	AlertManager        interface{}          `json:"alert_manager"`
+	IncidentManager     interface{}          `json:"incident_manager"`
+	ThreatIntelligence  interface{}          `json:"threat_intelligence"`
+	Compliance          interface{}          `json:"compliance"`
+	Workflow            interface{}          `json:"workflow"`
+	Collaboration       interface{}          `json:"collaboration"`
+	Automation          interface{}          `json:"automation"`
+	Reporting           interface{}          `json:"reporting"`
+	Customization       interface{}          `json:"customization"`
+	AIInsights          interface{}          `json:"ai_insights"`
+	PredictiveAnalytics interface{}          `json:"predictive_analytics"`
+	AnomalyDetection    interface{}          `json:"anomaly_detection"`
+	SecurityMetrics     interface{}          `json:"security_metrics"`
+	KPICalculator       interface{}          `json:"kpi_calculator"`
+	AuditSettings       *AuditConfig         `json:"audit_settings"`
+	BackupSettings      *BackupConfig        `json:"backup_settings"`
 }
 
 // NewAdvancedSOCDashboard creates a new advanced SOC dashboard
@@ -925,7 +1024,6 @@ type UserMetrics struct{}
 type NetworkMetrics struct{}
 type AssetMetrics struct{}
 type IncidentMetrics struct{}
-type ResponseMetrics struct{}
 
 // Additional placeholder functions
 func (d *AdvancedSOCDashboard) loadDefaultWidgets() error                                   { return nil }

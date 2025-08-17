@@ -668,7 +668,7 @@ func (z *ZeroDayDetector) calculateNovelty(input *InputVector) float64 {
 	// This would typically use the memory network or historical data
 	// For now, return a placeholder value based on complexity and entropy
 
-	signature := z.generateSignatureHash(input)
+	_ = z.generateSignatureHash(input)
 
 	// Check if we've seen this exact signature before
 	// This would query a database or cache in a real implementation
@@ -1015,3 +1015,81 @@ type AdaptiveThresholdConfig struct {
 	AdaptationRate     float64 `yaml:"adaptation_rate"`
 	ConfidenceInterval float64 `yaml:"confidence_interval"`
 }
+
+// Missing method implementations for ZeroDayDetector
+func (s *SemanticAnalyzer) AnalyzeSemantics(ctx context.Context, input *InputVector) (map[string]float64, error) {
+	return map[string]float64{}, nil
+}
+
+func (z *ZeroDayDetector) formatSemanticEvidence(features map[string]float64) []string {
+	return []string{}
+}
+
+func (z *ZeroDayDetector) calculateSemanticConfidence(features map[string]float64) float64 {
+	return 0.5
+}
+
+func (m *MemoryAugmentedNetwork) ProcessInput(ctx context.Context, input *InputVector) (*MemoryActivation, error) {
+	return &MemoryActivation{
+		NoveltyScore:      0.5,
+		ActivatedMemories: []MemorySlot{},
+	}, nil
+}
+
+func (q *QuantumAnomalyDetector) AnalyzeQuantumSignature(ctx context.Context, input *InputVector) (*QuantumSignature, error) {
+	return &QuantumSignature{}, nil
+}
+
+func (k *CyberSecurityKnowledgeGraph) ReasonAboutThreat(ctx context.Context, input *InputVector, analysis *ZeroDayAnalysis) (*KnowledgeMatch, error) {
+	return &KnowledgeMatch{
+		InferredThreats: []string{},
+		ConfidenceScore: 0.5,
+	}, nil
+}
+
+func (z *ZeroDayDetector) runEnsembleModels(input *InputVector) []*EnsembleResult {
+	return []*EnsembleResult{}
+}
+
+func (z *ZeroDayDetector) calculateEnsembleConfidence(results []*EnsembleResult) float64 {
+	return 0.5
+}
+
+func (a *AdaptiveThreshold) GetCurrentThreshold(ctx context.Context, input *InputVector) float64 {
+	return 0.5
+}
+
+func (z *ZeroDayDetector) calculateFinalZeroDayScore(analysis *ZeroDayAnalysis, ensembleConfidence float64) float64 {
+	return 0.5
+}
+
+func (z *ZeroDayDetector) enrichWithThreatIntel(ctx context.Context, analysis *ZeroDayAnalysis) *EnrichedThreatIntel {
+	return &EnrichedThreatIntel{}
+}
+
+func (o *OnlineLearningSystem) LearnFromDetection(analysis *ZeroDayAnalysis) error {
+	return nil
+}
+
+func (a *AdaptiveThreshold) UpdateThreshold(score float64, isZeroDay bool) error {
+	return nil
+}
+
+func (z *ZeroDayDetector) analyzeTemporalPatterns(input *InputVector) []TemporalPattern {
+	return []TemporalPattern{}
+}
+
+func (z *ZeroDayDetector) analyzeSpatialPatterns(input *InputVector) []SpatialPattern {
+	return []SpatialPattern{}
+}
+
+func (z *ZeroDayDetector) analyzeFrequencyDomain(input *InputVector) *FrequencyAnalysis {
+	return &FrequencyAnalysis{}
+}
+
+// Placeholder types for the stub methods
+type EnsembleResult struct{}
+type ThreatIntelligenceData struct{}
+type TemporalFeatures struct{}
+type SpatialFeatures struct{}
+type FrequencyFeatures struct{}
