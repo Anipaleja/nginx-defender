@@ -298,7 +298,7 @@ func (m *Manager) formatTelegramMessage(event Event) string {
 	
 	switch event.Type {
 	case "threat_detected":
-		message = fmt.Sprintf("🚨 *Threat Detected*\n\n")
+		message = fmt.Sprintf("*Threat Detected*\n\n")
 		message += fmt.Sprintf("**IP:** `%s`\n", event.IP)
 		message += fmt.Sprintf("**Action:** %s\n", event.Action)
 		message += fmt.Sprintf("**Threat Level:** %s\n", event.ThreatLevel)
@@ -311,7 +311,7 @@ func (m *Manager) formatTelegramMessage(event Event) string {
 		message += fmt.Sprintf("**Time:** %s", event.Timestamp.Format("2006-01-02 15:04:05 UTC"))
 		
 	case "ip_blocked":
-		message = fmt.Sprintf("🔒 *IP Blocked*\n\n")
+		message = fmt.Sprintf("*IP Blocked*\n\n")
 		message += fmt.Sprintf("**IP:** `%s`\n", event.IP)
 		message += fmt.Sprintf("**Action:** %s\n", event.Action)
 		message += fmt.Sprintf("**Reason:** %s\n", event.Reason)
@@ -340,11 +340,11 @@ func (m *Manager) formatTelegramMessage(event Event) string {
 func (m *Manager) formatSlackMessage(event Event) string {
 	switch event.Type {
 	case "threat_detected":
-		return fmt.Sprintf("🚨 Threat detected from IP %s - Action: %s", event.IP, event.Action)
+		return fmt.Sprintf("Threat detected from IP %s - Action: %s", event.IP, event.Action)
 	case "ip_blocked":
-		return fmt.Sprintf("🔒 IP %s has been blocked - Reason: %s", event.IP, event.Reason)
+		return fmt.Sprintf("IP %s has been blocked - Reason: %s", event.IP, event.Reason)
 	default:
-		return fmt.Sprintf("⚠️ System Alert: %s", event.Reason)
+		return fmt.Sprintf("System Alert: %s", event.Reason)
 	}
 }
 
