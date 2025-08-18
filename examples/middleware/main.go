@@ -35,7 +35,7 @@ func DefenderHTTPMiddleware(def *defender.Defender) func(http.Handler) http.Hand
 }
 
 func main() {
-	fmt.Println("🛡️  nginx-defender Middleware Examples")
+	fmt.Println("nginx-defender Middleware Examples")
 	fmt.Println("======================================")
 
 	// Initialize defender
@@ -50,11 +50,11 @@ func main() {
 
 	// Set up event logging
 	def.OnThreatDetected(func(event defender.ThreatEvent) {
-		fmt.Printf("🚨 [MIDDLEWARE] Threat: %s (Score: %d)\n", event.IP, event.Score)
+		fmt.Printf("[MIDDLEWARE] Threat: %s (Score: %d)\n", event.IP, event.Score)
 	})
 
 	def.OnBlockDecision(func(event defender.BlockEvent) {
-		fmt.Printf("🚫 [MIDDLEWARE] Blocked: %s (%s)\n", event.IP, event.Reason)
+		fmt.Printf("[MIDDLEWARE] Blocked: %s (%s)\n", event.IP, event.Reason)
 	})
 
 	if err := def.Start(); err != nil {
@@ -65,17 +65,17 @@ func main() {
 	go runGorillaExample(def)
 	go runStandardHTTPExample(def)
 
-	fmt.Println("🌐 Started web servers:")
+	fmt.Println("Started web servers:")
 	fmt.Println("  - Gorilla Mux:   http://localhost:8084")
 	fmt.Println("  - Standard HTTP: http://localhost:8085")
 	fmt.Println("  - Defender UI:   http://localhost:8083")
 
 	// Simulate some blocking for demonstration
-	fmt.Println("\n🎭 Simulating blocked IPs for demo...")
+	fmt.Println("\nSimulating blocked IPs for demo...")
 	def.BlockIP("203.0.113.1", 0, "Demo blocked IP")
 	def.BlockIP("198.51.100.1", 0, "Another demo blocked IP")
 
-	fmt.Println("📋 Try these URLs to test protection:")
+	fmt.Println("Try these URLs to test protection:")
 	fmt.Println("  - Normal access: curl http://localhost:8084/")
 	fmt.Println("  - API endpoint: curl http://localhost:8085/api/health")
 	fmt.Println("  - With blocked IP: curl -H 'X-Forwarded-For: 203.0.113.1' http://localhost:8084/")
@@ -95,7 +95,7 @@ func runGorillaExample(def *defender.Defender) {
 <html>
 <head><title>Gorilla Mux + nginx-defender</title></head>
 <body>
-    <h1>🦍 Gorilla Mux + nginx-defender</h1>
+    <h1>Gorilla Mux + nginx-defender</h1>
     <p>Your IP: %s</p>
     <p>Threat Score: %s</p>
     <p>Protected by nginx-defender middleware</p>
@@ -127,7 +127,7 @@ func runGorillaExample(def *defender.Defender) {
 		})
 	})
 
-	fmt.Println("🦍 Starting Gorilla Mux server on :8084")
+	fmt.Println("Starting Gorilla Mux server on :8084")
 	log.Fatal(http.ListenAndServe(":8084", r))
 }
 
@@ -142,7 +142,7 @@ func runStandardHTTPExample(def *defender.Defender) {
 <html>
 <head><title>Standard HTTP + nginx-defender</title></head>
 <body>
-    <h1>🌐 Standard HTTP + nginx-defender</h1>
+    <h1>Standard HTTP + nginx-defender</h1>
     <p>Your IP: %s</p>
     <p>Threat Score: %s</p>
     <p>Protected by nginx-defender middleware</p>
@@ -192,7 +192,7 @@ func runStandardHTTPExample(def *defender.Defender) {
 		json.NewEncoder(w).Encode(response)
 	})))
 
-	fmt.Println("🌐 Starting Standard HTTP server on :8085")
+	fmt.Println("Starting Standard HTTP server on :8085")
 	log.Fatal(http.ListenAndServe(":8085", mux))
 }
 

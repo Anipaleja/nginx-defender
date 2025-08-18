@@ -224,14 +224,14 @@ class DjangoDefenderMiddleware:
 if __name__ == "__main__":
     # Basic usage
     with NginxDefender() as defender:
-        print("🛡️ nginx-defender Python Example")
+        print("nginx-defender Python Example")
         
         # Set up event handlers
         defender.on_threat_detected(lambda event: 
-            print(f"🚨 Threat: {event.ip} (Score: {event.score})"))
+            print(f"Threat: {event.ip} (Score: {event.score})"))
         
         defender.on_block_decision(lambda event: 
-            print(f"🚫 Blocked: {event.ip} ({event.reason})"))
+            print(f"Blocked: {event.ip} ({event.reason})"))
         
         # Monitor log file
         defender.monitor_log_file("/var/log/nginx/access.log", "combined")

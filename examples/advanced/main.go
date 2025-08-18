@@ -128,7 +128,7 @@ func main() {
 	}()
 
 	// Simulate some activities
-	fmt.Println("\n🎭 Simulating security events...")
+	fmt.Println("\nSimulating security events...")
 
 	// Test different scenarios
 	scenarios := []struct {

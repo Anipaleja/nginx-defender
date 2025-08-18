@@ -4,15 +4,15 @@ A comprehensive, embeddable Web Application Firewall (WAF) and threat detection 
 
 ## Features
 
-- 🚀 **Real-time threat detection** with ML-powered analysis
-- 🍯 **Advanced honeypot system** for deception and early warning
-- 🌍 **GeoIP-based blocking** with country-level restrictions
-- ⚡ **Intelligent rate limiting** with adaptive thresholds
-- 📊 **Comprehensive metrics** and monitoring
-- 🔔 **Multi-channel notifications** (Slack, email, webhooks)
-- 🎯 **Pattern-based detection** for known attack signatures
-- 🧠 **Machine learning classification** for behavioral analysis
-- 🔧 **Highly configurable** with production-ready defaults
+- **Real-time threat detection** with ML-powered analysis
+- **Advanced honeypot system** for deception and early warning
+- **GeoIP-based blocking** with country-level restrictions
+- **Intelligent rate limiting** with adaptive thresholds
+- **Comprehensive metrics** and monitoring
+- **Multi-channel notifications** (Slack, email, webhooks)
+- **Pattern-based detection** for known attack signatures
+- **Machine learning classification** for behavioral analysis
+- **Highly configurable** with production-ready defaults
 
 ## Installation
 
@@ -401,6 +401,6 @@ Contributions welcome! Please see [CONTRIBUTING.md](../CONTRIBUTING.md) for guid
 
 ## Support
 
-- 📖 Documentation: [docs/](../docs/)
-- 🐛 Issues: [GitHub Issues](https://github.com/Anipaleja/nginx-defender/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/Anipaleja/nginx-defender/discussions)
+- Documentation: [docs/](../docs/)
+- Issues: [GitHub Issues](https://github.com/Anipaleja/nginx-defender/issues)
+- Discussions: [GitHub Discussions](https://github.com/Anipaleja/nginx-defender/discussions)

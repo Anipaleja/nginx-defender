@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🛡️  nginx-defender Manual Testing Demo"
+echo "nginx-defender Manual Testing Demo"
 echo "======================================"
 
 # Colors

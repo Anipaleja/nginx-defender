@@ -1,4 +1,5 @@
-#!/bin/bash
+#!echo "Quick nginx-defender Functionality Test"
+echo "======================================="in/bash
 
 echo "🧪 Quick nginx-defender Functionality Test"
 echo "=========================================="
@@ -9,25 +10,25 @@ go build -o nginx-defender-quick-test ./cmd/nginx-defender
 # Test 1: Configuration validation
 echo "1. Testing configuration validation..."
 if ./nginx-defender-quick-test -config config.yaml -validate > /dev/null 2>&1; then
-    echo "✅ Configuration validation: PASSED"
+    echo "[PASS] Configuration validation: PASSED"
 else
-    echo "❌ Configuration validation: FAILED"
+    echo "[FAIL] Configuration validation: FAILED"
 fi
 
 # Test 2: Unit tests
 echo "2. Running unit tests..."
 if go test ./internal/firewall > /dev/null 2>&1; then
-    echo "✅ Unit tests: PASSED"
+    echo "[PASS] Unit tests: PASSED"
 else
-    echo "❌ Unit tests: FAILED"
+    echo "[FAIL] Unit tests: FAILED"
 fi
 
 # Test 3: Build test
 echo "3. Testing build..."
 if go build ./... > /dev/null 2>&1; then
-    echo "✅ Build test: PASSED"
+    echo "[PASS] Build test: PASSED"
 else
-    echo "❌ Build test: FAILED"
+    echo "[FAIL] Build test: FAILED"
 fi
 
 # Test 4: Regex patterns test
@@ -49,9 +50,9 @@ func main() {
 }'
 
 if [ $? -eq 0 ]; then
-    echo "✅ Regex patterns: PASSED"
+    echo "[PASS] Regex patterns: PASSED"
 else
-    echo "❌ Regex patterns: FAILED"
+    echo "[FAIL] Regex patterns: FAILED"
 fi
 
 # Test 5: Mock firewall test
@@ -99,9 +100,9 @@ func main() {
 EOF
 
 if go run quick_test.go > /dev/null 2>&1; then
-    echo "✅ Mock firewall: PASSED"
+    echo "[PASS] Mock firewall: PASSED"
 else
-    echo -n "❌ Mock firewall: FAILED - "
+    echo -n "[FAIL] Mock firewall: FAILED - "
     go run quick_test.go 2>&1 | head -1
 fi
 
@@ -109,16 +110,16 @@ fi
 rm -f nginx-defender-quick-test quick_test.go
 
 echo ""
-echo "🎯 Quick test complete!"
+echo " Quick test complete!"
 echo ""
-echo "📝 Manual Testing Instructions:"
+echo " Manual Testing Instructions:"
 echo "1. Run: go build -o nginx-defender ./cmd/nginx-defender"
 echo "2. Test dry-run: ./nginx-defender -config config.yaml -dry-run"
 echo "3. Test web interface: ./nginx-defender -config config.yaml"
 echo "4. Visit: http://localhost:8080 for web dashboard"
 echo "5. Visit: http://localhost:9090/metrics for Prometheus metrics"
 echo ""
-echo "🔧 Debugging:"
+echo " Debugging:"
 echo "- Use -debug flag for verbose logging"
 echo "- Use -dry-run flag to test without actual firewall changes"
 echo "- Check logs for detailed error information"

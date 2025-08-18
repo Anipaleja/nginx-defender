@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println("🛡️  nginx-defender Library Example")
+	fmt.Println("nginx-defender Library Example")
 	fmt.Println("====================================")
 
 	// Create a new defender instance with default configuration

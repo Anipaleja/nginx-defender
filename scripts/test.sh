@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/echo "Starting nginx-defender Test Suite"
+echo "=================================="sh
 
 # nginx-defender Test Suite
 # This script tests various components of nginx-defender
@@ -165,7 +166,7 @@ echo -e "${RED}Tests Failed: $FAILED${NC}"
 echo -e "Total Tests: $((PASSED + FAILED))"
 
 if [ $FAILED -eq 0 ]; then
-    echo -e "\n${GREEN}🎉 All tests passed!${NC}"
+    echo -e "\n${GREEN}All tests passed!${NC}"
     exit 0
 else
     echo -e "\n${RED}❌ Some tests failed!${NC}"
