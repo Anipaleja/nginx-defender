@@ -10,9 +10,9 @@ We provide security updates for the following versions:
 
 | Version | Supported          | Notes                    |
 | ------- | ------------------ | ------------------------ |
-| 2.0.x   | :white_check_mark: | Current stable release   |
-| 1.5.x   | :white_check_mark: | LTS support until 2025  |
-| 1.4.x   | :warning:          | Security fixes only      |
+| 1.5.0   | :white_check_mark: | Current stable release   |
+| 1.4.2   | :white_check_mark: | LTS support until 2025  |
+| 1.4.1   | :warning:          | Security fixes only      |
 | < 1.4   | :x:                | End of life             |
 
 ## Security Architecture
