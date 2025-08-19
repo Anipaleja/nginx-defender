@@ -24,7 +24,6 @@ updates:
       - "dependencies"
       - "go"
       - "security"
-    # Group security updates together
     groups:
       security-updates:
         patterns:
@@ -82,7 +81,6 @@ updates:
       - "python"
       - "bindings"
     allow:
-      # Be conservative with Python updates
       - dependency-type: "direct"
       - dependency-type: "indirect"
     groups:
@@ -179,6 +177,8 @@ updates:
     open-pull-requests-limit: 2
     reviewers:
       - "Anipaleja"
+    assignees:
+      - "Anipaleja"
     commit-message:
       prefix: "deps(examples)"
       include: "scope"
@@ -193,6 +193,8 @@ updates:
     open-pull-requests-limit: 2
     reviewers:
       - "Anipaleja"
+    assignees:
+      - "Anipaleja"
     commit-message:
       prefix: "deps(examples)"
       include: "scope"
@@ -206,6 +208,8 @@ updates:
       interval: "monthly"
     open-pull-requests-limit: 2
     reviewers:
+      - "Anipaleja"
+    assignees:
       - "Anipaleja"
     commit-message:
       prefix: "deps(examples)"
