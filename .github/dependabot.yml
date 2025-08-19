@@ -11,6 +11,7 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "America/New_York"
+    target-branch: "main"
     open-pull-requests-limit: 8
     reviewers:
       - "Anipaleja"
@@ -47,6 +48,7 @@ updates:
       day: "monday"
       time: "10:00"
       timezone: "America/New_York"
+    target-branch: "main"
     open-pull-requests-limit: 5
     reviewers:
       - "Anipaleja"
@@ -68,6 +70,7 @@ updates:
       day: "tuesday"
       time: "09:00"
       timezone: "America/New_York"
+    target-branch: "main"
     open-pull-requests-limit: 5
     reviewers:
       - "Anipaleja"
@@ -102,6 +105,7 @@ updates:
       day: "tuesday"
       time: "10:00"
       timezone: "America/New_York"
+    target-branch: "main"
     open-pull-requests-limit: 5
     reviewers:
       - "Anipaleja"
@@ -135,6 +139,7 @@ updates:
       day: "wednesday"
       time: "09:00"
       timezone: "America/New_York"
+    target-branch: "main"
     open-pull-requests-limit: 3
     reviewers:
       - "Anipaleja"
@@ -156,6 +161,7 @@ updates:
       day: "wednesday"
       time: "10:00"
       timezone: "America/New_York"
+    target-branch: "main"
     open-pull-requests-limit: 3
     reviewers:
       - "Anipaleja"
@@ -174,6 +180,7 @@ updates:
     directory: "/examples/basic"
     schedule:
       interval: "monthly"
+    target-branch: "main"
     open-pull-requests-limit: 2
     reviewers:
       - "Anipaleja"
@@ -190,6 +197,7 @@ updates:
     directory: "/examples/advanced"
     schedule:
       interval: "monthly"
+    target-branch: "main"
     open-pull-requests-limit: 2
     reviewers:
       - "Anipaleja"
@@ -206,6 +214,7 @@ updates:
     directory: "/examples/middleware"
     schedule:
       interval: "monthly"
+    target-branch: "main"
     open-pull-requests-limit: 2
     reviewers:
       - "Anipaleja"
