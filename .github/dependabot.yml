@@ -84,9 +84,7 @@ updates:
     allow:
       # Be conservative with Python updates
       - dependency-type: "direct"
-        update-types: ["security", "minor", "patch"]
       - dependency-type: "indirect"
-        update-types: ["security", "patch"]
     groups:
       flask-ecosystem:
         patterns:
