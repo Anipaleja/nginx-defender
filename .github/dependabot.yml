@@ -3,7 +3,7 @@
 
 version: 2
 updates:
-  # Core Go project - highest priority
+  # Go modules
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
@@ -12,57 +12,17 @@ updates:
       time: "09:00"
       timezone: "America/New_York"
     target-branch: "main"
-    open-pull-requests-limit: 8
-    reviewers:
-      - "Anipaleja"
-    assignees:
-      - "Anipaleja"
-    commit-message:
-      prefix: "deps"
-      prefix-development: "deps-dev"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "go"
-      - "security"
-    groups:
-      security-updates:
-        patterns:
-          - "*"
-        update-types:
-          - "patch"
-          - "minor"
-      go-major-updates:
-        patterns:
-          - "golang.org/x/*"
-          - "github.com/sirupsen/logrus"
-          - "github.com/gorilla/*"
-        update-types:
-          - "major"
-
-  # Library package - critical for users
-  - package-ecosystem: "gomod"
-    directory: "/lib"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "10:00"
-      timezone: "America/New_York"
-    target-branch: "main"
     open-pull-requests-limit: 5
     reviewers:
       - "Anipaleja"
     assignees:
       - "Anipaleja"
-    commit-message:
-      prefix: "deps(lib)"
-      include: "scope"
     labels:
       - "dependencies"
-      - "library"
       - "go"
+      - "security"
 
-  # Python bindings
+  # Python dependencies
   - package-ecosystem: "pip"
     directory: "/bindings/python"
     schedule:
@@ -76,28 +36,12 @@ updates:
       - "Anipaleja"
     assignees:
       - "Anipaleja"
-    commit-message:
-      prefix: "deps(python)"
-      include: "scope"
     labels:
       - "dependencies"
       - "python"
       - "bindings"
-    allow:
-      - dependency-type: "direct"
-      - dependency-type: "indirect"
-    groups:
-      flask-ecosystem:
-        patterns:
-          - "flask*"
-          - "werkzeug"
-          - "jinja2"
-      django-ecosystem:
-        patterns:
-          - "django*"
-          - "djangorestframework"
 
-  # Node.js bindings
+  # Node.js dependencies
   - package-ecosystem: "npm"
     directory: "/bindings/nodejs"
     schedule:
@@ -111,25 +55,10 @@ updates:
       - "Anipaleja"
     assignees:
       - "Anipaleja"
-    commit-message:
-      prefix: "deps(nodejs)"
-      include: "scope"
     labels:
       - "dependencies"
       - "nodejs"
       - "bindings"
-    groups:
-      dev-dependencies:
-        patterns:
-          - "@types/*"
-          - "typescript"
-          - "jest"
-        dependency-type: "development"
-      runtime-dependencies:
-        patterns:
-          - "axios"
-          - "*"
-        dependency-type: "production"
 
   # Docker base images
   - package-ecosystem: "docker"
@@ -145,9 +74,6 @@ updates:
       - "Anipaleja"
     assignees:
       - "Anipaleja"
-    commit-message:
-      prefix: "deps(docker)"
-      include: "scope"
     labels:
       - "dependencies"
       - "docker"
@@ -167,62 +93,7 @@ updates:
       - "Anipaleja"
     assignees:
       - "Anipaleja"
-    commit-message:
-      prefix: "deps(actions)"
-      include: "scope"
     labels:
       - "dependencies"
       - "github-actions"
       - "ci"
-
-  # Example projects (less frequent updates)
-  - package-ecosystem: "gomod"
-    directory: "/examples/basic"
-    schedule:
-      interval: "monthly"
-    target-branch: "main"
-    open-pull-requests-limit: 2
-    reviewers:
-      - "Anipaleja"
-    assignees:
-      - "Anipaleja"
-    commit-message:
-      prefix: "deps(examples)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "examples"
-
-  - package-ecosystem: "gomod"
-    directory: "/examples/advanced"
-    schedule:
-      interval: "monthly"
-    target-branch: "main"
-    open-pull-requests-limit: 2
-    reviewers:
-      - "Anipaleja"
-    assignees:
-      - "Anipaleja"
-    commit-message:
-      prefix: "deps(examples)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "examples"
-
-  - package-ecosystem: "gomod"
-    directory: "/examples/middleware"
-    schedule:
-      interval: "monthly"
-    target-branch: "main"
-    open-pull-requests-limit: 2
-    reviewers:
-      - "Anipaleja"
-    assignees:
-      - "Anipaleja"
-    commit-message:
-      prefix: "deps(examples)"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "examples"
