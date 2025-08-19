@@ -30,7 +30,8 @@ updates:
         patterns:
           - "*"
         update-types:
-          - "security"
+          - "patch"
+          - "minor"
       go-major-updates:
         patterns:
           - "golang.org/x/*"
@@ -177,9 +178,6 @@ updates:
     directory: "/examples/basic"
     schedule:
       interval: "monthly"
-      day: "first-monday"
-      time: "11:00"
-      timezone: "America/New_York"
     open-pull-requests-limit: 2
     reviewers:
       - "Anipaleja"
@@ -194,9 +192,6 @@ updates:
     directory: "/examples/advanced"
     schedule:
       interval: "monthly"
-      day: "first-monday"
-      time: "11:15"
-      timezone: "America/New_York"
     open-pull-requests-limit: 2
     reviewers:
       - "Anipaleja"
@@ -211,9 +206,6 @@ updates:
     directory: "/examples/middleware"
     schedule:
       interval: "monthly"
-      day: "first-monday"
-      time: "11:30"
-      timezone: "America/New_York"
     open-pull-requests-limit: 2
     reviewers:
       - "Anipaleja"
