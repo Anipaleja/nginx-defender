@@ -8,6 +8,8 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go)](https://golang.org/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20FreeBSD-orange)](https://github.com/anipaleja/nginx-defender)
+![Stars - Purple](https://img.shields.io/github/stars/Anipaleja/nginx-defender?color=9b30ff&style=flat)
+![NGINX](https://img.shields.io/badge/nginx-1.25+-32CD32?logo=nginx&logoColor=white)
 
 **Enterprise-Grade Web Application Firewall with Advanced Threat Intelligence**
 
