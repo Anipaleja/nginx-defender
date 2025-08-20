@@ -1,0 +1,97 @@
+# Simplified Dependabot configuration for nginx-defender
+# This is a more conservative approach with fewer update frequencies
+
+version: 2
+updates:
+  # Main Go project - most critical
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Anipaleja"
+    commit-message:
+      prefix: "deps"
+    labels:
+      - "dependencies"
+      - "security"
+    # Group related updates together
+    groups:
+      security-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "security"
+      minor-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Library package - second priority
+  - package-ecosystem: "gomod"
+    directory: "/lib"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "Anipaleja"
+    commit-message:
+      prefix: "deps(lib)"
+    labels:
+      - "dependencies"
+      - "library"
+
+  # Language bindings - monthly updates
+  - package-ecosystem: "npm"
+    directory: "/bindings/nodejs"
+    schedule:
+      interval: "monthly"
+      day: "first-monday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(nodejs)"
+    labels:
+      - "dependencies"
+      - "nodejs"
+
+  - package-ecosystem: "pip"
+    directory: "/bindings/python"
+    schedule:
+      interval: "monthly"
+      day: "first-monday"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(python)"
+    labels:
+      - "dependencies"
+      - "python"
+
+  # Infrastructure updates
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "deps(docker)"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "deps(ci)"
+    labels:
+      - "dependencies"
+      - "github-actions"
