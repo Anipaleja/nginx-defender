@@ -22,6 +22,7 @@ type Config struct {
 	Clustering     ClusteringConfig     `yaml:"clustering"`
 	Performance    PerformanceConfig    `yaml:"performance"`
 	Honeypot       HoneypotConfig       `yaml:"honeypot"`
+	WebInterface   WebInterfaceConfig   `yaml:"web_interface"`
 }
 
 type ServerConfig struct {
@@ -192,6 +193,61 @@ type HoneypotConfig struct {
 	Enabled     bool  `yaml:"enabled"`
 	Ports       []int `yaml:"ports"`
 	LogAttempts bool  `yaml:"log_attempts"`
+}
+
+// WebInterfaceConfig represents web interface configuration
+type WebInterfaceConfig struct {
+	Enabled    bool             `yaml:"enabled"`
+	Auth       AuthConfig       `yaml:"auth"`
+	Features   FeaturesConfig   `yaml:"features"`
+	WebSocket  WebSocketConfig  `yaml:"websocket"`
+	API        APIConfig        `yaml:"api"`
+	Static     StaticConfig     `yaml:"static"`
+}
+
+type AuthConfig struct {
+	Enabled         bool     `yaml:"enabled"`
+	Method          string   `yaml:"method"`
+	SessionTimeout  int      `yaml:"session_timeout"`
+	DefaultUsername string   `yaml:"default_username"`
+	DefaultPassword string   `yaml:"default_password"`
+	PasswordHashAlgo string  `yaml:"password_hash_algo"`
+	Users           []User   `yaml:"users"`
+}
+
+type User struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
+
+type FeaturesConfig struct {
+	RealTimeDashboard   bool `yaml:"real_time_dashboard"`
+	LogViewer          bool `yaml:"log_viewer"`
+	ConfigurationEditor bool `yaml:"configuration_editor"`
+	FirewallManagement bool `yaml:"firewall_management"`
+	StatisticsCharts   bool `yaml:"statistics_charts"`
+	ThreatAnalysis     bool `yaml:"threat_analysis"`
+}
+
+type WebSocketConfig struct {
+	Enabled     bool `yaml:"enabled"`
+	Path        string `yaml:"path"`
+	PingInterval int `yaml:"ping_interval"`
+	PongTimeout  int `yaml:"pong_timeout"`
+}
+
+type APIConfig struct {
+	Enabled     bool     `yaml:"enabled"`
+	Version     string   `yaml:"version"`
+	RateLimit   int      `yaml:"rate_limit"`
+	CorsEnabled bool     `yaml:"cors_enabled"`
+	CorsOrigins []string `yaml:"cors_origins"`
+}
+
+type StaticConfig struct {
+	Path           string `yaml:"path"`
+	CacheDuration  int    `yaml:"cache_duration"`
+	Compression    bool   `yaml:"compression"`
 }
 
 // Load loads configuration from the specified file

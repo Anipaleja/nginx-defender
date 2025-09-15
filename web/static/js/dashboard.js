@@ -592,15 +592,26 @@ class Dashboard {
     showNotification(message, type = 'info') {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center">
-                <span>${message}</span>
-                <button type="button" class="btn-close btn-close-white" onclick="this.parentElement.parentElement.remove()"></button>
-            </div>
-        `;
-        
+
+        const container = document.createElement('div');
+        container.className = 'd-flex justify-content-between align-items-center';
+
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = message;
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'btn-close btn-close-white';
+        closeButton.onclick = function() {
+            notification.remove();
+        };
+
+        container.appendChild(messageSpan);
+        container.appendChild(closeButton);
+        notification.appendChild(container);
+
         document.body.appendChild(notification);
-        
+
         // Auto-remove after 5 seconds
         setTimeout(() => {
             if (notification.parentElement) {
