@@ -1,5 +1,5 @@
 # Multi-stage build for nginx-defender
-FROM golang:1.21-alpine AS build
+FROM golang:1.25-alpine AS build
 
 # Add metadata labels for container registry
 LABEL org.opencontainers.image.source=https://github.com/Anipaleja/nginx-defender
