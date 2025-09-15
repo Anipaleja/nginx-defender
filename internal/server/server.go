@@ -2,10 +2,15 @@ package server
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/Anipaleja/nginx-defender/internal/config"
@@ -15,11 +20,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Server provides the web interface and API
 type Server struct {
 	config          config.ServerConfig
+	webConfig       config.WebInterfaceConfig
 	logger          *logrus.Logger
 	router          *mux.Router
 	httpServer      *http.Server
@@ -33,20 +40,33 @@ type Server struct {
 	upgrader websocket.Upgrader
 	clients  map[*websocket.Conn]bool
 	
+	// Authentication
+	sessions map[string]*Session
+	sessionMutex sync.RWMutex
+	
 	// Context for shutdown
 	ctx    context.Context
 	cancel context.CancelFunc
 }
 
+// Session represents an authenticated session
+type Session struct {
+	ID       string
+	Username string
+	Expires  time.Time
+}
+
 // NewServer creates a new web server
-func NewServer(cfg config.ServerConfig, logger *logrus.Logger) *Server {
+func NewServer(cfg config.ServerConfig, webCfg config.WebInterfaceConfig, logger *logrus.Logger) *Server {
 	ctx, cancel := context.WithCancel(context.Background())
 	
 	server := &Server{
-		config:  cfg,
-		logger:  logger,
-		router:  mux.NewRouter(),
-		clients: make(map[*websocket.Conn]bool),
+		config:    cfg,
+		webConfig: webCfg,
+		logger:    logger,
+		router:    mux.NewRouter(),
+		clients:   make(map[*websocket.Conn]bool),
+		sessions:  make(map[string]*Session),
 		upgrader: websocket.Upgrader{
 			CheckOrigin: func(r *http.Request) bool {
 				return true // Allow all origins for now
@@ -81,13 +101,23 @@ func (s *Server) setupRoutes() {
 	// Static files
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static/"))))
 	
-	// Web interface routes
-	s.router.HandleFunc("/", s.dashboardHandler).Methods("GET")
-	s.router.HandleFunc("/dashboard", s.dashboardHandler).Methods("GET")
-	s.router.HandleFunc("/threats", s.threatsHandler).Methods("GET")
-	s.router.HandleFunc("/firewall", s.firewallHandler).Methods("GET")
-	s.router.HandleFunc("/settings", s.settingsHandler).Methods("GET")
-	s.router.HandleFunc("/logs", s.logsHandler).Methods("GET")
+	// Authentication routes (always available)
+	s.router.HandleFunc("/login", s.loginPageHandler).Methods("GET")
+	s.router.HandleFunc("/login", s.loginHandler).Methods("POST")
+	s.router.HandleFunc("/logout", s.logoutHandler).Methods("POST", "GET")
+	
+	// Protected web interface routes
+	protected := s.router.PathPrefix("/").Subrouter()
+	if s.webConfig.Auth.Enabled {
+		protected.Use(s.authMiddleware)
+	}
+	
+	protected.HandleFunc("/", s.dashboardHandler).Methods("GET")
+	protected.HandleFunc("/dashboard", s.dashboardHandler).Methods("GET")
+	protected.HandleFunc("/threats", s.threatsHandler).Methods("GET")
+	protected.HandleFunc("/firewall", s.firewallHandler).Methods("GET")
+	protected.HandleFunc("/settings", s.settingsHandler).Methods("GET")
+	protected.HandleFunc("/logs", s.logsHandler).Methods("GET")
 	
 	// API routes
 	api := s.router.PathPrefix("/api/v1").Subrouter()
@@ -392,24 +422,23 @@ func (s *Server) BroadcastUpdate(updateType string, data interface{}) {
 }
 
 // renderTemplate renders an HTML template
-func (s *Server) renderTemplate(w http.ResponseWriter, template string, data map[string]interface{}) {
-	// This would render actual HTML templates
-	// For now, return a simple JSON response
+func (s *Server) renderTemplate(w http.ResponseWriter, templateName string, data map[string]interface{}) {
+	templatePath := filepath.Join("web", "templates", templateName)
+	
+	tmpl, err := template.ParseFiles(templatePath)
+	if err != nil {
+		s.logger.Errorf("Failed to parse template %s: %v", templateName, err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, `
-	<!DOCTYPE html>
-	<html>
-	<head>
-		<title>%s - nginx-defender</title>
-		<link rel="stylesheet" href="/static/css/dashboard.css">
-	</head>
-	<body>
-		<h1>%s</h1>
-		<p>nginx-defender Web Interface</p>
-		<script src="/static/js/dashboard.js"></script>
-	</body>
-	</html>
-	`, data["Title"], data["Title"])
+	
+	if err := tmpl.Execute(w, data); err != nil {
+		s.logger.Errorf("Failed to execute template %s: %v", templateName, err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 }
 
 // Start starts the web server
@@ -494,6 +523,149 @@ func (s *Server) apiMetricsHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) apiMetricsExportHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 	json.NewEncoder(w).Encode(map[string]string{"error": "not implemented"})
+}
+
+// Authentication middleware
+func (s *Server) authMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("session")
+		if err != nil {
+			s.redirectToLogin(w, r)
+			return
+		}
+		
+		s.sessionMutex.RLock()
+		session, exists := s.sessions[cookie.Value]
+		s.sessionMutex.RUnlock()
+		
+		if !exists || session.Expires.Before(time.Now()) {
+			if exists {
+				// Clean up expired session
+				s.sessionMutex.Lock()
+				delete(s.sessions, cookie.Value)
+				s.sessionMutex.Unlock()
+			}
+			s.redirectToLogin(w, r)
+			return
+		}
+		
+		next.ServeHTTP(w, r)
+	})
+}
+
+// loginPageHandler handles GET requests to /login
+func (s *Server) loginPageHandler(w http.ResponseWriter, r *http.Request) {
+	errorMessage := s.getErrorMessage(r)
+	data := map[string]interface{}{
+		"Error": errorMessage,
+	}
+	
+	s.renderTemplate(w, "login.html", data)
+}
+
+// loginHandler handles POST requests to /login
+func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	
+	if s.validateCredentials(username, password) {
+		// Create new session
+		sessionID := s.generateSessionID()
+		session := &Session{
+			ID:       sessionID,
+			Username: username,
+			Expires:  time.Now().Add(time.Duration(s.webConfig.Auth.SessionTimeout) * time.Second),
+		}
+		
+		s.sessionMutex.Lock()
+		s.sessions[sessionID] = session
+		s.sessionMutex.Unlock()
+		
+		// Set session cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session",
+			Value:    sessionID,
+			Expires:  session.Expires,
+			HttpOnly: true,
+			Path:     "/",
+		})
+		
+		s.logger.Infof("User %s logged in successfully", username)
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
+	} else {
+		s.logger.Warnf("Failed login attempt for user %s", username)
+		http.Redirect(w, r, "/login?error=invalid", http.StatusFound)
+	}
+}
+
+// logoutHandler handles logout requests
+func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session")
+	if err == nil {
+		// Remove session
+		s.sessionMutex.Lock()
+		delete(s.sessions, cookie.Value)
+		s.sessionMutex.Unlock()
+		
+		// Clear cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session",
+			Value:    "",
+			Expires:  time.Now().Add(-1 * time.Hour),
+			HttpOnly: true,
+			Path:     "/",
+		})
+	}
+	
+	http.Redirect(w, r, "/login", http.StatusFound)
+}
+
+// validateCredentials validates user credentials
+func (s *Server) validateCredentials(username, password string) bool {
+	// Check users list from config
+	for _, user := range s.webConfig.Auth.Users {
+		if user.Username == username {
+			// Check if password is hashed or plain text
+			if s.webConfig.Auth.PasswordHashAlgo == "bcrypt" {
+				return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) == nil
+			} else {
+				// Plain text comparison (not recommended for production)
+				return user.Password == password
+			}
+		}
+	}
+	
+	// Fallback to default credentials
+	if username == s.webConfig.Auth.DefaultUsername {
+		if s.webConfig.Auth.PasswordHashAlgo == "bcrypt" {
+			return bcrypt.CompareHashAndPassword([]byte(s.webConfig.Auth.DefaultPassword), []byte(password)) == nil
+		} else {
+			return s.webConfig.Auth.DefaultPassword == password
+		}
+	}
+	
+	return false
+}
+
+// generateSessionID generates a random session ID
+func (s *Server) generateSessionID() string {
+	bytes := make([]byte, 32)
+	rand.Read(bytes)
+	return base64.URLEncoding.EncodeToString(bytes)
+}
+
+// redirectToLogin redirects to login page
+func (s *Server) redirectToLogin(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/login", http.StatusFound)
+}
+
+// getErrorMessage returns error message for login page
+func (s *Server) getErrorMessage(r *http.Request) string {
+	errorParam := r.URL.Query().Get("error")
+	if errorParam == "invalid" {
+		return `<div class="error">Invalid username or password</div>`
+	}
+	return ""
 }
 
 func (s *Server) apiConfigHandler(w http.ResponseWriter, r *http.Request) {

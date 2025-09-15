@@ -270,11 +270,17 @@ func (m *MLModel) determineThreatType(features []float64) string {
 
 // updateRoutine periodically updates the model
 func (m *MLModel) updateRoutine() {
-	ticker := time.NewTicker(time.Duration(m.config.UpdateInterval) * time.Second)
+	// Ensure we have a positive interval, default to 1 hour if not set
+	interval := m.config.UpdateInterval
+	if interval <= 0 {
+		interval = 3600 // 1 hour default
+	}
+	
+	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 	defer ticker.Stop()
 	
 	for range ticker.C {
-		if time.Since(m.lastUpdate) > time.Duration(m.config.UpdateInterval)*time.Second {
+		if time.Since(m.lastUpdate) > time.Duration(interval)*time.Second {
 			if err := m.Train(); err != nil {
 				// Log error but continue
 				continue

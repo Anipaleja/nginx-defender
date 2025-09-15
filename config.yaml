@@ -110,7 +110,7 @@ detection:
     
   # Geographic filtering with threat scoring
   geographic:
-    enabled: true
+    enabled: false
     mode: "threat_score" # block, allow, threat_score
     blocked_countries: ["CN", "RU", "KP", "IR"]
     allowed_countries: [] # if set, only these are allowed
@@ -545,6 +545,11 @@ web_interface:
     default_username: "admin"
     default_password: "change_me_please"
     password_hash_algo: "bcrypt"
+    users:
+      - username: "admin"
+        password: "change_me_please"
+      - username: "operator"
+        password: "secure_password_123"
     
   # Features
   features:

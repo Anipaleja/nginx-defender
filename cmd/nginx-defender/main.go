@@ -172,7 +172,7 @@ func NewApplication(cfg *config.Config, logger *logrus.Logger, dryRun bool) (*Ap
 	app.notificationMgr = notificationMgr
 
 	// Initialize web server
-	webServer := server.NewServer(cfg.Server, logger)
+	webServer := server.NewServer(cfg.Server, cfg.WebInterface, logger)
 	webServer.SetComponents(detectionEngine, firewallManager, metricsCollector)
 	app.webServer = webServer
 
