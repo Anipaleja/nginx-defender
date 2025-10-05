@@ -1,0 +1,111 @@
+name: Publish Packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        working-directory: ./bindings/nodejs
+        run: npm ci
+
+      - name: Build package
+        working-directory: ./bindings/nodejs
+        run: npm run build
+
+      - name: Test package
+        working-directory: ./bindings/nodejs
+        run: npm test
+
+      - name: Publish to npm
+        working-directory: ./bindings/nodejs
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Setup Node.js for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: Publish to GitHub Packages
+        working-directory: ./bindings/nodejs
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-python:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build package
+        working-directory: ./bindings/python
+        run: python -m build
+
+      - name: Check package
+        working-directory: ./bindings/python
+        run: twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: ./bindings/python/dist/
+
+  publish-go:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Run tests
+        run: go test ./...
+
+      - name: Tag Go module
+        run: |
+          TAG_NAME="lib/${{ github.ref_name }}"
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists, skipping..."
+          else
+            git tag "$TAG_NAME"
+            git push origin "$TAG_NAME"
+          fi

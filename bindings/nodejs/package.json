@@ -1,13 +1,15 @@
 {
-  "name": "nginx-defender",
+  "name": "@anipaleja/nginx-defender",
   "version": "2.0.0",
   "description": "Web Application Firewall and threat detection for Node.js applications",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "test": "jest",
-    "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "build": "echo 'No build step needed - using JavaScript directly'",
+    "prepublishOnly": "npm test --if-present",
+    "publish:github": "npm publish --registry=https://npm.pkg.github.com",
+    "publish:npm": "npm publish --registry=https://registry.npmjs.org"
   },
   "keywords": [
     "waf", 
@@ -32,6 +34,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Anipaleja/nginx-defender.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "@anipaleja:registry": "https://npm.pkg.github.com"
   },
   "engines": {
     "node": ">=14.0.0"

@@ -27,22 +27,22 @@ var (
 
 // Application represents the main application
 type Application struct {
-	config          *config.Config
-	logger          *logrus.Logger
-	
+	config *config.Config
+	logger *logrus.Logger
+
 	// Core components
-	detectionEngine   *detector.Engine
-	firewallManager   *firewall.Manager
-	metricsCollector  *metrics.Collector
-	notificationMgr   *notification.Manager
-	webServer         *server.Server
-	
+	detectionEngine  *detector.Engine
+	firewallManager  *firewall.Manager
+	metricsCollector *metrics.Collector
+	notificationMgr  *notification.Manager
+	webServer        *server.Server
+
 	// Log monitoring
-	logMonitors       []*LogMonitor
-	
+	logMonitors []*LogMonitor
+
 	// Context for graceful shutdown
-	ctx               context.Context
-	cancel            context.CancelFunc
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 // LogMonitor monitors a log file for threats
@@ -86,13 +86,13 @@ func main() {
 		logger.SetLevel(logrus.DebugLevel)
 		cfg.Logs.Level = "debug"
 	}
-	
+
 	// Set log level from config
 	level, err := logrus.ParseLevel(cfg.Logs.Level)
 	if err == nil {
 		logger.SetLevel(level)
 	}
-	
+
 	// Set log format
 	if cfg.Logs.Format == "json" {
 		logger.SetFormatter(&logrus.JSONFormatter{})
@@ -126,7 +126,7 @@ func main() {
 // NewApplication creates a new application instance
 func NewApplication(cfg *config.Config, logger *logrus.Logger, dryRun bool) (*Application, error) {
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	app := &Application{
 		config: cfg,
 		logger: logger,
@@ -215,7 +215,7 @@ func (app *Application) createLogMonitor(logConfig config.LogConfig, defaultForm
 	}
 
 	parser := logparser.NewParser(format)
-	
+
 	monitor := &LogMonitor{
 		config:   logConfig,
 		parser:   parser,
@@ -249,12 +249,12 @@ func (app *Application) Start() error {
 // runLogMonitor runs a log monitor
 func (app *Application) runLogMonitor(id int, monitor *LogMonitor) {
 	app.logger.Infof("Starting log monitor %d for file: %s", id, monitor.config.Path)
-	
+
 	// This is a simplified implementation
 	// In reality, you'd use file tailing libraries like fsnotify
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-monitor.stopChan:
@@ -272,7 +272,7 @@ func (app *Application) runLogMonitor(id int, monitor *LogMonitor) {
 func (app *Application) processLogFile(monitor *LogMonitor) {
 	// This is a placeholder implementation
 	// In reality, you'd read new lines from the log file and process them
-	
+
 	// Example log entry processing
 	sampleEntry := &logparser.LogEntry{
 		IP:           "192.168.1.100",
@@ -282,10 +282,10 @@ func (app *Application) processLogFile(monitor *LogMonitor) {
 		ResponseCode: 404,
 		UserAgent:    "curl/7.68.0",
 	}
-	
+
 	// Analyze the entry
 	result := app.detectionEngine.AnalyzeLogEntry(sampleEntry)
-	
+
 	// Record metrics
 	app.metricsCollector.RecordRequest(
 		sampleEntry.Method,
@@ -293,7 +293,7 @@ func (app *Application) processLogFile(monitor *LogMonitor) {
 		"US", // Would be determined by GeoIP
 		100*time.Millisecond,
 	)
-	
+
 	// Handle threats
 	if len(result.ThreatTypes) > 0 {
 		app.handleThreatDetection(result)
@@ -303,10 +303,10 @@ func (app *Application) processLogFile(monitor *LogMonitor) {
 // handleThreatDetection handles a detected threat
 func (app *Application) handleThreatDetection(result *detector.DetectionResult) {
 	app.logger.WithFields(logrus.Fields{
-		"ip":            result.IP,
-		"threat_types":  result.ThreatTypes,
-		"score":         result.Score,
-		"action":        result.RecommendedAction,
+		"ip":           result.IP,
+		"threat_types": result.ThreatTypes,
+		"score":        result.Score,
+		"action":       result.RecommendedAction,
 	}).Warn("Threat detected")
 
 	// Record threat metrics
@@ -328,18 +328,18 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 		if result.ThreatLevel == detector.ThreatLevelCritical {
 			duration = 24 * time.Hour
 		}
-		
+
 		err := app.firewallManager.BlockIP(
 			result.IP,
 			firewall.ActionBlock,
 			duration,
 			fmt.Sprintf("Threat detected: %v", result.ThreatTypes),
 			map[string]string{
-				"score":       fmt.Sprintf("%.2f", result.Score),
+				"score":        fmt.Sprintf("%.2f", result.Score),
 				"threat_types": fmt.Sprintf("%v", result.ThreatTypes),
 			},
 		)
-		
+
 		if err != nil {
 			app.logger.WithError(err).Errorf("Failed to block IP %s", result.IP)
 		} else {
@@ -349,7 +349,7 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 				"BLOCK",
 				"", // Country
 			)
-			
+
 			// Send notification
 			app.notificationMgr.SendIPBlocked(
 				result.IP,
@@ -369,7 +369,7 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 			fmt.Sprintf("AI scraper detected: %v", result.ThreatTypes),
 			nil,
 		)
-		
+
 		if err != nil {
 			app.logger.WithError(err).Errorf("Failed to tarpit IP %s", result.IP)
 		}
@@ -381,11 +381,11 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 
 	// Broadcast update to web clients
 	app.webServer.BroadcastUpdate("threat_detected", map[string]interface{}{
-		"ip":            result.IP,
-		"threat_types":  result.ThreatTypes,
-		"score":         result.Score,
-		"action":        result.RecommendedAction,
-		"timestamp":     result.Timestamp,
+		"ip":           result.IP,
+		"threat_types": result.ThreatTypes,
+		"score":        result.Score,
+		"action":       result.RecommendedAction,
+		"timestamp":    result.Timestamp,
 	})
 }
 
@@ -409,7 +409,7 @@ func (app *Application) getThreatLevelString(level detector.ThreatLevel) string 
 func (app *Application) WaitForShutdown() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	
+
 	select {
 	case sig := <-sigChan:
 		app.logger.Infof("Received signal: %v", sig)
@@ -421,28 +421,28 @@ func (app *Application) WaitForShutdown() {
 // Shutdown gracefully shuts down the application
 func (app *Application) Shutdown() error {
 	app.logger.Info("Starting graceful shutdown...")
-	
+
 	// Cancel context
 	app.cancel()
-	
+
 	// Stop log monitors
 	for _, monitor := range app.logMonitors {
 		close(monitor.stopChan)
 	}
-	
+
 	// Shutdown web server
 	if err := app.webServer.Shutdown(); err != nil {
 		app.logger.WithError(err).Error("Error shutting down web server")
 	}
-	
+
 	// Shutdown firewall manager
 	if err := app.firewallManager.Shutdown(); err != nil {
 		app.logger.WithError(err).Error("Error shutting down firewall manager")
 	}
-	
+
 	// Shutdown notification manager
 	app.notificationMgr.Shutdown()
-	
+
 	app.logger.Info("Graceful shutdown completed")
 	return nil
 }

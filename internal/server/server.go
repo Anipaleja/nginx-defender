@@ -25,25 +25,25 @@ import (
 
 // Server provides the web interface and API
 type Server struct {
-	config          config.ServerConfig
-	webConfig       config.WebInterfaceConfig
-	logger          *logrus.Logger
-	router          *mux.Router
-	httpServer      *http.Server
-	
+	config     config.ServerConfig
+	webConfig  config.WebInterfaceConfig
+	logger     *logrus.Logger
+	router     *mux.Router
+	httpServer *http.Server
+
 	// Components
-	detectionEngine *detector.Engine
-	firewallManager *firewall.Manager
+	detectionEngine  *detector.Engine
+	firewallManager  *firewall.Manager
 	metricsCollector *metrics.Collector
-	
+
 	// WebSocket
 	upgrader websocket.Upgrader
 	clients  map[*websocket.Conn]bool
-	
+
 	// Authentication
-	sessions map[string]*Session
+	sessions     map[string]*Session
 	sessionMutex sync.RWMutex
-	
+
 	// Context for shutdown
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -59,7 +59,7 @@ type Session struct {
 // NewServer creates a new web server
 func NewServer(cfg config.ServerConfig, webCfg config.WebInterfaceConfig, logger *logrus.Logger) *Server {
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	server := &Server{
 		config:    cfg,
 		webConfig: webCfg,
@@ -75,9 +75,9 @@ func NewServer(cfg config.ServerConfig, webCfg config.WebInterfaceConfig, logger
 		ctx:    ctx,
 		cancel: cancel,
 	}
-	
+
 	server.setupRoutes()
-	
+
 	server.httpServer = &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", cfg.BindAddress, cfg.Port),
 		Handler:      server.router,
@@ -85,7 +85,7 @@ func NewServer(cfg config.ServerConfig, webCfg config.WebInterfaceConfig, logger
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
-	
+
 	return server
 }
 
@@ -100,62 +100,62 @@ func (s *Server) SetComponents(engine *detector.Engine, firewall *firewall.Manag
 func (s *Server) setupRoutes() {
 	// Static files
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static/"))))
-	
+
 	// Authentication routes (always available)
 	s.router.HandleFunc("/login", s.loginPageHandler).Methods("GET")
 	s.router.HandleFunc("/login", s.loginHandler).Methods("POST")
 	s.router.HandleFunc("/logout", s.logoutHandler).Methods("POST", "GET")
-	
+
 	// Protected web interface routes
 	protected := s.router.PathPrefix("/").Subrouter()
 	if s.webConfig.Auth.Enabled {
 		protected.Use(s.authMiddleware)
 	}
-	
+
 	protected.HandleFunc("/", s.dashboardHandler).Methods("GET")
 	protected.HandleFunc("/dashboard", s.dashboardHandler).Methods("GET")
 	protected.HandleFunc("/threats", s.threatsHandler).Methods("GET")
 	protected.HandleFunc("/firewall", s.firewallHandler).Methods("GET")
 	protected.HandleFunc("/settings", s.settingsHandler).Methods("GET")
 	protected.HandleFunc("/logs", s.logsHandler).Methods("GET")
-	
+
 	// API routes
 	api := s.router.PathPrefix("/api/v1").Subrouter()
 	api.Use(s.jsonMiddleware)
-	
+
 	// Status and health
 	api.HandleFunc("/health", s.healthHandler).Methods("GET")
 	api.HandleFunc("/status", s.statusHandler).Methods("GET")
 	api.HandleFunc("/stats", s.statsHandler).Methods("GET")
-	
+
 	// Threat detector
 	api.HandleFunc("/threats", s.apiThreatsHandler).Methods("GET")
 	api.HandleFunc("/threats/{id}", s.apiThreatHandler).Methods("GET")
 	api.HandleFunc("/threats/search", s.apiThreatSearchHandler).Methods("POST")
-	
+
 	// Firewall management
 	api.HandleFunc("/firewall/rules", s.apiFirewallRulesHandler).Methods("GET")
 	api.HandleFunc("/firewall/rules", s.apiFirewallAddRuleHandler).Methods("POST")
 	api.HandleFunc("/firewall/rules/{id}", s.apiFirewallDeleteRuleHandler).Methods("DELETE")
 	api.HandleFunc("/firewall/block", s.apiFirewallBlockHandler).Methods("POST")
 	api.HandleFunc("/firewall/unblock", s.apiFirewallUnblockHandler).Methods("POST")
-	
+
 	// IP analysis
 	api.HandleFunc("/ip/{ip}/analyze", s.apiIPAnalyzeHandler).Methods("GET")
 	api.HandleFunc("/ip/{ip}/history", s.apiIPHistoryHandler).Methods("GET")
 	api.HandleFunc("/ip/{ip}/reputation", s.apiIPReputationHandler).Methods("GET")
-	
+
 	// Metrics and monitoring
 	api.HandleFunc("/metrics", s.apiMetricsHandler).Methods("GET")
 	api.HandleFunc("/metrics/export", s.apiMetricsExportHandler).Methods("GET")
-	
+
 	// Configuration
 	api.HandleFunc("/config", s.apiConfigHandler).Methods("GET")
 	api.HandleFunc("/config", s.apiConfigUpdateHandler).Methods("PUT")
-	
+
 	// Real-time updates via WebSocket
 	s.router.HandleFunc("/ws", s.websocketHandler)
-	
+
 	// Prometheus metrics endpoint
 	if s.metricsCollector != nil {
 		s.router.Handle("/metrics", s.metricsCollector.Handler())
@@ -169,12 +169,12 @@ func (s *Server) jsonMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		
+
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		
+
 		next.ServeHTTP(w, r)
 	})
 }
@@ -218,23 +218,23 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 		"version":   "2.0.0",
 		"uptime":    time.Since(time.Now()).String(), // This would be actual uptime
 	}
-	
+
 	json.NewEncoder(w).Encode(response)
 }
 
 func (s *Server) statusHandler(w http.ResponseWriter, r *http.Request) {
 	status := map[string]interface{}{
-		"detection_engine": s.detectionEngine != nil,
-		"firewall":         s.firewallManager != nil,
-		"metrics":          s.metricsCollector != nil,
+		"detection_engine":  s.detectionEngine != nil,
+		"firewall":          s.firewallManager != nil,
+		"metrics":           s.metricsCollector != nil,
 		"websocket_clients": len(s.clients),
-		"timestamp":        time.Now().UTC(),
+		"timestamp":         time.Now().UTC(),
 	}
-	
+
 	if s.firewallManager != nil {
 		status["firewall_stats"] = s.firewallManager.GetStats()
 	}
-	
+
 	json.NewEncoder(w).Encode(status)
 }
 
@@ -242,15 +242,15 @@ func (s *Server) statsHandler(w http.ResponseWriter, r *http.Request) {
 	stats := map[string]interface{}{
 		"timestamp": time.Now().UTC(),
 	}
-	
+
 	if s.metricsCollector != nil {
 		stats["metrics"] = s.metricsCollector.GetStats()
 	}
-	
+
 	if s.firewallManager != nil {
 		stats["firewall"] = s.firewallManager.GetStats()
 	}
-	
+
 	json.NewEncoder(w).Encode(stats)
 }
 
@@ -263,7 +263,7 @@ func (s *Server) apiThreatsHandler(w http.ResponseWriter, r *http.Request) {
 			limit = l
 		}
 	}
-	
+
 	// This would fetch recent threats from the detection engine
 	threats := []map[string]interface{}{
 		{
@@ -275,13 +275,13 @@ func (s *Server) apiThreatsHandler(w http.ResponseWriter, r *http.Request) {
 		},
 		// More threats would be fetched from storage
 	}
-	
+
 	response := map[string]interface{}{
 		"threats": threats[:min(len(threats), limit)],
 		"total":   len(threats),
 		"limit":   limit,
 	}
-	
+
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -290,7 +290,7 @@ func (s *Server) apiFirewallRulesHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "Firewall manager not available", http.StatusServiceUnavailable)
 		return
 	}
-	
+
 	rules := s.firewallManager.GetRules()
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"rules": rules,
@@ -303,24 +303,24 @@ func (s *Server) apiFirewallBlockHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "Firewall manager not available", http.StatusServiceUnavailable)
 		return
 	}
-	
+
 	var request struct {
 		IP       string `json:"ip"`
 		Action   string `json:"action"`
 		Duration string `json:"duration"`
 		Reason   string `json:"reason"`
 	}
-	
+
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	
+
 	duration, err := time.ParseDuration(request.Duration)
 	if err != nil {
 		duration = 1 * time.Hour // default
 	}
-	
+
 	action := firewall.ActionBlock
 	switch request.Action {
 	case "DROP":
@@ -330,13 +330,13 @@ func (s *Server) apiFirewallBlockHandler(w http.ResponseWriter, r *http.Request)
 	case "TARPIT":
 		action = firewall.ActionTarpit
 	}
-	
+
 	err = s.firewallManager.BlockIP(request.IP, action, duration, request.Reason, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{
 		"status": "blocked",
@@ -347,20 +347,20 @@ func (s *Server) apiFirewallBlockHandler(w http.ResponseWriter, r *http.Request)
 func (s *Server) apiIPAnalyzeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	ip := vars["ip"]
-	
+
 	// This would perform real-time analysis of the IP
 	analysis := map[string]interface{}{
-		"ip":             ip,
-		"reputation":     "unknown",
-		"threat_score":   0.0,
-		"country":        "Unknown",
-		"asn":            "Unknown",
-		"last_seen":      nil,
-		"request_count":  0,
-		"blocked":        false,
+		"ip":                ip,
+		"reputation":        "unknown",
+		"threat_score":      0.0,
+		"country":           "Unknown",
+		"asn":               "Unknown",
+		"last_seen":         nil,
+		"request_count":     0,
+		"blocked":           false,
 		"threat_categories": []string{},
 	}
-	
+
 	// Check if IP is currently blocked
 	if s.firewallManager != nil {
 		blocked, rule := s.firewallManager.IsBlocked(ip)
@@ -370,7 +370,7 @@ func (s *Server) apiIPAnalyzeHandler(w http.ResponseWriter, r *http.Request) {
 			analysis["block_expires"] = rule.ExpiresAt
 		}
 	}
-	
+
 	json.NewEncoder(w).Encode(analysis)
 }
 
@@ -382,10 +382,10 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
-	
+
 	s.clients[conn] = true
 	s.logger.Infof("New WebSocket client connected. Total clients: %d", len(s.clients))
-	
+
 	// Send initial data
 	initialData := map[string]interface{}{
 		"type":      "connected",
@@ -393,7 +393,7 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 		"message":   "Connected to nginx-defender real-time updates",
 	}
 	conn.WriteJSON(initialData)
-	
+
 	// Keep connection alive and handle client disconnect
 	for {
 		_, _, err := conn.ReadMessage()
@@ -412,7 +412,7 @@ func (s *Server) BroadcastUpdate(updateType string, data interface{}) {
 		"data":      data,
 		"timestamp": time.Now().UTC(),
 	}
-	
+
 	for client := range s.clients {
 		if err := client.WriteJSON(message); err != nil {
 			client.Close()
@@ -424,16 +424,16 @@ func (s *Server) BroadcastUpdate(updateType string, data interface{}) {
 // renderTemplate renders an HTML template
 func (s *Server) renderTemplate(w http.ResponseWriter, templateName string, data map[string]interface{}) {
 	templatePath := filepath.Join("web", "templates", templateName)
-	
+
 	tmpl, err := template.ParseFiles(templatePath)
 	if err != nil {
 		s.logger.Errorf("Failed to parse template %s: %v", templateName, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	
+
 	w.Header().Set("Content-Type", "text/html")
-	
+
 	if err := tmpl.Execute(w, data); err != nil {
 		s.logger.Errorf("Failed to execute template %s: %v", templateName, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -444,30 +444,30 @@ func (s *Server) renderTemplate(w http.ResponseWriter, templateName string, data
 // Start starts the web server
 func (s *Server) Start() error {
 	s.logger.Infof("Starting web server on %s", s.httpServer.Addr)
-	
+
 	if s.config.TLS.Enabled {
 		return s.httpServer.ListenAndServeTLS(s.config.TLS.CertFile, s.config.TLS.KeyFile)
 	}
-	
+
 	return s.httpServer.ListenAndServe()
 }
 
 // Shutdown gracefully shuts down the server
 func (s *Server) Shutdown() error {
 	s.logger.Info("Shutting down web server")
-	
+
 	// Close all WebSocket connections
 	for client := range s.clients {
 		client.Close()
 	}
-	
+
 	// Cancel context
 	s.cancel()
-	
+
 	// Shutdown HTTP server
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	
+
 	return s.httpServer.Shutdown(ctx)
 }
 
@@ -533,11 +533,11 @@ func (s *Server) authMiddleware(next http.Handler) http.Handler {
 			s.redirectToLogin(w, r)
 			return
 		}
-		
+
 		s.sessionMutex.RLock()
 		session, exists := s.sessions[cookie.Value]
 		s.sessionMutex.RUnlock()
-		
+
 		if !exists || session.Expires.Before(time.Now()) {
 			if exists {
 				// Clean up expired session
@@ -548,7 +548,7 @@ func (s *Server) authMiddleware(next http.Handler) http.Handler {
 			s.redirectToLogin(w, r)
 			return
 		}
-		
+
 		next.ServeHTTP(w, r)
 	})
 }
@@ -559,7 +559,7 @@ func (s *Server) loginPageHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"Error": errorMessage,
 	}
-	
+
 	s.renderTemplate(w, "login.html", data)
 }
 
@@ -567,7 +567,7 @@ func (s *Server) loginPageHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
-	
+
 	if s.validateCredentials(username, password) {
 		// Create new session
 		sessionID := s.generateSessionID()
@@ -576,11 +576,11 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 			Username: username,
 			Expires:  time.Now().Add(time.Duration(s.webConfig.Auth.SessionTimeout) * time.Second),
 		}
-		
+
 		s.sessionMutex.Lock()
 		s.sessions[sessionID] = session
 		s.sessionMutex.Unlock()
-		
+
 		// Set session cookie
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session",
@@ -589,7 +589,7 @@ func (s *Server) loginHandler(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,
 			Path:     "/",
 		})
-		
+
 		s.logger.Infof("User %s logged in successfully", username)
 		http.Redirect(w, r, "/dashboard", http.StatusFound)
 	} else {
@@ -606,7 +606,7 @@ func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 		s.sessionMutex.Lock()
 		delete(s.sessions, cookie.Value)
 		s.sessionMutex.Unlock()
-		
+
 		// Clear cookie
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session",
@@ -616,7 +616,7 @@ func (s *Server) logoutHandler(w http.ResponseWriter, r *http.Request) {
 			Path:     "/",
 		})
 	}
-	
+
 	http.Redirect(w, r, "/login", http.StatusFound)
 }
 
@@ -634,7 +634,7 @@ func (s *Server) validateCredentials(username, password string) bool {
 			}
 		}
 	}
-	
+
 	// Fallback to default credentials
 	if username == s.webConfig.Auth.DefaultUsername {
 		if s.webConfig.Auth.PasswordHashAlgo == "bcrypt" {
@@ -643,7 +643,7 @@ func (s *Server) validateCredentials(username, password string) bool {
 			return s.webConfig.Auth.DefaultPassword == password
 		}
 	}
-	
+
 	return false
 }
 

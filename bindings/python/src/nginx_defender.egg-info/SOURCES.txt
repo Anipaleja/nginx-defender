@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+src/nginx_defender/__init__.py
+src/nginx_defender/core.py
+src/nginx_defender.egg-info/PKG-INFO
+src/nginx_defender.egg-info/SOURCES.txt
+src/nginx_defender.egg-info/dependency_links.txt
+src/nginx_defender.egg-info/entry_points.txt
+src/nginx_defender.egg-info/requires.txt
+src/nginx_defender.egg-info/top_level.txt
