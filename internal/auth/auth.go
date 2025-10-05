@@ -690,8 +690,10 @@ func (am *AuthManager) sessionCleanupRoutine() {
 	for {
 		select {
 		case <-ticker.C:
-			am.sessionStore.mutex.Lock()
 			now := time.Now()
+
+			// Clean up expired sessions
+			am.sessionStore.mutex.Lock()
 			for sessionID, session := range am.sessionStore.sessions {
 				if session.ExpiresAt.Before(now) {
 					delete(am.sessionStore.sessions, sessionID)
@@ -699,6 +701,27 @@ func (am *AuthManager) sessionCleanupRoutine() {
 				}
 			}
 			am.sessionStore.mutex.Unlock()
+
+			// Clean up expired/used password reset tokens
+			am.resetTokenStore.mutex.Lock()
+			for tokenID, token := range am.resetTokenStore.tokens {
+				if token.Used || token.ExpiresAt.Before(now) {
+					delete(am.resetTokenStore.tokens, tokenID)
+					am.logger.Debugf("Cleaned up expired/used password reset token: %s", tokenID)
+				}
+			}
+			am.resetTokenStore.mutex.Unlock()
+
+			// Clean up expired API keys
+			am.apiKeyStore.mutex.Lock()
+			for keyID, apiKey := range am.apiKeyStore.keys {
+				if apiKey.ExpiresAt != nil && apiKey.ExpiresAt.Before(now) {
+					delete(am.apiKeyStore.keys, keyID)
+					am.logger.Debugf("Cleaned up expired API key: %s", keyID)
+				}
+			}
+			am.apiKeyStore.mutex.Unlock()
+
 		case <-am.shutdownCtx.Done():
 			am.logger.Debug("Session cleanup routine shutting down")
 			return
