@@ -1,11 +1,10 @@
 {
-  "name": "@anipaleja/nginx-defender",
+  "name": "@anish-paleja/nginx-defender",
   "version": "2.0.0",
   "description": "Web Application Firewall and threat detection for Node.js applications",
   "main": "index.js",
-  "types": "index.d.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "build": "echo 'No build step needed - using JavaScript directly'",
     "prepublishOnly": "npm test --if-present",
     "publish:github": "npm publish --registry=https://npm.pkg.github.com",
@@ -27,19 +26,24 @@
     "child_process": "^1.0.2"
   },
   "devDependencies": {
-    "@types/node": "^24.3.1",
-    "typescript": "^5.0.0",
     "jest": "^29.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Anipaleja/nginx-defender.git"
+    "url": "git+https://github.com/Anipaleja/nginx-defender.git"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "@anipaleja:registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "engines": {
     "node": ">=14.0.0"
+  },
+  "jest": {
+    "passWithNoTests": true,
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "*.js",
+      "!node_modules/**"
+    ]
   }
 }

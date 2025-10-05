@@ -116,8 +116,31 @@ class NginxDefender:
         
         # Get configurable binary path
         binary_path = self.config.get('binary_path')
-        if not binary_path:
-            # Search in PATH
+        if binary_path:
+            # Validate user-supplied binary path
+            import os
+            # Resolve to absolute path
+            binary_path = os.path.realpath(binary_path)
+            
+            # Security checks
+            if not os.path.isabs(binary_path):
+                logging.error(f"Binary path must be absolute: {binary_path}")
+                return False
+                
+            if not os.path.isfile(binary_path):
+                logging.error(f"Binary path does not exist: {binary_path}")
+                return False
+                
+            if not os.access(binary_path, os.X_OK):
+                logging.error(f"Binary path is not executable: {binary_path}")
+                return False
+                
+            # Reject suspicious characters or path traversal
+            if '..' in binary_path or any(c in binary_path for c in ['|', '&', ';', '`', '$']):
+                logging.error(f"Binary path contains suspicious characters: {binary_path}")
+                return False
+        else:
+            # Search in PATH only when no config value provided
             binary_path = shutil.which('nginx-defender-service')
             if not binary_path:
                 # Try local binary as fallback
@@ -261,6 +284,59 @@ class NginxDefender:
 
 
 # Flask/Django middleware
+def _extract_client_ip(remote_addr, request_environ, trusted_proxies):
+    """
+    Extract client IP with trusted proxy validation.
+    
+    Args:
+        remote_addr: The immediate remote address
+        request_environ: Dictionary containing HTTP headers (HTTP_X_FORWARDED_FOR)
+        trusted_proxies: List of trusted proxy IPs/CIDRs
+    
+    Returns:
+        str: The validated client IP address
+    """
+    import ipaddress
+    
+    # Only trust X-Forwarded-For if the immediate client is a trusted proxy
+    if trusted_proxies and remote_addr:
+        try:
+            remote_ip = ipaddress.ip_address(remote_addr)
+            is_trusted = False
+            
+            for proxy in trusted_proxies:
+                try:
+                    if '/' in proxy:
+                        # CIDR network
+                        if remote_ip in ipaddress.ip_network(proxy, strict=False):
+                            is_trusted = True
+                            break
+                    else:
+                        # Single IP
+                        if remote_ip == ipaddress.ip_address(proxy):
+                            is_trusted = True
+                            break
+                except ValueError:
+                    continue
+            
+            if is_trusted:
+                x_forwarded_for = request_environ.get('HTTP_X_FORWARDED_FOR', '')
+                if x_forwarded_for:
+                    # Parse comma-separated IPs and return first valid one
+                    ips = [ip.strip() for ip in x_forwarded_for.split(',')]
+                    for ip in ips:
+                        if ip:
+                            try:
+                                ipaddress.ip_address(ip)  # Validate IP syntax
+                                return ip
+                            except ValueError:
+                                continue
+        except ValueError:
+            pass
+    
+    return remote_addr
+
+
 class FlaskDefenderMiddleware:
     """Flask middleware for nginx-defender integration."""
     
@@ -278,48 +354,8 @@ class FlaskDefenderMiddleware:
             
     def _get_client_ip(self, request):
         """Extract client IP from request, only trusting X-Forwarded-For from configured trusted proxies."""
-        import ipaddress
-        
-        remote_addr = request.remote_addr
         trusted_proxies = self.defender.config.get('trusted_proxies', [])
-        
-        # Only trust X-Forwarded-For if the immediate client is a trusted proxy
-        if trusted_proxies and remote_addr:
-            try:
-                remote_ip = ipaddress.ip_address(remote_addr)
-                is_trusted = False
-                
-                for proxy in trusted_proxies:
-                    try:
-                        if '/' in proxy:
-                            # CIDR network
-                            if remote_ip in ipaddress.ip_network(proxy, strict=False):
-                                is_trusted = True
-                                break
-                        else:
-                            # Single IP
-                            if remote_ip == ipaddress.ip_address(proxy):
-                                is_trusted = True
-                                break
-                    except ValueError:
-                        continue
-                
-                if is_trusted:
-                    x_forwarded_for = request.environ.get('HTTP_X_FORWARDED_FOR', '')
-                    if x_forwarded_for:
-                        # Parse comma-separated IPs and return first valid one
-                        ips = [ip.strip() for ip in x_forwarded_for.split(',')]
-                        for ip in ips:
-                            if ip:
-                                try:
-                                    ipaddress.ip_address(ip)  # Validate IP syntax
-                                    return ip
-                                except ValueError:
-                                    continue
-            except ValueError:
-                pass
-        
-        return remote_addr
+        return _extract_client_ip(request.remote_addr, request.environ, trusted_proxies)
 
 
 class DjangoDefenderMiddleware:
@@ -358,48 +394,8 @@ class DjangoDefenderMiddleware:
     
     def _get_client_ip(self, request):
         """Extract client IP from request, only trusting X-Forwarded-For from configured trusted proxies."""
-        import ipaddress
-        
-        remote_addr = request.META.get('REMOTE_ADDR')
         trusted_proxies = self.defender.config.get('trusted_proxies', [])
-        
-        # Only trust X-Forwarded-For if the immediate client is a trusted proxy
-        if trusted_proxies and remote_addr:
-            try:
-                remote_ip = ipaddress.ip_address(remote_addr)
-                is_trusted = False
-                
-                for proxy in trusted_proxies:
-                    try:
-                        if '/' in proxy:
-                            # CIDR network
-                            if remote_ip in ipaddress.ip_network(proxy, strict=False):
-                                is_trusted = True
-                                break
-                        else:
-                            # Single IP
-                            if remote_ip == ipaddress.ip_address(proxy):
-                                is_trusted = True
-                                break
-                    except ValueError:
-                        continue
-                
-                if is_trusted:
-                    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', '')
-                    if x_forwarded_for:
-                        # Parse comma-separated IPs and return first valid one
-                        ips = [ip.strip() for ip in x_forwarded_for.split(',')]
-                        for ip in ips:
-                            if ip:
-                                try:
-                                    ipaddress.ip_address(ip)  # Validate IP syntax
-                                    return ip
-                                except ValueError:
-                                    continue
-            except ValueError:
-                pass
-        
-        return remote_addr
+        return _extract_client_ip(request.META.get('REMOTE_ADDR'), request.META, trusted_proxies)
         
     def _cleanup(self):
         """Clean up defender resources on shutdown."""

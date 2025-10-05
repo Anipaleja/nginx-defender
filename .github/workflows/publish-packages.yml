@@ -38,7 +38,7 @@ jobs:
 
       - name: Publish to npm
         working-directory: ./bindings/nodejs
-        run: npm publish
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -48,14 +48,30 @@ jobs:
           node-version: '18'
           registry-url: 'https://npm.pkg.github.com'
 
+      - name: Update package for GitHub Packages
+        working-directory: ./bindings/nodejs
+        run: |
+          # Backup original package.json
+          cp package.json package.json.backup
+          # Update name for GitHub Packages (must match repository owner)
+          sed -i 's/"@anish-paleja\/nginx-defender"/"@anipaleja\/nginx-defender"/g' package.json
+          # Update publishConfig for GitHub Packages
+          jq '.publishConfig = {"registry": "https://npm.pkg.github.com", "@anipaleja:registry": "https://npm.pkg.github.com"}' package.json > package.json.tmp
+          mv package.json.tmp package.json
+
       - name: Publish to GitHub Packages
         working-directory: ./bindings/nodejs
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Restore original package.json
+        working-directory: ./bindings/nodejs
+        run: mv package.json.backup package.json
+
   publish-python:
     runs-on: ubuntu-latest
+    #environment: pypi
     permissions:
       contents: read
       id-token: write
@@ -88,6 +104,8 @@ jobs:
 
   publish-go:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4

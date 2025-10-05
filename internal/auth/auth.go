@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
@@ -27,6 +28,9 @@ type AuthManager struct {
 	resetTokenStore *PasswordResetStore
 	jwtSecret       []byte
 	mutex           sync.RWMutex
+	shutdownCtx     context.Context
+	shutdownCancel  context.CancelFunc
+	shutdownOnce    sync.Once
 }
 
 // UserStore manages user data
@@ -110,7 +114,7 @@ type PasswordResetToken struct {
 // PasswordResetStore manages password reset tokens
 type PasswordResetStore struct {
 	tokens map[string]*PasswordResetToken
-	mutex  *sync.RWMutex
+	mutex  sync.RWMutex
 }
 
 // AuditLogger placeholder type (implementation would be in a separate file)
@@ -128,12 +132,15 @@ func (al *AuditLogger) LogEvent(eventType, username, identifier string, metadata
 
 // NewAuthManager creates a new authentication manager
 func NewAuthManager(cfg *config.AuthConfig, logger *logrus.Logger) (*AuthManager, error) {
+	ctx, cancel := context.WithCancel(context.Background())
 	am := &AuthManager{
-		config:       cfg,
-		logger:       logger,
-		userStore:    &UserStore{users: make(map[string]*User)},
-		sessionStore: &SessionStore{sessions: make(map[string]*Session)},
-		apiKeyStore:  &APIKeyStore{keys: make(map[string]*APIKey)},
+		config:         cfg,
+		logger:         logger,
+		userStore:      &UserStore{users: make(map[string]*User)},
+		sessionStore:   &SessionStore{sessions: make(map[string]*Session)},
+		apiKeyStore:    &APIKeyStore{keys: make(map[string]*APIKey)},
+		shutdownCtx:    ctx,
+		shutdownCancel: cancel,
 	}
 
 	// Initialize JWT secret
@@ -161,7 +168,7 @@ func NewAuthManager(cfg *config.AuthConfig, logger *logrus.Logger) (*AuthManager
 	// Initialize password reset token store
 	am.resetTokenStore = &PasswordResetStore{
 		tokens: make(map[string]*PasswordResetToken),
-		mutex:  &sync.RWMutex{},
+		mutex:  sync.RWMutex{},
 	}
 
 	// Start session cleanup routine
@@ -250,13 +257,13 @@ func (am *AuthManager) ValidateCredentials(username, password string) (*User, er
 	// Check if account is locked
 	if user.LockedUntil != nil && user.LockedUntil.After(time.Now()) {
 		am.logAuthEvent("login_failed", username, "account_locked", nil)
-		return nil, fmt.Errorf("account locked until %s", user.LockedUntil.Format(time.RFC3339))
+		return nil, errors.New("invalid credentials")
 	}
 
 	// Check if account is active
 	if !user.Active {
 		am.logAuthEvent("login_failed", username, "account_inactive", nil)
-		return nil, errors.New("account is inactive")
+		return nil, errors.New("invalid credentials")
 	}
 
 	// Validate password
@@ -276,7 +283,8 @@ func (am *AuthManager) ValidateCredentials(username, password string) (*User, er
 
 	// Reset failed login count on successful login
 	user.FailedLogins = 0
-	user.LastLogin = &[]time.Time{time.Now()}[0]
+	t := time.Now()
+	user.LastLogin = &t
 
 	am.logAuthEvent("login_success", username, "", nil)
 	return user, nil
@@ -679,17 +687,31 @@ func (am *AuthManager) sessionCleanupRoutine() {
 	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		am.sessionStore.mutex.Lock()
-		now := time.Now()
-		for sessionID, session := range am.sessionStore.sessions {
-			if session.ExpiresAt.Before(now) {
-				delete(am.sessionStore.sessions, sessionID)
-				am.logger.Debugf("Cleaned up expired session: %s", sessionID)
+	for {
+		select {
+		case <-ticker.C:
+			am.sessionStore.mutex.Lock()
+			now := time.Now()
+			for sessionID, session := range am.sessionStore.sessions {
+				if session.ExpiresAt.Before(now) {
+					delete(am.sessionStore.sessions, sessionID)
+					am.logger.Debugf("Cleaned up expired session: %s", sessionID)
+				}
 			}
+			am.sessionStore.mutex.Unlock()
+		case <-am.shutdownCtx.Done():
+			am.logger.Debug("Session cleanup routine shutting down")
+			return
 		}
-		am.sessionStore.mutex.Unlock()
 	}
+}
+
+// Shutdown gracefully shuts down the AuthManager and stops background routines
+func (am *AuthManager) Shutdown() {
+	am.shutdownOnce.Do(func() {
+		am.logger.Debug("Shutting down AuthManager")
+		am.shutdownCancel()
+	})
 }
 
 // logAuthEvent logs an authentication event

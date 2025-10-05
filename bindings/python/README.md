@@ -38,7 +38,7 @@ defender.monitor_log_file("/var/log/nginx/access.log", "combined")
 
 ## Documentation
 
-For full documentation, visit: https://github.com/Anipaleja/nginx-defender
+For full documentation, visit: <https://github.com/Anipaleja/nginx-defender>
 
 ## License
 

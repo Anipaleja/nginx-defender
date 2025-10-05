@@ -113,8 +113,17 @@ publish_python() {
         pip install twine build
     fi
     
-    # Clean previous builds
-    rm -rf dist/ build/ *.egg-info/
+    # Clean previous builds safely
+    # Verify we're in the correct Python package directory
+    if [[ ! -f "pyproject.toml" ]] && [[ ! -f "setup.py" ]]; then
+        print_error "Not in a Python package directory (no pyproject.toml or setup.py found)"
+        exit 1
+    fi
+    
+    # Remove build artifacts only from current directory
+    [[ -d "dist" ]] && rm -rf "dist"
+    [[ -d "build" ]] && rm -rf "build"
+    find . -maxdepth 1 -name "*.egg-info" -type d -exec rm -rf {} + 2>/dev/null || true
     
     # Build package
     print_status "Building Python package..."

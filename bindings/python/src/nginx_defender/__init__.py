@@ -21,6 +21,9 @@ def main():
     
     if args.start:
         defender = NginxDefender(config_file=args.config)
-        defender.start()
+        if not defender.start():
+            import sys
+            print("ERROR: nginx-defender service failed to start", file=sys.stderr)
+            sys.exit(1)
     else:
         parser.print_help()

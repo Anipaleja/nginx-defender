@@ -238,7 +238,7 @@ func (s *FeatureScaler) Transform(features []float64) []float64 {
 // determineThreatType determines threat type based on feature values
 func (m *MLModel) determineThreatType(features []float64) string {
 	// Simple heuristic based on feature importance
-	if len(features) < 5 {
+	if len(features) < 8 {
 		return "unknown"
 	}
 
@@ -280,16 +280,14 @@ func (m *MLModel) updateRoutine() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		if time.Since(m.lastUpdate) > time.Duration(interval)*time.Second {
-			if err := m.Train(); err != nil {
-				// Log error but continue
-				continue
-			}
+		if err := m.Train(); err != nil {
+			// Log error but continue
+			continue
+		}
 
-			// Save model
-			if m.config.ModelPath != "" {
-				m.saveModel(m.config.ModelPath)
-			}
+		// Save model
+		if m.config.ModelPath != "" {
+			m.saveModel(m.config.ModelPath)
 		}
 	}
 }
