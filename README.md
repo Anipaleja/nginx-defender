@@ -1,4 +1,7 @@
-# nginx-defender
+<div align="center">
+<img width="769" height="124" alt="image" src="https://github.com/user-attachments/assets/9560154d-686e-4fd1-b112-bc87b68f0d53" />
+</div>
+
 
 <div align="center">
   
