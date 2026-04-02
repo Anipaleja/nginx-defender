@@ -1189,6 +1189,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) f
 </details>
 
 ---
+## Star History
+
+<a href="https://www.star-history.com/?repos=anipaleja%2Fnginx-defender&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&legend=top-left" />
+ </picture>
+</a>
 
 <div align="center">
 
