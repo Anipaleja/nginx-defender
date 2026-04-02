@@ -1189,7 +1189,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) f
 </details>
 
 ---
-## Star History
 
 <a href="https://www.star-history.com/?repos=anipaleja%2Fnginx-defender&type=date&legend=top-left">
  <picture>
