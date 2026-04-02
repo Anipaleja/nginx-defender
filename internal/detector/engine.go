@@ -2,9 +2,11 @@ package detector
 
 import (
 	"fmt"
+	"net"
 	"regexp"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/Anipaleja/nginx-defender/internal/config"
@@ -27,13 +29,14 @@ const (
 
 // DetectionResult represents the result of threat detection
 type DetectionResult struct {
-	IP             string            `json:"ip"`
-	ThreatLevel    ThreatLevel       `json:"threat_level"`
-	ThreatTypes    []string          `json:"threat_types"`
-	Score          float64           `json:"score"`
-	Details        map[string]string `json:"details"`
-	Timestamp      time.Time         `json:"timestamp"`
-	RecommendedAction string         `json:"recommended_action"`
+	ID                string            `json:"id"`
+	IP                string            `json:"ip"`
+	ThreatLevel       ThreatLevel       `json:"threat_level"`
+	ThreatTypes       []string          `json:"threat_types"`
+	Score             float64           `json:"score"`
+	Details           map[string]string `json:"details"`
+	Timestamp         time.Time         `json:"timestamp"`
+	RecommendedAction string            `json:"recommended_action"`
 }
 
 // Engine is the main threat detection engine
@@ -42,17 +45,26 @@ type Engine struct {
 	rangeManager   *ranges.RangeManager
 	geoIP          *geoip.Service
 	patternMatcher *patterns.Matcher
-	
+
 	// Detection state
-	ipStats        map[string]*IPStatistics
-	statsLock      sync.RWMutex
-	
+	ipStats   map[string]*IPStatistics
+	statsLock sync.RWMutex
+
 	// Machine learning
-	mlModel        *MLModel
-	
+	mlModel *MLModel
+
 	// Behavioral analysis
 	behaviorAnalyzer *BehaviorAnalyzer
-	
+
+	// Replay and audit state
+	history     []*DetectionResult
+	historyByIP map[string][]*DetectionResult
+	historyLock sync.RWMutex
+	nextEventID uint64
+
+	// Trusted proxy handling
+	trustedProxyNetworks []*net.IPNet
+
 	logger *logrus.Logger
 }
 
@@ -68,34 +80,36 @@ type IPStatistics struct {
 	RequestMethods   map[string]int
 	BytesTransferred int64
 	AvgResponseTime  float64
-	
+
 	// Behavioral metrics
 	RequestPattern   []time.Time
 	SuspiciousScore  float64
 	ThreatCategories []string
-	
+
 	mutex sync.RWMutex
 }
 
 // NewEngine creates a new threat detection engine
 func NewEngine(cfg *config.Config, logger *logrus.Logger) (*Engine, error) {
 	engine := &Engine{
-		config:  cfg,
-		ipStats: make(map[string]*IPStatistics),
-		logger:  logger,
+		config:      cfg,
+		ipStats:     make(map[string]*IPStatistics),
+		history:     make([]*DetectionResult, 0, 2048),
+		historyByIP: make(map[string][]*DetectionResult),
+		logger:      logger,
 	}
-	
+
 	// Initialize components
 	engine.rangeManager = ranges.NewRangeManager()
-	
+
 	geoService, err := geoip.NewService(cfg.Detection.Geographic)
 	if err != nil {
 		return nil, err
 	}
 	engine.geoIP = geoService
-	
+
 	engine.patternMatcher = patterns.NewMatcher(cfg.Detection.SuspiciousPatterns.Patterns)
-	
+
 	// Initialize ML model if enabled
 	if cfg.MachineLearning.Enabled {
 		mlModel, err := NewMLModel(cfg.MachineLearning)
@@ -105,18 +119,58 @@ func NewEngine(cfg *config.Config, logger *logrus.Logger) (*Engine, error) {
 			engine.mlModel = mlModel
 		}
 	}
-	
+
 	// Initialize behavior analyzer
 	engine.behaviorAnalyzer = NewBehaviorAnalyzer(*cfg)
-	
+
+	if cfg.Detection.Proxy.Enabled {
+		engine.trustedProxyNetworks = make([]*net.IPNet, 0, len(cfg.Detection.Proxy.TrustedProxies))
+		for _, proxy := range cfg.Detection.Proxy.TrustedProxies {
+			if strings.Contains(proxy, "/") {
+				_, network, err := net.ParseCIDR(proxy)
+				if err != nil {
+					logger.WithError(err).Warnf("Invalid trusted proxy CIDR %s", proxy)
+					continue
+				}
+				engine.trustedProxyNetworks = append(engine.trustedProxyNetworks, network)
+				continue
+			}
+
+			parsed := net.ParseIP(proxy)
+			if parsed == nil {
+				logger.Warnf("Invalid trusted proxy IP %s", proxy)
+				continue
+			}
+
+			bits := 128
+			if parsed.To4() != nil {
+				bits = 32
+			}
+			engine.trustedProxyNetworks = append(engine.trustedProxyNetworks, &net.IPNet{IP: parsed, Mask: net.CIDRMask(bits, bits)})
+		}
+	}
+
 	// Start cleanup routine
 	go engine.cleanupRoutine()
-	
+
 	return engine, nil
 }
 
 // AnalyzeLogEntry analyzes a single log entry for threats
 func (e *Engine) AnalyzeLogEntry(entry *logparser.LogEntry) *DetectionResult {
+	if entry == nil {
+		return &DetectionResult{
+			ThreatTypes: []string{},
+			Details:     map[string]string{},
+			Timestamp:   time.Now(),
+		}
+	}
+
+	resolvedIP := e.resolveClientIP(entry)
+	if resolvedIP != "" {
+		entry.IP = resolvedIP
+	}
+
 	result := &DetectionResult{
 		IP:          entry.IP,
 		ThreatTypes: []string{},
@@ -124,10 +178,10 @@ func (e *Engine) AnalyzeLogEntry(entry *logparser.LogEntry) *DetectionResult {
 		Timestamp:   entry.Timestamp,
 		Score:       0.0,
 	}
-	
+
 	// Update IP statistics
 	e.updateIPStats(entry)
-	
+
 	// Run all detection checks
 	e.checkRateLimiting(entry, result)
 	e.checkGeographic(entry, result)
@@ -135,16 +189,20 @@ func (e *Engine) AnalyzeLogEntry(entry *logparser.LogEntry) *DetectionResult {
 	e.checkSuspiciousPatterns(entry, result)
 	e.checkThreatIntelligence(entry, result)
 	e.checkBehavioralAnomalies(entry, result)
-	
+
 	// ML-based detection if available
 	if e.mlModel != nil {
 		e.runMLDetection(entry, result)
 	}
-	
+
 	// Calculate final threat level and recommended action
 	e.calculateThreatLevel(result)
 	e.determineAction(result)
-	
+
+	if result.Score > 0 {
+		e.recordDetectionResult(result, entry)
+	}
+
 	return result
 }
 
@@ -153,33 +211,43 @@ func (e *Engine) checkRateLimiting(entry *logparser.LogEntry, result *DetectionR
 	if !e.config.Detection.RateLimiting.Enabled {
 		return
 	}
-	
+
+	threshold := e.config.Detection.RateLimiting.Threshold
+	windowSeconds := e.config.Detection.RateLimiting.WindowSeconds
+	for _, routeRule := range e.config.Detection.RateLimiting.Routes {
+		if strings.HasPrefix(entry.Path, routeRule.PathPrefix) {
+			threshold = routeRule.Threshold
+			windowSeconds = routeRule.WindowSeconds
+			break
+		}
+	}
+
 	e.statsLock.RLock()
 	stats, exists := e.ipStats[entry.IP]
 	e.statsLock.RUnlock()
-	
+
 	if !exists {
 		return
 	}
-	
+
 	stats.mutex.RLock()
 	defer stats.mutex.RUnlock()
-	
+
 	// Check request rate in the time window
-	windowStart := time.Now().Add(-time.Duration(e.config.Detection.RateLimiting.WindowSeconds) * time.Second)
+	windowStart := time.Now().Add(-time.Duration(windowSeconds) * time.Second)
 	recentRequests := 0
-	
+
 	for _, reqTime := range stats.RequestPattern {
 		if reqTime.After(windowStart) {
 			recentRequests++
 		}
 	}
-	
-	if recentRequests >= e.config.Detection.RateLimiting.Threshold {
+
+	if recentRequests >= threshold {
 		result.ThreatTypes = append(result.ThreatTypes, "rate_limiting")
 		result.Score += 30.0
-		result.Details["rate_limit_violations"] = fmt.Sprintf("%d requests in %d seconds", 
-			recentRequests, e.config.Detection.RateLimiting.WindowSeconds)
+		result.Details["rate_limit_violations"] = fmt.Sprintf("%d requests in %d seconds",
+			recentRequests, windowSeconds)
 	}
 }
 
@@ -188,14 +256,14 @@ func (e *Engine) checkGeographic(entry *logparser.LogEntry, result *DetectionRes
 	if !e.config.Detection.Geographic.Enabled {
 		return
 	}
-	
+
 	country, err := e.geoIP.GetCountry(entry.IP)
 	if err != nil {
 		return
 	}
-	
+
 	result.Details["country"] = country
-	
+
 	// Check blocked countries
 	for _, blocked := range e.config.Detection.Geographic.BlockedCountries {
 		if strings.EqualFold(country, blocked) {
@@ -205,7 +273,7 @@ func (e *Engine) checkGeographic(entry *logparser.LogEntry, result *DetectionRes
 			return
 		}
 	}
-	
+
 	// Check allowed countries (if specified)
 	if len(e.config.Detection.Geographic.AllowedCountries) > 0 {
 		allowed := false
@@ -228,9 +296,9 @@ func (e *Engine) checkUserAgent(entry *logparser.LogEntry, result *DetectionResu
 	if !e.config.Detection.UserAgentBlocking.Enabled {
 		return
 	}
-	
+
 	userAgent := entry.UserAgent
-	
+
 	// Check blocked patterns
 	for _, pattern := range e.config.Detection.UserAgentBlocking.BlockedPatterns {
 		if matched, _ := regexp.MatchString(pattern, userAgent); matched {
@@ -240,7 +308,7 @@ func (e *Engine) checkUserAgent(entry *logparser.LogEntry, result *DetectionResu
 			return
 		}
 	}
-	
+
 	// Check suspicious user agent characteristics
 	if e.isSuspiciousUserAgent(userAgent) {
 		result.ThreatTypes = append(result.ThreatTypes, "suspicious_user_agent")
@@ -254,7 +322,7 @@ func (e *Engine) checkSuspiciousPatterns(entry *logparser.LogEntry, result *Dete
 	if !e.config.Detection.SuspiciousPatterns.Enabled {
 		return
 	}
-	
+
 	matches := e.patternMatcher.CheckPatterns(entry.Path, entry.QueryString, entry.UserAgent)
 	if len(matches) > 0 {
 		result.ThreatTypes = append(result.ThreatTypes, "suspicious_pattern")
@@ -267,14 +335,14 @@ func (e *Engine) checkSuspiciousPatterns(entry *logparser.LogEntry, result *Dete
 func (e *Engine) checkThreatIntelligence(entry *logparser.LogEntry, result *DetectionResult) {
 	// Check against various threat categories
 	categories := []string{"threat", "malware", "botnet", "tor", "vpn"}
-	
+
 	matched, matchedCategories := e.rangeManager.CheckIP(entry.IP, categories)
 	if matched {
 		result.ThreatTypes = append(result.ThreatTypes, "threat_intel")
 		result.Score += 60.0
 		result.Details["threat_categories"] = strings.Join(matchedCategories, ", ")
 	}
-	
+
 	// Check against AI/scraper categories
 	aiCategories := []string{"openai", "github", "deepseek", "anthropic"}
 	aiMatched, aiMatchedCategories := e.rangeManager.CheckIP(entry.IP, aiCategories)
@@ -290,11 +358,11 @@ func (e *Engine) checkBehavioralAnomalies(entry *logparser.LogEntry, result *Det
 	e.statsLock.RLock()
 	stats, exists := e.ipStats[entry.IP]
 	e.statsLock.RUnlock()
-	
+
 	if !exists {
 		return
 	}
-	
+
 	anomalyScore := e.behaviorAnalyzer.AnalyzeIP(stats, entry)
 	if anomalyScore > 0.7 {
 		result.ThreatTypes = append(result.ThreatTypes, "behavioral_anomaly")
@@ -307,7 +375,7 @@ func (e *Engine) checkBehavioralAnomalies(entry *logparser.LogEntry, result *Det
 func (e *Engine) runMLDetection(entry *logparser.LogEntry, result *DetectionResult) {
 	features := e.extractFeatures(entry)
 	prediction := e.mlModel.Predict(features)
-	
+
 	if prediction.IsThreat && prediction.Confidence > 0.8 {
 		result.ThreatTypes = append(result.ThreatTypes, "ml_detection")
 		result.Score += prediction.Confidence * 50.0
@@ -342,7 +410,7 @@ func (e *Engine) determineAction(result *DetectionResult) {
 	default:
 		result.RecommendedAction = "MONITOR"
 	}
-	
+
 	// Override based on specific threat types
 	for _, threatType := range result.ThreatTypes {
 		switch threatType {
@@ -358,7 +426,7 @@ func (e *Engine) determineAction(result *DetectionResult) {
 func (e *Engine) updateIPStats(entry *logparser.LogEntry) {
 	e.statsLock.Lock()
 	defer e.statsLock.Unlock()
-	
+
 	stats, exists := e.ipStats[entry.IP]
 	if !exists {
 		stats = &IPStatistics{
@@ -371,24 +439,33 @@ func (e *Engine) updateIPStats(entry *logparser.LogEntry) {
 		}
 		e.ipStats[entry.IP] = stats
 	}
-	
+
 	stats.mutex.Lock()
 	defer stats.mutex.Unlock()
-	
+
 	// Update basic stats
 	stats.LastSeen = entry.Timestamp
 	stats.RequestCount++
+	currentCount := stats.RequestCount
 	stats.UniqueEndpoints[entry.Path]++
 	stats.UserAgents[entry.UserAgent]++
 	stats.ResponseCodes[entry.ResponseCode]++
 	stats.RequestMethods[entry.Method]++
 	stats.BytesTransferred += int64(entry.ResponseSize)
-	
+
+	if entry.RequestTime > 0 {
+		if currentCount <= 1 {
+			stats.AvgResponseTime = entry.RequestTime
+		} else {
+			stats.AvgResponseTime = ((stats.AvgResponseTime * float64(currentCount-1)) + entry.RequestTime) / float64(currentCount)
+		}
+	}
+
 	// Track failed requests
 	if entry.ResponseCode >= 400 {
 		stats.FailedRequests++
 	}
-	
+
 	// Update request pattern (keep last 1000 requests)
 	stats.RequestPattern = append(stats.RequestPattern, entry.Timestamp)
 	if len(stats.RequestPattern) > 1000 {
@@ -402,19 +479,19 @@ func (e *Engine) isSuspiciousUserAgent(userAgent string) bool {
 		"bot", "crawler", "spider", "scraper", "scan", "test", "benchmark",
 		"wget", "curl", "python", "go-http", "java", "perl", "ruby",
 	}
-	
+
 	lowerUA := strings.ToLower(userAgent)
 	for _, pattern := range suspicious {
 		if strings.Contains(lowerUA, pattern) {
 			return true
 		}
 	}
-	
+
 	// Check for empty or very short user agents
 	if len(userAgent) < 10 {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -423,21 +500,21 @@ func (e *Engine) extractFeatures(entry *logparser.LogEntry) []float64 {
 	// This would extract various features for ML prediction
 	// Features might include: request rate, path length, query complexity, etc.
 	features := make([]float64, 20) // Example: 20 features
-	
+
 	// Feature 1: Path length
 	features[0] = float64(len(entry.Path))
-	
+
 	// Feature 2: Query string length
 	features[1] = float64(len(entry.QueryString))
-	
+
 	// Feature 3: User agent length
 	features[2] = float64(len(entry.UserAgent))
-	
+
 	// Feature 4: Response code (normalized)
 	features[3] = float64(entry.ResponseCode) / 500.0
-	
+
 	// Add more features as needed...
-	
+
 	return features
 }
 
@@ -445,7 +522,7 @@ func (e *Engine) extractFeatures(entry *logparser.LogEntry) []float64 {
 func (e *Engine) cleanupRoutine() {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
-	
+
 	for range ticker.C {
 		e.cleanupOldStats()
 	}
@@ -455,15 +532,208 @@ func (e *Engine) cleanupRoutine() {
 func (e *Engine) cleanupOldStats() {
 	e.statsLock.Lock()
 	defer e.statsLock.Unlock()
-	
+
 	cutoff := time.Now().Add(-24 * time.Hour)
 	for ip, stats := range e.ipStats {
 		stats.mutex.RLock()
 		lastSeen := stats.LastSeen
 		stats.mutex.RUnlock()
-		
+
 		if lastSeen.Before(cutoff) {
 			delete(e.ipStats, ip)
 		}
 	}
+}
+
+func (e *Engine) recordDetectionResult(result *DetectionResult, entry *logparser.LogEntry) {
+	if result == nil || entry == nil {
+		return
+	}
+
+	resultCopy := *result
+	resultCopy.ID = fmt.Sprintf("threat-%d", atomic.AddUint64(&e.nextEventID, 1))
+
+	detailsCopy := make(map[string]string, len(result.Details)+3)
+	for key, value := range result.Details {
+		detailsCopy[key] = value
+	}
+	detailsCopy["path"] = entry.Path
+	detailsCopy["method"] = entry.Method
+	if entry.XForwardedFor != "" {
+		detailsCopy["x_forwarded_for"] = entry.XForwardedFor
+	}
+	resultCopy.Details = detailsCopy
+
+	e.historyLock.Lock()
+	defer e.historyLock.Unlock()
+
+	e.history = append(e.history, &resultCopy)
+	if len(e.history) > 10000 {
+		e.history = e.history[len(e.history)-10000:]
+	}
+
+	e.historyByIP[resultCopy.IP] = append(e.historyByIP[resultCopy.IP], &resultCopy)
+	if len(e.historyByIP[resultCopy.IP]) > 2000 {
+		e.historyByIP[resultCopy.IP] = e.historyByIP[resultCopy.IP][len(e.historyByIP[resultCopy.IP])-2000:]
+	}
+}
+
+func (e *Engine) GetRecentThreats(limit int) []DetectionResult {
+	if limit <= 0 {
+		limit = 100
+	}
+
+	e.historyLock.RLock()
+	defer e.historyLock.RUnlock()
+
+	if len(e.history) == 0 {
+		return []DetectionResult{}
+	}
+
+	start := len(e.history) - limit
+	if start < 0 {
+		start = 0
+	}
+
+	results := make([]DetectionResult, 0, len(e.history)-start)
+	for i := len(e.history) - 1; i >= start; i-- {
+		results = append(results, *e.history[i])
+	}
+
+	return results
+}
+
+func (e *Engine) GetThreatByID(id string) (*DetectionResult, bool) {
+	e.historyLock.RLock()
+	defer e.historyLock.RUnlock()
+
+	for _, result := range e.history {
+		if result.ID == id {
+			copyResult := *result
+			return &copyResult, true
+		}
+	}
+
+	return nil, false
+}
+
+func (e *Engine) GetIPThreatHistory(ip string, limit int) []DetectionResult {
+	if limit <= 0 {
+		limit = 100
+	}
+
+	e.historyLock.RLock()
+	defer e.historyLock.RUnlock()
+
+	entries, exists := e.historyByIP[ip]
+	if !exists || len(entries) == 0 {
+		return []DetectionResult{}
+	}
+
+	start := len(entries) - limit
+	if start < 0 {
+		start = 0
+	}
+
+	results := make([]DetectionResult, 0, len(entries)-start)
+	for i := len(entries) - 1; i >= start; i-- {
+		results = append(results, *entries[i])
+	}
+
+	return results
+}
+
+func (e *Engine) resolveClientIP(entry *logparser.LogEntry) string {
+	if entry == nil {
+		return ""
+	}
+
+	sourceIP := normalizeIP(entry.IP)
+	if sourceIP == "" {
+		return ""
+	}
+
+	if !e.config.Detection.Proxy.Enabled || len(e.trustedProxyNetworks) == 0 {
+		return sourceIP
+	}
+
+	if !e.isTrustedProxy(sourceIP) {
+		return sourceIP
+	}
+
+	headers := e.config.Detection.Proxy.ClientIPHeaders
+	if len(headers) == 0 {
+		headers = []string{"CF-Connecting-IP", "X-Forwarded-For", "X-Real-IP"}
+	}
+
+	for _, header := range headers {
+		switch strings.ToLower(strings.TrimSpace(header)) {
+		case "cf-connecting-ip":
+			candidate := normalizeIP(getHeaderValue(entry.Headers, "CF-Connecting-IP"))
+			if candidate != "" {
+				return candidate
+			}
+		case "x-forwarded-for":
+			xff := entry.XForwardedFor
+			if xff == "" {
+				xff = getHeaderValue(entry.Headers, "X-Forwarded-For")
+			}
+			for _, candidate := range strings.Split(xff, ",") {
+				parsed := normalizeIP(candidate)
+				if parsed != "" {
+					return parsed
+				}
+			}
+		case "x-real-ip":
+			candidate := normalizeIP(getHeaderValue(entry.Headers, "X-Real-IP"))
+			if candidate != "" {
+				return candidate
+			}
+		}
+	}
+
+	return sourceIP
+}
+
+func (e *Engine) isTrustedProxy(ip string) bool {
+	parsed := net.ParseIP(ip)
+	if parsed == nil {
+		return false
+	}
+
+	for _, network := range e.trustedProxyNetworks {
+		if network.Contains(parsed) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func getHeaderValue(headers map[string]string, key string) string {
+	for headerKey, value := range headers {
+		if strings.EqualFold(headerKey, key) {
+			return strings.TrimSpace(value)
+		}
+	}
+
+	return ""
+}
+
+func normalizeIP(ip string) string {
+	ip = strings.TrimSpace(ip)
+	if ip == "" {
+		return ""
+	}
+
+	if host, _, err := net.SplitHostPort(ip); err == nil {
+		ip = host
+	}
+
+	parsed := net.ParseIP(ip)
+	if parsed == nil {
+		return ""
+	}
+
+	return parsed.String()
 }

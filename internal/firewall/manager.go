@@ -2,8 +2,11 @@ package firewall
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -45,11 +48,12 @@ type Manager struct {
 	rules    map[string]*Rule
 	mutex    sync.RWMutex
 	logger   *logrus.Logger
-	
+	workerWG sync.WaitGroup
+
 	// Channels for async operations
-	ruleChan   chan *Rule
+	ruleChan    chan *Rule
 	unblockChan chan string
-	
+
 	// Cleanup
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -68,7 +72,7 @@ type Backend interface {
 // NewManager creates a new firewall manager
 func NewManager(cfg config.FirewallConfig, logger *logrus.Logger) (*Manager, error) {
 	ctx, cancel := context.WithCancel(context.Background())
-	
+
 	manager := &Manager{
 		config:      cfg,
 		rules:       make(map[string]*Rule),
@@ -78,24 +82,38 @@ func NewManager(cfg config.FirewallConfig, logger *logrus.Logger) (*Manager, err
 		ctx:         ctx,
 		cancel:      cancel,
 	}
-	
+
 	// Initialize backend
 	backend, err := manager.createBackend()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create firewall backend: %v", err)
 	}
 	manager.backend = backend
-	
+
 	// Start worker goroutines
+	manager.workerWG.Add(1)
 	go manager.ruleWorker()
+	manager.workerWG.Add(1)
 	go manager.unblockWorker()
+	manager.workerWG.Add(1)
 	go manager.cleanupWorker()
-	
+
+	if manager.config.Persistence.Enabled {
+		manager.workerWG.Add(1)
+		go manager.persistenceWorker()
+	}
+
 	// Load existing rules
 	if err := manager.loadExistingRules(); err != nil {
 		logger.WithError(err).Warn("Failed to load existing firewall rules")
 	}
-	
+
+	if manager.config.Persistence.Enabled {
+		if err := manager.loadPersistedRules(); err != nil {
+			logger.WithError(err).Warn("Failed to load persisted firewall rules")
+		}
+	}
+
 	logger.Infof("Firewall manager initialized with backend: %s", backend.Name())
 	return manager, nil
 }
@@ -112,7 +130,7 @@ func (m *Manager) createBackend() (Backend, error) {
 	case "mock":
 		return NewMockBackend(), nil
 	default:
-		return NewIptablesBackend(m.config, m.logger) // Default to iptables
+		return NewNftablesBackend(m.config, m.logger)
 	}
 }
 
@@ -122,37 +140,39 @@ func (m *Manager) BlockIP(ip string, action Action, duration time.Duration, reas
 	if net.ParseIP(ip) == nil {
 		return fmt.Errorf("invalid IP address: %s", ip)
 	}
-	
+
 	// Check whitelist
 	if m.isWhitelisted(ip) {
 		m.logger.Infof("IP %s is whitelisted, skipping block", ip)
 		return nil
 	}
-	
+
 	// Check if already blocked
 	m.mutex.RLock()
 	existingRule, exists := m.rules[ip]
 	m.mutex.RUnlock()
-	
+
 	if exists && existingRule.ExpiresAt.After(time.Now()) {
 		m.logger.Infof("IP %s is already blocked until %v", ip, existingRule.ExpiresAt)
 		return nil
 	}
-	
+
 	// Create rule
 	rule := &Rule{
-		ID:          generateRuleID(),
-		IP:          ip,
-		Action:      action,
-		Duration:    duration,
-		CreatedAt:   time.Now(),
-		ExpiresAt:   time.Now().Add(duration),
-		Reason:      reason,
-		Metadata:    metadata,
+		ID:        generateRuleID(),
+		IP:        ip,
+		Action:    action,
+		Duration:  duration,
+		CreatedAt: time.Now(),
+		ExpiresAt: time.Now().Add(duration),
+		Reason:    reason,
+		Metadata:  metadata,
 	}
-	
+
 	// Add to pending rules
 	select {
+	case <-m.ctx.Done():
+		return fmt.Errorf("firewall manager is shutting down")
 	case m.ruleChan <- rule:
 		m.logger.Infof("Queued %s action for IP %s (duration: %v, reason: %s)", action, ip, duration, reason)
 		return nil
@@ -164,6 +184,8 @@ func (m *Manager) BlockIP(ip string, action Action, duration time.Duration, reas
 // UnblockIP unblocks an IP address
 func (m *Manager) UnblockIP(ip string) error {
 	select {
+	case <-m.ctx.Done():
+		return fmt.Errorf("firewall manager is shutting down")
 	case m.unblockChan <- ip:
 		m.logger.Infof("Queued unblock for IP %s", ip)
 		return nil
@@ -176,17 +198,17 @@ func (m *Manager) UnblockIP(ip string) error {
 func (m *Manager) IsBlocked(ip string) (bool, *Rule) {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
-	
+
 	rule, exists := m.rules[ip]
 	if !exists {
 		return false, nil
 	}
-	
+
 	// Check if rule has expired
 	if rule.ExpiresAt.Before(time.Now()) {
 		return false, nil
 	}
-	
+
 	return true, rule
 }
 
@@ -194,16 +216,16 @@ func (m *Manager) IsBlocked(ip string) (bool, *Rule) {
 func (m *Manager) GetRules() []*Rule {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
-	
+
 	rules := make([]*Rule, 0, len(m.rules))
 	now := time.Now()
-	
+
 	for _, rule := range m.rules {
 		if rule.ExpiresAt.After(now) {
 			rules = append(rules, rule)
 		}
 	}
-	
+
 	return rules
 }
 
@@ -211,11 +233,11 @@ func (m *Manager) GetRules() []*Rule {
 func (m *Manager) GetStats() map[string]interface{} {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
-	
+
 	stats := map[string]interface{}{
-		"backend":      m.backend.Name(),
-		"total_rules":  len(m.rules),
-		"active_rules": 0,
+		"backend":       m.backend.Name(),
+		"total_rules":   len(m.rules),
+		"active_rules":  0,
 		"expired_rules": 0,
 		"actions": map[Action]int{
 			ActionBlock:     0,
@@ -225,7 +247,7 @@ func (m *Manager) GetStats() map[string]interface{} {
 			ActionTarpit:    0,
 		},
 	}
-	
+
 	now := time.Now()
 	for _, rule := range m.rules {
 		if rule.ExpiresAt.After(now) {
@@ -236,17 +258,22 @@ func (m *Manager) GetStats() map[string]interface{} {
 			stats["expired_rules"] = stats["expired_rules"].(int) + 1
 		}
 	}
-	
+
 	return stats
 }
 
 // ruleWorker processes pending firewall rules
 func (m *Manager) ruleWorker() {
+	defer m.workerWG.Done()
+
 	for {
 		select {
 		case <-m.ctx.Done():
 			return
-		case rule := <-m.ruleChan:
+		case rule, ok := <-m.ruleChan:
+			if !ok {
+				return
+			}
 			if rule == nil {
 				m.logger.Warn("Received nil rule, skipping")
 				continue
@@ -260,11 +287,16 @@ func (m *Manager) ruleWorker() {
 
 // unblockWorker processes pending unblock requests
 func (m *Manager) unblockWorker() {
+	defer m.workerWG.Done()
+
 	for {
 		select {
 		case <-m.ctx.Done():
 			return
-		case ip := <-m.unblockChan:
+		case ip, ok := <-m.unblockChan:
+			if !ok {
+				return
+			}
 			if err := m.processUnblock(ip); err != nil {
 				m.logger.WithError(err).Errorf("Failed to unblock IP %s", ip)
 			}
@@ -274,9 +306,11 @@ func (m *Manager) unblockWorker() {
 
 // cleanupWorker periodically cleans up expired rules
 func (m *Manager) cleanupWorker() {
+	defer m.workerWG.Done()
+
 	ticker := time.NewTicker(5 * time.Minute)
 	defer ticker.Stop()
-	
+
 	for {
 		select {
 		case <-m.ctx.Done():
@@ -287,28 +321,66 @@ func (m *Manager) cleanupWorker() {
 	}
 }
 
+func (m *Manager) persistenceWorker() {
+	defer m.workerWG.Done()
+
+	interval := time.Duration(m.config.Persistence.SaveInterval) * time.Second
+	if interval <= 0 {
+		interval = 60 * time.Second
+	}
+
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-m.ctx.Done():
+			return
+		case <-ticker.C:
+			if err := m.persistRules(); err != nil {
+				m.logger.WithError(err).Error("Failed to persist firewall rules")
+			}
+		}
+	}
+}
+
 // processRule processes a single firewall rule
 func (m *Manager) processRule(rule *Rule) error {
 	// Add rule to backend
 	if err := m.backend.AddRule(rule); err != nil {
 		return fmt.Errorf("backend failed to add rule: %v", err)
 	}
-	
+
 	// Store rule
 	m.mutex.Lock()
 	m.rules[rule.IP] = rule
 	m.mutex.Unlock()
-	
+
 	m.logger.Infof("Applied %s action to IP %s (expires: %v)", rule.Action, rule.IP, rule.ExpiresAt)
-	
+
 	// Schedule automatic unblock
 	if rule.Duration > 0 {
-		go func() {
-			time.Sleep(rule.Duration)
-			m.UnblockIP(rule.IP)
-		}()
+		go func(ip string, duration time.Duration) {
+			timer := time.NewTimer(duration)
+			defer timer.Stop()
+
+			select {
+			case <-m.ctx.Done():
+				return
+			case <-timer.C:
+				if err := m.UnblockIP(ip); err != nil {
+					m.logger.WithError(err).Debugf("Failed to queue auto-unblock for IP %s", ip)
+				}
+			}
+		}(rule.IP, rule.Duration)
 	}
-	
+
+	if m.config.Persistence.Enabled {
+		if err := m.persistRules(); err != nil {
+			m.logger.WithError(err).Warn("Failed to persist rules after block action")
+		}
+	}
+
 	return nil
 }
 
@@ -317,21 +389,27 @@ func (m *Manager) processUnblock(ip string) error {
 	m.mutex.RLock()
 	rule, exists := m.rules[ip]
 	m.mutex.RUnlock()
-	
+
 	if !exists {
 		return fmt.Errorf("no rule found for IP %s", ip)
 	}
-	
+
 	// Remove from backend
 	if err := m.backend.RemoveRule(rule.ID); err != nil {
 		return fmt.Errorf("backend failed to remove rule: %v", err)
 	}
-	
+
 	// Remove from local storage
 	m.mutex.Lock()
 	delete(m.rules, ip)
 	m.mutex.Unlock()
-	
+
+	if m.config.Persistence.Enabled {
+		if err := m.persistRules(); err != nil {
+			m.logger.WithError(err).Warn("Failed to persist rules after unblock action")
+		}
+	}
+
 	m.logger.Infof("Unblocked IP %s", ip)
 	return nil
 }
@@ -340,28 +418,34 @@ func (m *Manager) processUnblock(ip string) error {
 func (m *Manager) cleanupExpiredRules() {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
-	
+
 	now := time.Now()
 	expiredIPs := []string{}
-	
+
 	for ip, rule := range m.rules {
 		if rule.ExpiresAt.Before(now) {
 			expiredIPs = append(expiredIPs, ip)
 		}
 	}
-	
+
 	for _, ip := range expiredIPs {
 		rule := m.rules[ip]
-		
+
 		// Remove from backend
 		if err := m.backend.RemoveRule(rule.ID); err != nil {
 			m.logger.WithError(err).Errorf("Failed to remove expired rule for IP %s", ip)
 			continue
 		}
-		
+
 		// Remove from local storage
 		delete(m.rules, ip)
 		m.logger.Infof("Cleaned up expired rule for IP %s", ip)
+	}
+
+	if m.config.Persistence.Enabled {
+		if err := m.persistRules(); err != nil {
+			m.logger.WithError(err).Warn("Failed to persist rules after cleanup")
+		}
 	}
 }
 
@@ -371,7 +455,7 @@ func (m *Manager) isWhitelisted(ip string) bool {
 	if parsedIP == nil {
 		return false
 	}
-	
+
 	for _, whitelistEntry := range m.config.Whitelist {
 		// Check if it's a CIDR range
 		if strings.Contains(whitelistEntry, "/") {
@@ -389,7 +473,7 @@ func (m *Manager) isWhitelisted(ip string) bool {
 			}
 		}
 	}
-	
+
 	return false
 }
 
@@ -399,17 +483,17 @@ func (m *Manager) loadExistingRules() error {
 	if err != nil {
 		return err
 	}
-	
+
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
-	
+
 	now := time.Now()
 	for _, rule := range rules {
 		if rule.ExpiresAt.After(now) {
 			m.rules[rule.IP] = rule
 		}
 	}
-	
+
 	m.logger.Infof("Loaded %d existing firewall rules", len(rules))
 	return nil
 }
@@ -417,23 +501,98 @@ func (m *Manager) loadExistingRules() error {
 // Shutdown gracefully shuts down the firewall manager
 func (m *Manager) Shutdown() error {
 	m.logger.Info("Shutting down firewall manager")
-	
+
 	// Cancel context to stop workers
 	m.cancel()
-	
-	// Process remaining rules in channels
-	close(m.ruleChan)
-	close(m.unblockChan)
-	
-	// Process any remaining rules
-	for rule := range m.ruleChan {
-		m.processRule(rule)
+	m.workerWG.Wait()
+
+	if m.config.Persistence.Enabled {
+		if err := m.persistRules(); err != nil {
+			m.logger.WithError(err).Error("Failed to persist firewall rules during shutdown")
+		}
 	}
-	
-	for ip := range m.unblockChan {
-		m.processUnblock(ip)
+
+	return nil
+}
+
+func (m *Manager) persistRules() error {
+	if !m.config.Persistence.Enabled || m.config.Persistence.RulesFile == "" {
+		return nil
 	}
-	
+
+	m.mutex.RLock()
+	rules := make([]*Rule, 0, len(m.rules))
+	now := time.Now()
+	for _, rule := range m.rules {
+		if rule.ExpiresAt.After(now) {
+			ruleCopy := *rule
+			rules = append(rules, &ruleCopy)
+		}
+	}
+	m.mutex.RUnlock()
+
+	data, err := json.MarshalIndent(rules, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal firewall rules: %w", err)
+	}
+
+	if err := os.MkdirAll(filepath.Dir(m.config.Persistence.RulesFile), 0755); err != nil {
+		return fmt.Errorf("failed to create persistence directory: %w", err)
+	}
+
+	tempFile := m.config.Persistence.RulesFile + ".tmp"
+	if err := os.WriteFile(tempFile, data, 0644); err != nil {
+		return fmt.Errorf("failed to write temp rules file: %w", err)
+	}
+
+	if err := os.Rename(tempFile, m.config.Persistence.RulesFile); err != nil {
+		return fmt.Errorf("failed to rotate persisted rules file: %w", err)
+	}
+
+	return nil
+}
+
+func (m *Manager) loadPersistedRules() error {
+	if m.config.Persistence.RulesFile == "" {
+		return nil
+	}
+
+	data, err := os.ReadFile(m.config.Persistence.RulesFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return fmt.Errorf("failed to read persisted rules file: %w", err)
+	}
+
+	var persistedRules []*Rule
+	if err := json.Unmarshal(data, &persistedRules); err != nil {
+		return fmt.Errorf("failed to decode persisted rules: %w", err)
+	}
+
+	now := time.Now()
+	for _, rule := range persistedRules {
+		if rule == nil || rule.IP == "" || rule.ExpiresAt.Before(now) {
+			continue
+		}
+
+		m.mutex.RLock()
+		_, exists := m.rules[rule.IP]
+		m.mutex.RUnlock()
+		if exists {
+			continue
+		}
+
+		if err := m.backend.AddRule(rule); err != nil {
+			m.logger.WithError(err).Warnf("Failed to restore persisted rule for IP %s", rule.IP)
+			continue
+		}
+
+		m.mutex.Lock()
+		m.rules[rule.IP] = rule
+		m.mutex.Unlock()
+	}
+
 	return nil
 }
 
