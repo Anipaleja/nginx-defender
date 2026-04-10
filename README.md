@@ -227,7 +227,7 @@ type Rule struct {
 - **Real-time Threat Map**: Geographic visualization of attacks
 - **Performance Metrics**: Request processing and response times
 - **Rule Management**: Interactive firewall rule configuration
-- **Log Analysis**: Advanced filtering and search capabilities
+- **Log Analysis**: Filtering and search capabilities
 - **Alert Management**: Notification configuration and history
 
 #### Prometheus Metrics
