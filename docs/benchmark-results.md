@@ -1,12 +1,8 @@
 # Benchmark Results
 
-Generated at: 2026-04-12T19:28:18Z
+Generated automatically by nginx-defender benchmark mode.
 
-## nginx-defender
-- baseline processing test runtime: 0m0.361s
-
-## Fail2Ban
-- fail2ban not installed in this environment
-
-## Notes
-- Run this script in a controlled environment with representative log replay for meaningful numbers.
+| System | Detection Time | False Positives | Missed Attacks |
+|---|---:|---:|---:|
+| nginx-defender | 500.6115ms | 200 | 224 |
+| fail2ban-baseline | 2.542µs | 0 | 441 |
