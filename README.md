@@ -14,7 +14,7 @@
 ![Stars - Purple](https://img.shields.io/github/stars/Anipaleja/nginx-defender?color=9b30ff&style=flat)
 ![NGINX](https://img.shields.io/badge/nginx-1.25+-32CD32?logo=nginx&logoColor=white)
 
-**Enterprise-Grade Web Application Firewall with Advanced Threat Intelligence**
+**Web Application Firewall with Threat Intelligence**
 
 </div>
 
@@ -50,7 +50,7 @@
 
 ## Overview
 
-**nginx-defender** is a high-performance, enterprise-grade Web Application Firewall (WAF) and threat detection system engineered for modern web infrastructure. Built with Go and designed for scalability, it provides real-time threat mitigation, machine learning-based anomaly detection, and comprehensive security analytics.
+**nginx-defender** is a high-performance, Web Application Firewall (WAF) and threat detection system engineered for modern web infrastructure. Built with Go and designed for scalability, it provides real time threat mitigation, machine learning-based anomaly detection, and comprehensive security analytics.
 
 ### Key Differentiators
 
@@ -227,7 +227,7 @@ type Rule struct {
 - **Real-time Threat Map**: Geographic visualization of attacks
 - **Performance Metrics**: Request processing and response times
 - **Rule Management**: Interactive firewall rule configuration
-- **Log Analysis**: Advanced filtering and search capabilities
+- **Log Analysis**: Filtering and search capabilities
 - **Alert Management**: Notification configuration and history
 
 #### Prometheus Metrics
@@ -1189,6 +1189,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) f
 </details>
 
 ---
+
+<a href="https://www.star-history.com/?repos=anipaleja%2Fnginx-defender&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&legend=top-left" />
+ </picture>
+</a>
 
 <div align="center">
 

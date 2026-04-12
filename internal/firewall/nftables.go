@@ -2,8 +2,12 @@ package firewall
 
 import (
 	"fmt"
+	"net"
 	"os/exec"
+	"regexp"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/Anipaleja/nginx-defender/internal/config"
 	"github.com/sirupsen/logrus"
@@ -15,21 +19,30 @@ type NftablesBackend struct {
 	logger *logrus.Logger
 	table  string
 	chain  string
+
+	ipv4Set string
+	ipv6Set string
+
+	rules map[string]*Rule
+	mutex sync.RWMutex
 }
 
 // NewNftablesBackend creates a new nftables backend
 func NewNftablesBackend(cfg config.FirewallConfig, logger *logrus.Logger) (*NftablesBackend, error) {
 	backend := &NftablesBackend{
-		config: cfg,
-		logger: logger,
-		table:  "nginx_defender",
-		chain:  cfg.Chain,
+		config:  cfg,
+		logger:  logger,
+		table:   "nginx_defender",
+		chain:   normalizeNFTChain(cfg.Chain),
+		ipv4Set: "blocked_ipv4",
+		ipv6Set: "blocked_ipv6",
+		rules:   make(map[string]*Rule),
 	}
-	
+
 	if err := backend.initialize(); err != nil {
 		return nil, fmt.Errorf("failed to initialize nftables: %v", err)
 	}
-	
+
 	return backend, nil
 }
 
@@ -40,91 +53,128 @@ func (b *NftablesBackend) Name() string {
 
 // AddRule adds a firewall rule using nftables
 func (b *NftablesBackend) AddRule(rule *Rule) error {
-	var nftCommand string
-	
-	switch rule.Action {
-	case ActionBlock, ActionDrop:
-		nftCommand = fmt.Sprintf("add rule ip %s %s ip saddr %s drop comment \"%s\"",
-			b.table, b.chain, rule.IP, fmt.Sprintf("nginx-defender:%s:%s", rule.ID, rule.Reason))
-			
-	case ActionReject:
-		nftCommand = fmt.Sprintf("add rule ip %s %s ip saddr %s reject comment \"%s\"",
-			b.table, b.chain, rule.IP, fmt.Sprintf("nginx-defender:%s:%s", rule.ID, rule.Reason))
-			
-	case ActionRateLimit:
-		limit := "10/minute"
-		if limitStr, exists := rule.Metadata["limit"]; exists {
-			limit = limitStr
-		}
-		nftCommand = fmt.Sprintf("add rule ip %s %s ip saddr %s limit rate %s accept comment \"%s\"",
-			b.table, b.chain, rule.IP, limit, fmt.Sprintf("nginx-defender:%s:rate-limit", rule.ID))
-			
-	default:
-		return fmt.Errorf("unsupported action: %s", rule.Action)
+	if rule == nil {
+		return fmt.Errorf("cannot add nil rule")
 	}
-	
-	cmd := exec.Command("nft", strings.Fields(nftCommand)...)
-	if output, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("nftables command failed: %v, output: %s", err, string(output))
+
+	if rule.Duration <= 0 {
+		rule.Duration = 24 * time.Hour
+		rule.ExpiresAt = time.Now().Add(rule.Duration)
 	}
-	
-	b.logger.Debugf("Added nftables rule for IP %s with action %s", rule.IP, rule.Action)
+
+	parsedIP := net.ParseIP(rule.IP)
+	if parsedIP == nil {
+		return fmt.Errorf("invalid IP address: %s", rule.IP)
+	}
+
+	if rule.Action != ActionBlock && rule.Action != ActionDrop && rule.Action != ActionReject && rule.Action != ActionTarpit {
+		return fmt.Errorf("unsupported action for nftables set backend: %s", rule.Action)
+	}
+
+	setName := b.ipv4Set
+	if parsedIP.To4() == nil {
+		setName = b.ipv6Set
+	}
+
+	// Replace existing element to refresh timeout.
+	_ = b.execute("delete", "element", "inet", b.table, setName, "{", rule.IP, "}")
+
+	timeout := rule.Duration.Truncate(time.Second)
+	if timeout < time.Second {
+		timeout = time.Second
+	}
+
+	if err := b.execute("add", "element", "inet", b.table, setName, "{", rule.IP, "timeout", timeout.String(), "}"); err != nil {
+		return fmt.Errorf("failed to add element to nftables set %s: %w", setName, err)
+	}
+
+	b.mutex.Lock()
+	b.rules[rule.ID] = rule
+	b.mutex.Unlock()
+
+	b.logger.Debugf("Added nftables set entry for IP %s with action %s", rule.IP, rule.Action)
 	return nil
 }
 
 // RemoveRule removes a firewall rule
 func (b *NftablesBackend) RemoveRule(ruleID string) error {
-	// List rules and find the one to remove
-	cmd := exec.Command("nft", "list", "chain", "ip", b.table, b.chain)
-	output, err := cmd.Output()
-	if err != nil {
-		return fmt.Errorf("failed to list nftables rules: %v", err)
+	b.mutex.RLock()
+	rule, exists := b.rules[ruleID]
+	b.mutex.RUnlock()
+
+	if !exists {
+		return nil
 	}
-	
-	lines := strings.Split(string(output), "\n")
-	for _, line := range lines {
-		if strings.Contains(line, ruleID) {
-			// Extract handle from the line (simplified)
-			// In real implementation, would need proper parsing
-			// For now, use a different approach
-			b.logger.Debugf("Would remove nftables rule containing: %s", ruleID)
-			break
+
+	parsedIP := net.ParseIP(rule.IP)
+	if parsedIP == nil {
+		return fmt.Errorf("invalid stored IP for rule %s", ruleID)
+	}
+
+	setName := b.ipv4Set
+	if parsedIP.To4() == nil {
+		setName = b.ipv6Set
+	}
+
+	if err := b.execute("delete", "element", "inet", b.table, setName, "{", rule.IP, "}"); err != nil {
+		if !isNFTNoSuchElementError(err) {
+			return fmt.Errorf("failed to remove IP %s from set %s: %w", rule.IP, setName, err)
 		}
 	}
-	
+
+	b.mutex.Lock()
+	delete(b.rules, ruleID)
+	b.mutex.Unlock()
+
 	return nil
 }
 
 // ListRules lists all active rules
 func (b *NftablesBackend) ListRules() ([]*Rule, error) {
-	// Implementation would parse nftables output
-	// For now, return empty list
-	return []*Rule{}, nil
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
+
+	rules := make([]*Rule, 0, len(b.rules))
+	now := time.Now()
+	for _, rule := range b.rules {
+		if rule.ExpiresAt.After(now) {
+			ruleCopy := *rule
+			rules = append(rules, &ruleCopy)
+		}
+	}
+
+	return rules, nil
 }
 
 // IsBlocked checks if an IP is blocked
 func (b *NftablesBackend) IsBlocked(ip string) (bool, error) {
-	rules, err := b.ListRules()
-	if err != nil {
-		return false, err
-	}
-	
-	for _, rule := range rules {
-		if rule.IP == ip {
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
+
+	now := time.Now()
+	for _, rule := range b.rules {
+		if rule.IP == ip && rule.ExpiresAt.After(now) {
 			return true, nil
 		}
 	}
-	
+
 	return false, nil
 }
 
 // Flush removes all rules managed by nginx-defender
 func (b *NftablesBackend) Flush() error {
-	cmd := exec.Command("nft", "flush", "chain", "ip", b.table, b.chain)
-	if output, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("failed to flush nftables chain: %v, output: %s", err, string(output))
+	if err := b.execute("flush", "set", "inet", b.table, b.ipv4Set); err != nil && !isNFTNoSuchElementError(err) {
+		return fmt.Errorf("failed to flush nftables set %s: %w", b.ipv4Set, err)
 	}
-	
+
+	if err := b.execute("flush", "set", "inet", b.table, b.ipv6Set); err != nil && !isNFTNoSuchElementError(err) {
+		return fmt.Errorf("failed to flush nftables set %s: %w", b.ipv6Set, err)
+	}
+
+	b.mutex.Lock()
+	b.rules = make(map[string]*Rule)
+	b.mutex.Unlock()
+
 	b.logger.Info("Flushed all nginx-defender nftables rules")
 	return nil
 }
@@ -132,19 +182,61 @@ func (b *NftablesBackend) Flush() error {
 // initialize sets up the nftables table and chain
 func (b *NftablesBackend) initialize() error {
 	commands := [][]string{
-		{"nft", "add", "table", "ip", b.table},
-		{"nft", "add", "chain", "ip", b.table, b.chain, "{", "type", "filter", "hook", "input", "priority", "0", ";", "}"},
+		{"add", "table", "inet", b.table},
+		{"add", "set", "inet", b.table, b.ipv4Set, "{", "type", "ipv4_addr", ";", "flags", "timeout", ";", "}"},
+		{"add", "set", "inet", b.table, b.ipv6Set, "{", "type", "ipv6_addr", ";", "flags", "timeout", ";", "}"},
+		{"add", "chain", "inet", b.table, b.chain, "{", "type", "filter", "hook", "input", "priority", "0", ";", "policy", "accept", ";", "}"},
+		{"add", "rule", "inet", b.table, b.chain, "ip", "saddr", "@" + b.ipv4Set, "drop", "comment", "nginx-defender-ipv4"},
+		{"add", "rule", "inet", b.table, b.chain, "ip6", "saddr", "@" + b.ipv6Set, "drop", "comment", "nginx-defender-ipv6"},
 	}
-	
-	for _, cmdArgs := range commands {
-		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
-		if output, err := cmd.CombinedOutput(); err != nil {
-			// Ignore errors if table/chain already exists
-			if !strings.Contains(string(output), "exists") {
-				b.logger.WithError(err).Warnf("nftables command failed: %v", string(output))
-			}
+
+	for _, command := range commands {
+		if err := b.execute(command...); err != nil && !isNFTAlreadyExistsError(err) {
+			return err
 		}
 	}
-	
+
 	return nil
+}
+
+func (b *NftablesBackend) execute(args ...string) error {
+	cmd := exec.Command("nft", args...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("nft %s failed: %v, output: %s", strings.Join(args, " "), err, string(output))
+	}
+
+	return nil
+}
+
+func normalizeNFTChain(chain string) string {
+	chain = strings.TrimSpace(chain)
+	if chain == "" {
+		return "input"
+	}
+
+	chain = strings.ToLower(chain)
+	if regexp.MustCompile(`^[a-z0-9_]+$`).MatchString(chain) {
+		return chain
+	}
+
+	return "input"
+}
+
+func isNFTAlreadyExistsError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	errText := strings.ToLower(err.Error())
+	return strings.Contains(errText, "file exists") || strings.Contains(errText, "exists")
+}
+
+func isNFTNoSuchElementError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	errText := strings.ToLower(err.Error())
+	return strings.Contains(errText, "no such file") || strings.Contains(errText, "no such element")
 }

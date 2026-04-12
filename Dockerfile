@@ -16,7 +16,15 @@ WORKDIR /app
 COPY go.mod go.sum ./
 
 # Download dependencies
-RUN go mod download && go mod verify
+RUN /bin/sh -ec ' \
+        for attempt in 1 2 3 4 5; do \
+            go mod download && go mod verify && exit 0; \
+            echo "go mod download failed (attempt ${attempt}/5), retrying..." >&2; \
+            sleep $((attempt * 2)); \
+        done; \
+        echo "go mod download failed after retries" >&2; \
+        exit 1 \
+    '
 
 # Copy source code
 COPY . .

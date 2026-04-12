@@ -1,0 +1,49 @@
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Environment and secret files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.secret
+secrets/
+
+# Local override configs
+config.local.yaml
+config.*.local.yaml
+
+# Logs and runtime state
+*.log
+logs/
+tmp/
+*.tmp
+
+# Go build/test artifacts
+bin/
+build/
+dist/
+coverage/
+*.out
+*.test
+nginx-defender-test
+
+# Node artifacts
+bindings/nodejs/node_modules/
+bindings/nodejs/.npm/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+bindings/python/build/
+bindings/python/dist/
+bindings/python/*.egg-info/
+bindings/python/src/*.egg-info/

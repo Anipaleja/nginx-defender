@@ -58,7 +58,7 @@ services:
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_SECURITY_ADMIN_PASSWORD=ChangeThisGrafanaPassword_2026!
       - GF_USERS_ALLOW_SIGN_UP=false
 
   nginx:
