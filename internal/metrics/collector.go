@@ -3,6 +3,7 @@ package metrics
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -47,6 +48,15 @@ type Collector struct {
 	// Internal stats
 	stats map[string]interface{}
 	mutex sync.RWMutex
+
+	// Fast in-memory counters for operational dashboards
+	totalThreats     uint64
+	totalIPsBlocked  uint64
+	totalBotsBlocked uint64
+
+	threatTypeCounts  map[string]uint64
+	blockedTypeCounts map[string]uint64
+	blockedReason     map[string]uint64
 }
 
 // NewCollector will create a new metrics collector
@@ -58,6 +68,9 @@ func NewCollector(cfg config.MetricsConfig, logger *logrus.Logger) *Collector {
 		logger:   logger,
 		registry: registry,
 		stats:    make(map[string]interface{}),
+		threatTypeCounts:  make(map[string]uint64),
+		blockedTypeCounts: make(map[string]uint64),
+		blockedReason:     make(map[string]uint64),
 	}
 	
 	collector.initializeMetrics()
@@ -219,11 +232,39 @@ func (c *Collector) RecordThreat(threatType, threatLevel, action string, score f
 	if country != "" {
 		c.threatsByCountry.WithLabelValues(country).Inc()
 	}
+
+	c.mutex.Lock()
+	c.totalThreats++
+	c.threatTypeCounts[strings.ToLower(strings.TrimSpace(threatType))]++
+	c.stats["last_threat_type"] = threatType
+	c.stats["last_threat_level"] = threatLevel
+	c.stats["last_threat_action"] = action
+	c.stats["last_threat_score"] = score
+	c.stats["last_threat_at"] = time.Now().UTC()
+	c.mutex.Unlock()
 }
 
 func (c *Collector) RecordIPBlocked(reason, action, country string) {
 	c.ipsBLocked.WithLabelValues(reason, action, country).Inc()
 	c.blockedRequests.WithLabelValues(action, reason).Inc()
+
+	normalizedReason := strings.ToLower(strings.TrimSpace(reason))
+	derivedType := deriveThreatType(normalizedReason)
+
+	c.mutex.Lock()
+	c.totalIPsBlocked++
+	c.blockedReason[normalizedReason]++
+	if derivedType != "" {
+		c.blockedTypeCounts[derivedType]++
+		if isBotThreat(derivedType) {
+			c.totalBotsBlocked++
+		}
+	}
+	c.stats["last_block_reason"] = reason
+	c.stats["last_block_action"] = action
+	c.stats["last_block_country"] = country
+	c.stats["last_block_at"] = time.Now().UTC()
+	c.mutex.Unlock()
 }
 
 func (c *Collector) RecordMLPrediction(prediction string, confidence float64) {
@@ -269,6 +310,30 @@ func (c *Collector) GetStats() map[string]interface{} {
 	for k, v := range c.stats {
 		stats[k] = v
 	}
+
+	threatsByType := make(map[string]uint64, len(c.threatTypeCounts))
+	for k, v := range c.threatTypeCounts {
+		threatsByType[k] = v
+	}
+
+	blockedByType := make(map[string]uint64, len(c.blockedTypeCounts))
+	for k, v := range c.blockedTypeCounts {
+		blockedByType[k] = v
+	}
+
+	blockedByReason := make(map[string]uint64, len(c.blockedReason))
+	for k, v := range c.blockedReason {
+		blockedByReason[k] = v
+	}
+
+	stats["summary"] = map[string]interface{}{
+		"total_threats_detected": c.totalThreats,
+		"total_ips_blocked":      c.totalIPsBlocked,
+		"total_bots_blocked":     c.totalBotsBlocked,
+	}
+	stats["threats_by_type"] = threatsByType
+	stats["blocked_by_threat_type"] = blockedByType
+	stats["blocked_by_reason"] = blockedByReason
 	
 	return stats
 }
@@ -388,7 +453,43 @@ func (c *Collector) Reset() {
 	// Clear internal stats
 	c.mutex.Lock()
 	c.stats = make(map[string]interface{})
+	c.totalThreats = 0
+	c.totalIPsBlocked = 0
+	c.totalBotsBlocked = 0
+	c.threatTypeCounts = make(map[string]uint64)
+	c.blockedTypeCounts = make(map[string]uint64)
+	c.blockedReason = make(map[string]uint64)
 	c.mutex.Unlock()
 	
 	c.logger.Info("Metrics collector reset")
+}
+
+func deriveThreatType(reason string) string {
+	if reason == "" {
+		return ""
+	}
+
+	for _, candidate := range []string{
+		"bot",
+		"botnet",
+		"ai_scraper",
+		"sql_injection",
+		"xss",
+		"path_traversal",
+		"rce",
+		"suspicious_pattern",
+		"threat_intel",
+		"rate_limiting",
+		"behavioral_anomaly",
+	} {
+		if strings.Contains(reason, candidate) {
+			return candidate
+		}
+	}
+
+	return "unknown"
+}
+
+func isBotThreat(threatType string) bool {
+	return strings.Contains(threatType, "bot") || strings.Contains(threatType, "scraper")
 }

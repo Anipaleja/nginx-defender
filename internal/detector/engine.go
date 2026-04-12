@@ -45,6 +45,7 @@ type Engine struct {
 	rangeManager   *ranges.RangeManager
 	geoIP          *geoip.Service
 	patternMatcher *patterns.Matcher
+	builtInSignatures map[string]*regexp.Regexp
 
 	// Detection state
 	ipStats   map[string]*IPStatistics
@@ -96,6 +97,7 @@ func NewEngine(cfg *config.Config, logger *logrus.Logger) (*Engine, error) {
 		ipStats:     make(map[string]*IPStatistics),
 		history:     make([]*DetectionResult, 0, 2048),
 		historyByIP: make(map[string][]*DetectionResult),
+		builtInSignatures: make(map[string]*regexp.Regexp),
 		logger:      logger,
 	}
 
@@ -109,6 +111,7 @@ func NewEngine(cfg *config.Config, logger *logrus.Logger) (*Engine, error) {
 	engine.geoIP = geoService
 
 	engine.patternMatcher = patterns.NewMatcher(cfg.Detection.SuspiciousPatterns.Patterns)
+	engine.initializeBuiltInSignatures()
 
 	// Initialize ML model if enabled
 	if cfg.MachineLearning.Enabled {
@@ -154,6 +157,26 @@ func NewEngine(cfg *config.Config, logger *logrus.Logger) (*Engine, error) {
 	go engine.cleanupRoutine()
 
 	return engine, nil
+}
+
+func (e *Engine) initializeBuiltInSignatures() {
+	raw := map[string]string{
+		"sql_injection":   `(?i)(union\s+select|select\s+.+\s+from|sleep\s*\(|benchmark\s*\(|information_schema|or\s+1=1|\bdrop\b\s+\btable\b|\bexec\b\s+\bxp_)`,
+		"xss":             `(?i)(<script\b|javascript:|vbscript:|onerror\s*=|onload\s*=|<img[^>]+onerror=)`,
+		"path_traversal":  `(?i)(\.\./|\.\.\\|%2e%2e%2f|%252e%252e%252f|/etc/passwd|/proc/self/environ)`,
+		"rce":             `(?i)(\b(wget|curl|chmod|nc|bash|sh)\b\s+|\$\(|` + "`" + `.+` + "`" + `|;\s*(cat|id|uname)\b)`,
+		"cmd_injection":   `(?i)(\|\||&&|;\s*(rm|cat|bash|sh|python)\b)`,
+		"sensitive_probe": `(?i)(/\.git/|/\.env|/wp-admin|/phpmyadmin|/actuator|/\.well-known/)`,
+	}
+
+	for kind, pattern := range raw {
+		re, err := regexp.Compile(pattern)
+		if err != nil {
+			e.logger.WithError(err).Warnf("Failed to compile built-in signature for %s", kind)
+			continue
+		}
+		e.builtInSignatures[kind] = re
+	}
 }
 
 // AnalyzeLogEntry analyzes a single log entry for threats
@@ -314,6 +337,12 @@ func (e *Engine) checkUserAgent(entry *logparser.LogEntry, result *DetectionResu
 		result.ThreatTypes = append(result.ThreatTypes, "suspicious_user_agent")
 		result.Score += 15.0
 		result.Details["suspicious_ua"] = userAgent
+
+		lowerUA := strings.ToLower(userAgent)
+		if strings.Contains(lowerUA, "bot") || strings.Contains(lowerUA, "crawler") || strings.Contains(lowerUA, "spider") || strings.Contains(lowerUA, "scraper") {
+			result.ThreatTypes = append(result.ThreatTypes, "bot_attack")
+			result.Score += 20.0
+		}
 	}
 }
 
@@ -321,6 +350,23 @@ func (e *Engine) checkUserAgent(entry *logparser.LogEntry, result *DetectionResu
 func (e *Engine) checkSuspiciousPatterns(entry *logparser.LogEntry, result *DetectionResult) {
 	if !e.config.Detection.SuspiciousPatterns.Enabled {
 		return
+	}
+
+	payload := strings.ToLower(entry.Path + " " + entry.QueryString + " " + entry.UserAgent)
+	for threatType, re := range e.builtInSignatures {
+		if re == nil || !re.MatchString(payload) {
+			continue
+		}
+
+		result.ThreatTypes = append(result.ThreatTypes, threatType)
+		switch threatType {
+		case "sql_injection", "xss", "rce", "cmd_injection":
+			result.Score += 55.0
+		case "path_traversal", "sensitive_probe":
+			result.Score += 45.0
+		default:
+			result.Score += 25.0
+		}
 	}
 
 	matches := e.patternMatcher.CheckPatterns(entry.Path, entry.QueryString, entry.UserAgent)
@@ -414,9 +460,9 @@ func (e *Engine) determineAction(result *DetectionResult) {
 	// Override based on specific threat types
 	for _, threatType := range result.ThreatTypes {
 		switch threatType {
-		case "threat_intel", "malware":
+		case "threat_intel", "malware", "sql_injection", "xss", "rce", "cmd_injection", "path_traversal", "sensitive_probe":
 			result.RecommendedAction = "BLOCK_IMMEDIATE"
-		case "ai_scraper":
+		case "ai_scraper", "bot_attack":
 			result.RecommendedAction = "TARPIT"
 		}
 	}
