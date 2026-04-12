@@ -44,6 +44,8 @@ type Collector struct {
 	// ML metrics
 	mlPredictions    *prometheus.CounterVec
 	mlModelAccuracy  prometheus.Gauge
+	falsePositives   *prometheus.CounterVec
+	decisionLatency  *prometheus.HistogramVec
 	
 	// Internal stats
 	stats map[string]interface{}
@@ -199,6 +201,23 @@ func (c *Collector) initializeMetrics() {
 			Help: "Current ML model accuracy",
 		},
 	)
+
+	c.falsePositives = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "nginx_defender_false_positives_total",
+			Help: "Total number of events marked as false positives",
+		},
+		[]string{"source", "threat_type"},
+	)
+
+	c.decisionLatency = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "nginx_defender_response_latency_seconds",
+			Help:    "Latency between log ingestion and mitigation decision",
+			Buckets: []float64{0.0005, 0.001, 0.0025, 0.005, 0.01, 0.05, 0.1, 0.25, 0.5},
+		},
+		[]string{"action"},
+	)
 }
 
 // registerMetrics registers all metrics with the registry
@@ -217,6 +236,8 @@ func (c *Collector) registerMetrics() {
 	c.registry.MustRegister(c.blockedRequests)
 	c.registry.MustRegister(c.mlPredictions)
 	c.registry.MustRegister(c.mlModelAccuracy)
+	c.registry.MustRegister(c.falsePositives)
+	c.registry.MustRegister(c.decisionLatency)
 }
 
 // Record methods for different types of events
@@ -284,6 +305,23 @@ func (c *Collector) UpdateSystemMetrics(activeConns, memoryUsage, cpuUsage float
 
 func (c *Collector) UpdateMLAccuracy(accuracy float64) {
 	c.mlModelAccuracy.Set(accuracy)
+}
+
+func (c *Collector) RecordFalsePositive(source, threatType string) {
+	if source == "" {
+		source = "manual"
+	}
+	if threatType == "" {
+		threatType = "unknown"
+	}
+	c.falsePositives.WithLabelValues(source, threatType).Inc()
+}
+
+func (c *Collector) RecordDecisionLatency(action string, duration time.Duration) {
+	if action == "" {
+		action = "unknown"
+	}
+	c.decisionLatency.WithLabelValues(action).Observe(duration.Seconds())
 }
 
 // getConfidenceRange converts confidence score to range

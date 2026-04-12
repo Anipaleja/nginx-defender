@@ -52,6 +52,32 @@
 
 **nginx-defender** is a high-performance, Web Application Firewall (WAF) and threat detection system engineered for modern web infrastructure. Built with Go and designed for scalability, it provides real time threat mitigation, machine learning-based anomaly detection, and comprehensive security analytics.
 
+### Next-Generation Detection Pipeline
+
+- Streaming anomaly detection with incremental model persistence
+- Behavioral profiling with burst, scraping, probing, and credential-stuffing signals
+- Confidence-driven adaptive mitigation (monitor, rate-limit, tarpit, block)
+- Deception endpoint detection fed back into the ML signal stream
+- Extensible detection plugins through dynamic module loading
+
+### ML and Adaptive Security Deep Dive
+
+The detection path now combines:
+
+1. Signature and threat-intelligence signals
+2. Per-IP behavioral profile scoring
+3. Streaming online anomaly model output
+4. Adaptive response planning based on confidence
+
+This enables deterministic blocking for known high-risk payloads while still adapting to new attacker behavior with a continuously updated model.
+
+### Reproducible Benchmarking
+
+Use the benchmark harness to compare runtime and deployment readiness against Fail2Ban:
+
+- script: scripts/benchmark-compare.sh
+- output: docs/benchmark-results.md
+
 ### Key Differentiators
 
 ```mermaid

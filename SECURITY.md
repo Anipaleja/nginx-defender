@@ -17,6 +17,32 @@ We provide security updates for the following versions:
 
 ## Security Architecture
 
+### Threat Model
+
+The primary adversaries are:
+
+- Remote opportunistic attackers performing scanning, exploitation, and credential stuffing.
+- Automated botnets and scraping infrastructure rotating IPs and user agents.
+- Targeted attackers attempting WAF evasion via low-and-slow behavior.
+- Misconfiguration-driven insider risk (overly broad trust boundaries, weak credentials).
+
+### Attack Surface Analysis
+
+Primary exposed surfaces:
+
+- Log ingestion pipeline (untrusted request metadata and payload artifacts).
+- Administrative API and web interface.
+- Firewall orchestration backend calls.
+- Model state persistence and plugin loading path.
+
+Mitigations in this project include:
+
+- Strict config validation with rejection of weak/default credentials.
+- Authenticated API operations with CSRF and session protection.
+- Confidence-based mitigation escalation to reduce false positives.
+- Optional plugin loading controlled by explicit environment configuration.
+- Restricted file permissions for persisted model state and sensitive artifacts.
+
 ### Core Security Features
 
 1. **Multi-Backend Firewall Support**

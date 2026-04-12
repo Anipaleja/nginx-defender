@@ -3,13 +3,18 @@ package detector
 import (
 	"fmt"
 	"net"
+	"os"
 	"regexp"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/Anipaleja/nginx-defender/internal/behavior"
 	"github.com/Anipaleja/nginx-defender/internal/config"
+	"github.com/Anipaleja/nginx-defender/internal/deception"
+	"github.com/Anipaleja/nginx-defender/internal/ml"
+	"github.com/Anipaleja/nginx-defender/internal/plugins"
 	"github.com/Anipaleja/nginx-defender/pkg/geoip"
 	"github.com/Anipaleja/nginx-defender/pkg/logparser"
 	"github.com/Anipaleja/nginx-defender/pkg/patterns"
@@ -34,6 +39,7 @@ type DetectionResult struct {
 	ThreatLevel       ThreatLevel       `json:"threat_level"`
 	ThreatTypes       []string          `json:"threat_types"`
 	Score             float64           `json:"score"`
+	Confidence        float64           `json:"confidence"`
 	Details           map[string]string `json:"details"`
 	Timestamp         time.Time         `json:"timestamp"`
 	RecommendedAction string            `json:"recommended_action"`
@@ -52,7 +58,14 @@ type Engine struct {
 	statsLock sync.RWMutex
 
 	// Machine learning
-	mlModel *MLModel
+	mlModel      *MLModel
+	onlineModel  *ml.OnlineAnomalyModel
+	mlEnabled    bool
+
+	// Profiling and deception
+	behaviorProfiler *behavior.Profiler
+	deceptionEngine  *deception.Engine
+	pluginManager    *plugins.Manager
 
 	// Behavioral analysis
 	behaviorAnalyzer *BehaviorAnalyzer
@@ -112,9 +125,31 @@ func NewEngine(cfg *config.Config, logger *logrus.Logger) (*Engine, error) {
 
 	engine.patternMatcher = patterns.NewMatcher(cfg.Detection.SuspiciousPatterns.Patterns)
 	engine.initializeBuiltInSignatures()
+	engine.behaviorProfiler = behavior.NewProfiler(50000, 30*time.Minute)
+	engine.deceptionEngine = deception.NewEngine()
+	engine.pluginManager = plugins.NewManager()
+	if paths := strings.TrimSpace(os.Getenv("NGINX_DEFENDER_PLUGINS")); paths != "" {
+		for _, path := range strings.Split(paths, ",") {
+			pluginPath := strings.TrimSpace(path)
+			if pluginPath == "" {
+				continue
+			}
+			if err := engine.pluginManager.LoadSharedObject(pluginPath); err != nil {
+				logger.WithError(err).Warnf("Failed to load detection plugin %s", pluginPath)
+			}
+		}
+	}
 
 	// Initialize ML model if enabled
 	if cfg.MachineLearning.Enabled {
+		engine.mlEnabled = true
+		engine.onlineModel = ml.NewOnlineAnomalyModel(cfg.MachineLearning.AnomalyThreshold)
+		if cfg.MachineLearning.ModelPath != "" {
+			if err := engine.onlineModel.Load(cfg.MachineLearning.ModelPath); err != nil {
+				logger.WithError(err).Debug("Unable to load streaming ML model state, starting fresh")
+			}
+		}
+
 		mlModel, err := NewMLModel(cfg.MachineLearning)
 		if err != nil {
 			logger.WithError(err).Warn("Failed to initialize ML model")
@@ -200,6 +235,7 @@ func (e *Engine) AnalyzeLogEntry(entry *logparser.LogEntry) *DetectionResult {
 		Details:     make(map[string]string),
 		Timestamp:   entry.Timestamp,
 		Score:       0.0,
+		Confidence:  0.0,
 	}
 
 	// Update IP statistics
@@ -210,13 +246,28 @@ func (e *Engine) AnalyzeLogEntry(entry *logparser.LogEntry) *DetectionResult {
 	e.checkGeographic(entry, result)
 	e.checkUserAgent(entry, result)
 	e.checkSuspiciousPatterns(entry, result)
+	e.checkDeceptionSignals(entry, result)
 	e.checkThreatIntelligence(entry, result)
 	e.checkBehavioralAnomalies(entry, result)
+	e.checkProfileSignals(entry, result)
 
 	// ML-based detection if available
-	if e.mlModel != nil {
+	if e.mlEnabled {
 		e.runMLDetection(entry, result)
 	}
+
+	pluginCtx := &plugins.DetectionContext{
+		ThreatTypes: append([]string{}, result.ThreatTypes...),
+		Score:       result.Score,
+		Details:     map[string]string{},
+	}
+	for k, v := range result.Details {
+		pluginCtx.Details[k] = v
+	}
+	e.pluginManager.Run(entry, pluginCtx)
+	result.ThreatTypes = pluginCtx.ThreatTypes
+	result.Score = pluginCtx.Score
+	result.Details = pluginCtx.Details
 
 	// Calculate final threat level and recommended action
 	e.calculateThreatLevel(result)
@@ -227,6 +278,43 @@ func (e *Engine) AnalyzeLogEntry(entry *logparser.LogEntry) *DetectionResult {
 	}
 
 	return result
+}
+
+func (e *Engine) checkDeceptionSignals(entry *logparser.LogEntry, result *DetectionResult) {
+	if e.deceptionEngine == nil || entry == nil {
+		return
+	}
+	if matched, endpoint := e.deceptionEngine.Match(entry.Path); matched {
+		result.ThreatTypes = append(result.ThreatTypes, "honeypot_interaction")
+		result.Score += 70.0
+		result.Details["deception_endpoint"] = endpoint
+	}
+}
+
+func (e *Engine) checkProfileSignals(entry *logparser.LogEntry, result *DetectionResult) {
+	if e.behaviorProfiler == nil || entry == nil {
+		return
+	}
+
+	_, signals := e.behaviorProfiler.Observe(entry.IP, entry)
+	result.Details["endpoint_entropy"] = fmt.Sprintf("%.3f", signals.EndpointEntropy)
+	result.Details["burst_score"] = fmt.Sprintf("%.3f", signals.BurstScore)
+
+	if signals.ScrapingScore > 0.7 {
+		result.ThreatTypes = append(result.ThreatTypes, "scraping")
+		result.Score += signals.ScrapingScore * 35.0
+	}
+	if signals.CredentialStuffing > 0.7 {
+		result.ThreatTypes = append(result.ThreatTypes, "credential_stuffing")
+		result.Score += signals.CredentialStuffing * 40.0
+	}
+	if signals.ProbingScore > 0.6 {
+		result.ThreatTypes = append(result.ThreatTypes, "probing")
+		result.Score += signals.ProbingScore * 35.0
+	}
+	if signals.HoneypotScore > 0 {
+		result.Score += signals.HoneypotScore * 25.0
+	}
 }
 
 // checkRateLimiting checks for rate limiting violations
@@ -419,6 +507,38 @@ func (e *Engine) checkBehavioralAnomalies(entry *logparser.LogEntry, result *Det
 
 // runMLDetection runs machine learning based detection
 func (e *Engine) runMLDetection(entry *logparser.LogEntry, result *DetectionResult) {
+	if !e.mlEnabled {
+		return
+	}
+
+	if e.onlineModel != nil {
+		onlineFeatures := ml.FeatureVector{
+			RequestFrequency:   featureRequestFrequency(entry, result),
+			EndpointEntropy:    parseFloatOrZero(result.Details["endpoint_entropy"]),
+			UserAgentRisk:      userAgentRisk(entry.UserAgent),
+			ErrorRate:          featureErrorRate(entry.ResponseCode),
+			BurstScore:         parseFloatOrZero(result.Details["burst_score"]),
+			CredentialStuffing: boolToFloat(containsThreat(result.ThreatTypes, "credential_stuffing")),
+			ScanScore:          boolToFloat(containsThreat(result.ThreatTypes, "probing")),
+			HoneypotScore:      boolToFloat(containsThreat(result.ThreatTypes, "honeypot_interaction")),
+		}
+
+		pred := e.onlineModel.PredictAndLearn(onlineFeatures)
+		result.Details["ml_anomaly_score"] = fmt.Sprintf("%.3f", pred.AnomalyScore)
+		result.Confidence = pred.Confidence
+		if pred.IsAnomalous {
+			result.ThreatTypes = append(result.ThreatTypes, "ml_streaming_anomaly")
+			result.Score += pred.AnomalyScore * 50.0
+		}
+		if e.config.MachineLearning.ModelPath != "" {
+			_ = e.onlineModel.Save(e.config.MachineLearning.ModelPath)
+		}
+	}
+
+	if e.mlModel == nil {
+		return
+	}
+
 	features := e.extractFeatures(entry)
 	prediction := e.mlModel.Predict(features)
 
@@ -427,7 +547,63 @@ func (e *Engine) runMLDetection(entry *logparser.LogEntry, result *DetectionResu
 		result.Score += prediction.Confidence * 50.0
 		result.Details["ml_confidence"] = fmt.Sprintf("%.2f", prediction.Confidence)
 		result.Details["ml_threat_type"] = prediction.ThreatType
+		if prediction.Confidence > result.Confidence {
+			result.Confidence = prediction.Confidence
+		}
 	}
+}
+
+func featureRequestFrequency(entry *logparser.LogEntry, result *DetectionResult) float64 {
+	if entry == nil {
+		return 0
+	}
+	if containsThreat(result.ThreatTypes, "rate_limiting") {
+		return 1
+	}
+	return 0.4
+}
+
+func featureErrorRate(code int) float64 {
+	if code >= 500 {
+		return 1
+	}
+	if code >= 400 {
+		return 0.6
+	}
+	return 0.1
+}
+
+func userAgentRisk(ua string) float64 {
+	l := strings.ToLower(ua)
+	if strings.Contains(l, "bot") || strings.Contains(l, "crawler") || strings.Contains(l, "scraper") {
+		return 0.9
+	}
+	if len(strings.TrimSpace(ua)) < 10 {
+		return 0.6
+	}
+	return 0.2
+}
+
+func containsThreat(types []string, target string) bool {
+	for _, t := range types {
+		if t == target {
+			return true
+		}
+	}
+	return false
+}
+
+func parseFloatOrZero(v string) float64 {
+	var f float64
+	_, _ = fmt.Sscanf(v, "%f", &f)
+	return f
+}
+
+func boolToFloat(v bool) float64 {
+	if v {
+		return 1
+	}
+	return 0
 }
 
 // calculateThreatLevel determines the overall threat level

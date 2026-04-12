@@ -421,7 +421,7 @@ func (c *Config) Validate() error {
 		c.Detection.Mode = "block"
 	}
 
-	allowedModes := []string{"block", "shadow", "monitor"}
+	allowedModes := []string{"block", "shadow", "monitor", "ml", "hybrid"}
 	modeValid := false
 	for _, mode := range allowedModes {
 		if c.Detection.Mode == mode {

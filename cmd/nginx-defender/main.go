@@ -19,6 +19,7 @@ import (
 	"github.com/Anipaleja/nginx-defender/internal/firewall"
 	"github.com/Anipaleja/nginx-defender/internal/metrics"
 	"github.com/Anipaleja/nginx-defender/internal/notification"
+	"github.com/Anipaleja/nginx-defender/internal/response"
 	"github.com/Anipaleja/nginx-defender/internal/server"
 	"github.com/Anipaleja/nginx-defender/pkg/logparser"
 	"github.com/nxadm/tail"
@@ -437,6 +438,7 @@ func (app *Application) processLogEntry(entry *logparser.LogEntry) {
 
 	if len(result.ThreatTypes) > 0 {
 		app.handleThreatDetection(result)
+		app.metricsCollector.RecordDecisionLatency(result.RecommendedAction, time.Since(start))
 	}
 }
 
@@ -471,6 +473,11 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 	primaryThreatType := "unknown"
 	if len(result.ThreatTypes) > 0 {
 		primaryThreatType = result.ThreatTypes[0]
+	}
+
+	decision := response.Plan(result)
+	if decision.Action != "" {
+		result.RecommendedAction = decision.Action
 	}
 
 	if mode == "shadow" || mode == "monitor" {
@@ -577,9 +584,11 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 		"ip":           result.IP,
 		"threat_types": result.ThreatTypes,
 		"score":        result.Score,
+		"confidence":   result.Confidence,
 		"action":       result.RecommendedAction,
 		"mode":         mode,
 		"enforced":     true,
+		"escalated":    decision.Escalate,
 		"timestamp":    result.Timestamp,
 	})
 }
