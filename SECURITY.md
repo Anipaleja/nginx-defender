@@ -10,6 +10,7 @@ We provide security updates for the following versions:
 
 | Version | Supported          | Notes                    |
 | ------- | ------------------ | ------------------------ |
+| 2.0.0   | 
 | 1.5.0   | Yes                | Current stable release   |
 | 1.4.2   | Yes                | LTS support until 2025  |
 | 1.4.1   | Yes                | Security fixes only      |
