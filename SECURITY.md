@@ -10,11 +10,12 @@ We provide security updates for the following versions:
 
 | Version | Supported          | Notes                    |
 | ------- | ------------------ | ------------------------ |
-| 2.0.0   | 
-| 1.5.0   | Yes                | Current stable release   |
-| 1.4.2   | Yes                | LTS support until 2025  |
+| 2.1.0   | Yes                | Future Release
+| 2.0.0   | Yes                | Current stable release   | 
+| 1.5.0   | Yes                | Previous Release         |
+| 1.4.2   | Yes                | LTS support until 2025   |
 | 1.4.1   | Yes                | Security fixes only      |
-| < 1.4   | No                 | End of life             |
+| < 1.4   | No                 | End of life              |
 
 ## Security Architecture
 
@@ -24,7 +25,7 @@ The primary adversaries are:
 
 - Remote opportunistic attackers performing scanning, exploitation, and credential stuffing.
 - Automated botnets and scraping infrastructure rotating IPs and user agents.
-- Targeted attackers attempting WAF evasion via low-and-slow behavior.
+- Targeted attackers attempting WAF evasion via low and slow behavior.
 - Misconfiguration-driven insider risk (overly broad trust boundaries, weak credentials).
 
 ### Attack Surface Analysis
