@@ -8,11 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://apaleja.tech/nginx-defender/benchmark-results/">
+        <link rel="canonical" href="https://nginx-defender.apaleja.tech/benchmark-results/">
       
       
         <link rel="prev" href="../library-refactor/">
       
+      
+        <link rel="next" href="../benchmark-methodology/">
       
       
         
@@ -597,6 +599,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -614,6 +634,97 @@
 
       </a>
       
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-and-build-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime and Build Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detection-quality-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detection Quality Snapshot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduce-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduce Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmark-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -646,6 +757,58 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-and-build-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime and Build Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detection-quality-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detection Quality Snapshot
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproduce-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproduce Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -665,7 +828,46 @@
 
 
 <h1 id="benchmark-results">Benchmark Results<a class="headerlink" href="#benchmark-results" title="Permanent link">&para;</a></h1>
-<p>Generated automatically by nginx-defender benchmark mode.</p>
+<p>This page tracks practical benchmark metrics for nginx-defender. Values below are from local runs and should be compared only across similar machines and workloads.</p>
+<p>Last updated: 2026-04-15</p>
+<h2 id="runtime-and-build-benchmarks">Runtime and Build Benchmarks<a class="headerlink" href="#runtime-and-build-benchmarks" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Command</th>
+<th style="text-align: right;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Command package tests</td>
+<td><code>go test ./cmd/nginx-defender</code></td>
+<td style="text-align: right;">3.35s</td>
+</tr>
+<tr>
+<td>Core engine tests</td>
+<td><code>go test ./internal/detector ./internal/firewall ./internal/metrics</code></td>
+<td style="text-align: right;">0.33s</td>
+</tr>
+<tr>
+<td>Full repository tests</td>
+<td><code>go test ./...</code></td>
+<td style="text-align: right;">0.62s</td>
+</tr>
+<tr>
+<td>Production binary build</td>
+<td><code>go build -o /tmp/nginx-defender-bench ./cmd/nginx-defender</code></td>
+<td style="text-align: right;">3.04s</td>
+</tr>
+<tr>
+<td>Binary size</td>
+<td><code>stat -f %z /tmp/nginx-defender-bench</code></td>
+<td style="text-align: right;">23,135,506 bytes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="detection-quality-snapshot">Detection Quality Snapshot<a class="headerlink" href="#detection-quality-snapshot" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -684,12 +886,29 @@
 </tr>
 <tr>
 <td>fail2ban-baseline</td>
-<td style="text-align: right;">2.542µs</td>
+<td style="text-align: right;">2.542us</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">441</td>
 </tr>
 </tbody>
 </table>
+<h2 id="environment-notes">Environment Notes<a class="headerlink" href="#environment-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>fail2ban baseline was not installed in this environment during this run.</li>
+<li>Test caching can reduce repeated <code>go test</code> wall time.</li>
+<li>For strict comparisons, run with cache disabled: <code>go test -count=1 ./...</code>.</li>
+</ul>
+<h2 id="reproduce-benchmarks">Reproduce Benchmarks<a class="headerlink" href="#reproduce-benchmarks" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Build and test timings</span>
+/usr/bin/time<span class="w"> </span>-p<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>./cmd/nginx-defender
+/usr/bin/time<span class="w"> </span>-p<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>./internal/detector<span class="w"> </span>./internal/firewall<span class="w"> </span>./internal/metrics
+/usr/bin/time<span class="w"> </span>-p<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>./...<span class="w"> </span>-count<span class="o">=</span><span class="m">1</span>
+/usr/bin/time<span class="w"> </span>-p<span class="w"> </span>go<span class="w"> </span>build<span class="w"> </span>-o<span class="w"> </span>/tmp/nginx-defender-bench<span class="w"> </span>./cmd/nginx-defender
+stat<span class="w"> </span>-f<span class="w"> </span>%z<span class="w"> </span>/tmp/nginx-defender-bench
+
+<span class="c1"># Optional comparison script</span>
+bash<span class="w"> </span>scripts/benchmark-compare.sh
+</code></pre></div>
 
 
 

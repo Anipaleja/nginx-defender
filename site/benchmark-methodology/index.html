@@ -8,26 +8,26 @@
       
       
       
-        <link rel="canonical" href="https://nginx-defender.apaleja.tech/">
+        <link rel="canonical" href="https://nginx-defender.apaleja.tech/benchmark-methodology/">
       
       
+        <link rel="prev" href="../benchmark-results/">
       
-        <link rel="next" href="installation-guide/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>nginx-defender Documentation</title>
+        <title>Benchmark Methodology - nginx-defender Documentation</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -46,7 +46,7 @@
       
     
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#nginx-defender" class="md-skip">
+        <a href="#benchmark-methodology" class="md-skip">
           Skip to content
         </a>
       
@@ -80,7 +80,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="nginx-defender Documentation" class="md-header__button md-logo" aria-label="nginx-defender Documentation" data-md-component="logo">
+    <a href=".." title="nginx-defender Documentation" class="md-header__button md-logo" aria-label="nginx-defender Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -100,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Benchmark Methodology
             
           </span>
         </div>
@@ -192,7 +192,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="nginx-defender Documentation" class="md-nav__button md-logo" aria-label="nginx-defender Documentation" data-md-component="logo">
+    <a href=".." title="nginx-defender Documentation" class="md-nav__button md-logo" aria-label="nginx-defender Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -219,37 +219,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -265,70 +238,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#what-this-project-does" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What This Project Does
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation Map
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Start
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#project-links" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Project Links
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -340,7 +249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="installation-guide/" class="md-nav__link">
+      <a href="../installation-guide/" class="md-nav__link">
         
   
   
@@ -419,7 +328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="security-architecture/" class="md-nav__link">
+      <a href="../security-architecture/" class="md-nav__link">
         
   
   
@@ -447,7 +356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="security-config/" class="md-nav__link">
+      <a href="../security-config/" class="md-nav__link">
         
   
   
@@ -475,7 +384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="threat-model/" class="md-nav__link">
+      <a href="../threat-model/" class="md-nav__link">
         
   
   
@@ -562,7 +471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="nginx-lib/" class="md-nav__link">
+      <a href="../nginx-lib/" class="md-nav__link">
         
   
   
@@ -590,7 +499,7 @@
   
   
     <li class="md-nav__item">
-      <a href="library-refactor/" class="md-nav__link">
+      <a href="../library-refactor/" class="md-nav__link">
         
   
   
@@ -622,8 +531,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -634,11 +545,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
@@ -659,7 +570,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -677,7 +588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="benchmark-results/" class="md-nav__link">
+      <a href="../benchmark-results/" class="md-nav__link">
         
   
   
@@ -702,10 +613,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="benchmark-methodology/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Methodology
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -721,6 +659,81 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benchmark Categories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standard-benchmark-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Benchmark Suite
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detection-quality-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detection Quality Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publishing-guidance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing Guidance
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -760,10 +773,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-this-project-does" class="md-nav__link">
+  <a href="#benchmark-categories" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What This Project Does
+        Benchmark Categories
       
     </span>
   </a>
@@ -771,10 +784,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#documentation-map" class="md-nav__link">
+  <a href="#standard-benchmark-suite" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Documentation Map
+        Standard Benchmark Suite
       
     </span>
   </a>
@@ -782,10 +795,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#detection-quality-benchmarks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Detection Quality Benchmarks
       
     </span>
   </a>
@@ -793,10 +806,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-links" class="md-nav__link">
+  <a href="#resource-benchmarks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Project Links
+        Resource Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publishing-guidance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing Guidance
       
     </span>
   </a>
@@ -823,28 +847,97 @@
   
 
 
-<h1 id="nginx-defender">nginx-defender<a class="headerlink" href="#nginx-defender" title="Permanent link">&para;</a></h1>
-<p>Real-time Web Application Firewall with threat intelligence, adaptive response controls, and observability for modern infrastructure.</p>
-<h2 id="what-this-project-does">What This Project Does<a class="headerlink" href="#what-this-project-does" title="Permanent link">&para;</a></h2>
-<p>nginx-defender monitors incoming requests and classifies malicious behavior such as SQL injection probes, scanning activity, brute force patterns, and suspicious bot traffic. It can enforce mitigation actions through firewall integrations and exposes operational metrics for visibility.</p>
-<h2 id="documentation-map">Documentation Map<a class="headerlink" href="#documentation-map" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Start with Installation Guide for setup and runtime prerequisites.</li>
-<li>Review Security Architecture for system design and trust boundaries.</li>
-<li>Use Security Configuration for hardening and production tuning.</li>
-<li>Read Threat Model for attacker assumptions and risk framing.</li>
-<li>See Nginx Library and Refactor Notes for library-level integration details.</li>
-<li>Use Benchmark Results to compare runtime behavior and performance characteristics.</li>
-</ul>
-<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># from project root</span>
-mkdocs<span class="w"> </span>serve
+<h1 id="benchmark-methodology">Benchmark Methodology<a class="headerlink" href="#benchmark-methodology" title="Permanent link">&para;</a></h1>
+<p>Use this page to keep benchmark runs consistent over time.</p>
+<h2 id="benchmark-categories">Benchmark Categories<a class="headerlink" href="#benchmark-categories" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Build performance</li>
+<li>Test runtime performance</li>
+<li>Detection quality</li>
+<li>Resource footprint</li>
+</ol>
+<h2 id="standard-benchmark-suite">Standard Benchmark Suite<a class="headerlink" href="#standard-benchmark-suite" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># Always run from repository root</span>
+/usr/bin/time<span class="w"> </span>-p<span class="w"> </span>go<span class="w"> </span>build<span class="w"> </span>-o<span class="w"> </span>/tmp/nginx-defender-bench<span class="w"> </span>./cmd/nginx-defender
+/usr/bin/time<span class="w"> </span>-p<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>./cmd/nginx-defender
+/usr/bin/time<span class="w"> </span>-p<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>./internal/detector<span class="w"> </span>./internal/firewall<span class="w"> </span>./internal/metrics
+/usr/bin/time<span class="w"> </span>-p<span class="w"> </span>go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-count<span class="o">=</span><span class="m">1</span><span class="w"> </span>./...
+stat<span class="w"> </span>-f<span class="w"> </span>%z<span class="w"> </span>/tmp/nginx-defender-bench
 </code></pre></div>
-<p>Then open the local URL shown in the terminal (usually http://127.0.0.1:8000).</p>
-<h2 id="project-links">Project Links<a class="headerlink" href="#project-links" title="Permanent link">&para;</a></h2>
+<h2 id="detection-quality-benchmarks">Detection Quality Benchmarks<a class="headerlink" href="#detection-quality-benchmarks" title="Permanent link">&para;</a></h2>
+<p>Use a fixed replay dataset and report:</p>
 <ul>
-<li>Repository: https://github.com/Anipaleja/nginx-defender</li>
-<li>Site: https://apaleja.tech/nginx-defender</li>
+<li>True positives</li>
+<li>False positives</li>
+<li>False negatives</li>
+<li>Precision and recall</li>
+<li>p95 detection latency</li>
+</ul>
+<p>Suggested format:</p>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th style="text-align: right;">TP</th>
+<th style="text-align: right;">FP</th>
+<th style="text-align: right;">FN</th>
+<th style="text-align: right;">Precision</th>
+<th style="text-align: right;">Recall</th>
+<th style="text-align: right;">p95 Latency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>baseline-http-logs</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+</tr>
+<tr>
+<td>scanner-heavy</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+</tr>
+<tr>
+<td>mixed-production-sample</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+</tr>
+</tbody>
+</table>
+<h2 id="resource-benchmarks">Resource Benchmarks<a class="headerlink" href="#resource-benchmarks" title="Permanent link">&para;</a></h2>
+<p>Recommended metrics for long runs (15m, 1h):</p>
+<ul>
+<li>CPU percent</li>
+<li>RSS memory</li>
+<li>Goroutine count</li>
+<li>Event throughput per second</li>
+</ul>
+<p>Example collection commands:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># process-level snapshot</span>
+ps<span class="w"> </span>-o<span class="w"> </span>%cpu,rss,etime,command<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>pgrep<span class="w"> </span>-f<span class="w"> </span>nginx-defender<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># Go runtime benchmarks where available</span>
+go<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-bench<span class="o">=</span>.<span class="w"> </span>-benchmem<span class="w"> </span>./...
+</code></pre></div>
+<h2 id="publishing-guidance">Publishing Guidance<a class="headerlink" href="#publishing-guidance" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Record machine type and OS.</li>
+<li>Record Go version (<code>go version</code>).</li>
+<li>Disable test cache for timed runs (<code>-count=1</code>).</li>
+<li>Keep benchmark datasets versioned.</li>
+<li>Update docs/benchmark-results.md after each benchmark session.</li>
 </ul>
 
 
@@ -901,10 +994,10 @@ mkdocs<span class="w"> </span>serve
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

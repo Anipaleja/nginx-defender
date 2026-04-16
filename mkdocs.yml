@@ -1,5 +1,5 @@
 site_name: nginx-defender Documentation
-site_url: https://apaleja.tech/nginx-defender
+site_url: https://defender.apaleja.tech
 repo_url: https://github.com/Anipaleja/nginx-defender
 repo_name: Anipaleja/nginx-defender
 theme:
@@ -31,3 +31,4 @@ nav:
       - Refactor Notes: library-refactor.md
   - Performance:
       - Benchmark Results: benchmark-results.md
+      - Benchmark Methodology: benchmark-methodology.md

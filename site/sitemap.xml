@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://apaleja.tech/nginx-defender/</loc>
+         <loc>https://nginx-defender.apaleja.tech/</loc>
          <lastmod>2026-04-16</lastmod>
     </url>
     <url>
-         <loc>https://apaleja.tech/nginx-defender/benchmark-results/</loc>
+         <loc>https://nginx-defender.apaleja.tech/benchmark-methodology/</loc>
          <lastmod>2026-04-16</lastmod>
     </url>
     <url>
-         <loc>https://apaleja.tech/nginx-defender/installation-guide/</loc>
+         <loc>https://nginx-defender.apaleja.tech/benchmark-results/</loc>
          <lastmod>2026-04-16</lastmod>
     </url>
     <url>
-         <loc>https://apaleja.tech/nginx-defender/library-refactor/</loc>
+         <loc>https://nginx-defender.apaleja.tech/installation-guide/</loc>
          <lastmod>2026-04-16</lastmod>
     </url>
     <url>
-         <loc>https://apaleja.tech/nginx-defender/nginx-lib/</loc>
+         <loc>https://nginx-defender.apaleja.tech/library-refactor/</loc>
          <lastmod>2026-04-16</lastmod>
     </url>
     <url>
-         <loc>https://apaleja.tech/nginx-defender/security-architecture/</loc>
+         <loc>https://nginx-defender.apaleja.tech/nginx-lib/</loc>
          <lastmod>2026-04-16</lastmod>
     </url>
     <url>
-         <loc>https://apaleja.tech/nginx-defender/security-config/</loc>
+         <loc>https://nginx-defender.apaleja.tech/security-architecture/</loc>
          <lastmod>2026-04-16</lastmod>
     </url>
     <url>
-         <loc>https://apaleja.tech/nginx-defender/threat-model/</loc>
+         <loc>https://nginx-defender.apaleja.tech/security-config/</loc>
+         <lastmod>2026-04-16</lastmod>
+    </url>
+    <url>
+         <loc>https://nginx-defender.apaleja.tech/threat-model/</loc>
          <lastmod>2026-04-16</lastmod>
     </url>
 </urlset>
