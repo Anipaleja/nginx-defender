@@ -52,7 +52,7 @@
 
 **nginx-defender** is a high-performance, Web Application Firewall (WAF) and threat detection system engineered for modern web infrastructure. Built with Go and designed for scalability, it provides real time threat mitigation, machine learning-based anomaly detection, and comprehensive security analytics.
 
-### Next-Generation Detection Pipeline
+### Detection Pipeline
 
 - Streaming anomaly detection with incremental model persistence
 - Behavioral profiling with burst, scraping, probing, and credential-stuffing signals
