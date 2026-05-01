@@ -10,12 +10,40 @@ We provide security updates for the following versions:
 
 | Version | Supported          | Notes                    |
 | ------- | ------------------ | ------------------------ |
-| 1.5.0   | :white_check_mark: | Current stable release   |
-| 1.4.2   | :white_check_mark: | LTS support until 2025  |
-| 1.4.1   | :warning:          | Security fixes only      |
-| < 1.4   | :x:                | End of life             |
+| 2.1.0   | Yes                | Future Release
+| 2.0.0   | Yes                | Current stable release   | 
+| 1.5.0   | Yes                | Previous Release         |
+| 1.4.2   | Yes                | LTS support until 2025   |
+| 1.4.1   | Yes                | Security fixes only      |
+| < 1.4   | No                 | End of life              |
 
 ## Security Architecture
+
+### Threat Model
+
+The primary adversaries are:
+
+- Remote opportunistic attackers performing scanning, exploitation, and credential stuffing.
+- Automated botnets and scraping infrastructure rotating IPs and user agents.
+- Targeted attackers attempting WAF evasion via low and slow behavior.
+- Misconfiguration-driven insider risk (overly broad trust boundaries, weak credentials).
+
+### Attack Surface Analysis
+
+Primary exposed surfaces:
+
+- Log ingestion pipeline (untrusted request metadata and payload artifacts).
+- Administrative API and web interface.
+- Firewall orchestration backend calls.
+- Model state persistence and plugin loading path.
+
+Mitigations in this project include:
+
+- Strict config validation with rejection of weak/default credentials.
+- Authenticated API operations with CSRF and session protection.
+- Confidence-based mitigation escalation to reduce false positives.
+- Optional plugin loading controlled by explicit environment configuration.
+- Restricted file permissions for persisted model state and sensitive artifacts.
 
 ### Core Security Features
 
@@ -73,17 +101,17 @@ We provide security updates for the following versions:
 Instead, please report security vulnerabilities through one of the following channels:
 
 1. **GitHub Security Advisories** (Preferred)
-   - Navigate to the "Security" tab in our repository
-   - Click "Report a vulnerability"
+   - Navigate to the `"Security"` tab in our repository
+   - Click `"Report a vulnerability"`
    - Provide detailed information about the vulnerability
 
 2. **Email** (Alternative)
-   - Send an encrypted email to: security@nginx-defender.com
+   - Send an encrypted email to: anipaleja@gmail.com
    - Use our PGP key: [Key ID: 0x1234567890ABCDEF]
    - Include reproduction steps and impact assessment
 
-3. **Security Bug Bounty**
-   - Report through our HackerOne program: https://hackerone.com/nginx-defender
+3. **Security Bug Bounty (Coming Soon)**
+   - Report through our HackerOne program: https://hackerone.com/anipaleja
    - Eligible for monetary rewards based on severity
 
 ### What to Include

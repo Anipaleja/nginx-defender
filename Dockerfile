@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.description="Advanced Nginx Security Defense Syst
 LABEL org.opencontainers.image.licenses=MIT
 
 # Install build dependencies
-RUN apk add --no-cache git ca-certificates tzdata gcc musl-dev
+RUN apk add --no-cache git ca-certificates tzdata
 
 # Set the working directory
 WORKDIR /app
@@ -33,11 +33,12 @@ COPY . .
 ARG VERSION=dev
 ARG BUILD_TIME
 ARG GIT_HASH
+ARG TARGETOS
+ARG TARGETARCH
 
 # Build the application with optimizations
-RUN CGO_ENABLED=1 GOOS=linux go build \
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} go build \
     -ldflags="-w -s -X main.version=${VERSION} -X main.buildTime=${BUILD_TIME} -X main.gitHash=${GIT_HASH}" \
-    -a -installsuffix cgo \
     -o nginx-defender \
     ./cmd/nginx-defender
 

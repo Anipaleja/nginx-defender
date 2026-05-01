@@ -144,6 +144,7 @@ func (s *Server) setupRoutes() {
 	// Threat detector
 	protectedAPI.HandleFunc("/threats", s.apiThreatsHandler).Methods("GET")
 	protectedAPI.HandleFunc("/threats/{id}", s.apiThreatHandler).Methods("GET")
+	protectedAPI.HandleFunc("/threats/{id}/false-positive", s.apiThreatFalsePositiveHandler).Methods("POST")
 	protectedAPI.HandleFunc("/threats/search", s.apiThreatSearchHandler).Methods("POST")
 
 	// Firewall management
@@ -318,6 +319,28 @@ func (s *Server) apiThreatsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func (s *Server) apiThreatFalsePositiveHandler(w http.ResponseWriter, r *http.Request) {
+	if s.metricsCollector == nil {
+		http.Error(w, "Metrics collector not available", http.StatusServiceUnavailable)
+		return
+	}
+
+	id := mux.Vars(r)["id"]
+	threatType := "unknown"
+	if s.detectionEngine != nil {
+		if threat, ok := s.detectionEngine.GetThreatByID(id); ok && len(threat.ThreatTypes) > 0 {
+			threatType = threat.ThreatTypes[0]
+		}
+	}
+
+	s.metricsCollector.RecordFalsePositive("api", threatType)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":      "recorded",
+		"threat_id":   id,
+		"threat_type": threatType,
+	})
 }
 
 func (s *Server) apiFirewallRulesHandler(w http.ResponseWriter, r *http.Request) {

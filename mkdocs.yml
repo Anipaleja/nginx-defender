@@ -1,0 +1,34 @@
+site_name: nginx-defender Documentation
+site_url: https://defender.apaleja.tech
+repo_url: https://github.com/Anipaleja/nginx-defender
+repo_name: Anipaleja/nginx-defender
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Installation Guide: installation-guide.md
+  - Security:
+      - Security Architecture: security-architecture.md
+      - Security Configuration: security-config.md
+      - Threat Model: threat-model.md
+  - Library:
+      - Nginx Library: nginx-lib.md
+      - Refactor Notes: library-refactor.md
+  - Performance:
+      - Benchmark Results: benchmark-results.md
+      - Benchmark Methodology: benchmark-methodology.md

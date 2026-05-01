@@ -1,0 +1,2114 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://defender.apaleja.tech/security-architecture/">
+      
+      
+        <link rel="prev" href="../installation-guide/">
+      
+      
+        <link rel="next" href="../security-config/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Security Architecture - nginx-defender Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="nginx-defender Documentation" class="md-header__button md-logo" aria-label="nginx-defender Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            nginx-defender Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Anipaleja/nginx-defender" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Anipaleja/nginx-defender
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="nginx-defender Documentation" class="md-nav__button md-logo" aria-label="nginx-defender Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    nginx-defender Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Anipaleja/nginx-defender" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Anipaleja/nginx-defender
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Layers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-network-layer-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Network Layer Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Network Layer Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#firewall-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-application-layer-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Application Layer Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Application Layer Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-application-firewall-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Application Firewall (WAF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-machine-learning-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Machine Learning Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Machine Learning Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#threat-detection-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat Detection Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-data-security-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Data Security Layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Data Security Layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#information-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Information Protection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-and-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication and Authorization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication and Authorization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-factor-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Factor Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#role-based-access-control-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Role-Based Access Control (RBAC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secure-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure Communication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Secure Communication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tls-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TLS Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certificate-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-validation-and-sanitization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Validation and Sanitization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Input Validation and Sanitization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#request-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#audit-logging-and-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audit Logging and Monitoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Audit Logging and Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-event-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Event Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threat-intelligence-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat Intelligence Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Threat Intelligence Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external-threat-feeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Threat Feeds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-deployment-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Deployment Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Deployment Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-availability-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High Availability Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="High Availability Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-node-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Node Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zero-trust-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero-Trust Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zero-Trust Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-mesh-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Mesh Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-and-security-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance and Security Trade-offs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance and Security Trade-offs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optimization-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security-config/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Library
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Library
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nginx-lib/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx Library
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../library-refactor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor Notes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Performance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmark-results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmark-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Layers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-network-layer-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Network Layer Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Network Layer Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#firewall-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-application-layer-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Application Layer Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Application Layer Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-application-firewall-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Application Firewall (WAF)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-machine-learning-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Machine Learning Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Machine Learning Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#threat-detection-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat Detection Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-data-security-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Data Security Layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Data Security Layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#information-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Information Protection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-and-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication and Authorization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authentication and Authorization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-factor-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Factor Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#role-based-access-control-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Role-Based Access Control (RBAC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secure-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure Communication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Secure Communication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tls-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TLS Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certificate-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certificate Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-validation-and-sanitization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Validation and Sanitization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Input Validation and Sanitization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#request-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#audit-logging-and-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audit Logging and Monitoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Audit Logging and Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-event-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Event Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threat-intelligence-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat Intelligence Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Threat Intelligence Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#external-threat-feeds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Threat Feeds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-deployment-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Deployment Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Deployment Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-availability-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High Availability Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="High Availability Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multi-node-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Node Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zero-trust-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero-Trust Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Zero-Trust Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-mesh-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Mesh Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-and-security-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance and Security Trade-offs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance and Security Trade-offs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optimization-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="security-architecture">Security Architecture<a class="headerlink" href="#security-architecture" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>nginx-defender implements a multi-layered security architecture designed to provide comprehensive protection against modern web threats while maintaining high performance and scalability.</p>
+<h2 id="security-layers">Security Layers<a class="headerlink" href="#security-layers" title="Permanent link">&para;</a></h2>
+<h3 id="1-network-layer-security">1. Network Layer Security<a class="headerlink" href="#1-network-layer-security" title="Permanent link">&para;</a></h3>
+<h4 id="firewall-integration">Firewall Integration<a class="headerlink" href="#firewall-integration" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>graph TB
+    A[Incoming Traffic] --&gt; B[Network Firewall]
+    B --&gt; C{Threat Detection}
+    C --&gt;|Threat Detected| D[Block/Rate Limit]
+    C --&gt;|Clean Traffic| E[Application Layer]
+    D --&gt; F[Alert System]
+    E --&gt; G[Web Application]
+</code></pre></div>
+<p><strong>Components:</strong>
+- Multi-backend firewall support (iptables, nftables, pfctl)
+- Real-time rule management
+- Geographic IP blocking
+- DDoS mitigation mechanisms</p>
+<p><strong>Security Controls:</strong>
+- IP-based access control
+- Port-based filtering
+- Protocol inspection
+- Connection rate limiting</p>
+<h3 id="2-application-layer-security">2. Application Layer Security<a class="headerlink" href="#2-application-layer-security" title="Permanent link">&para;</a></h3>
+<h4 id="web-application-firewall-waf">Web Application Firewall (WAF)<a class="headerlink" href="#web-application-firewall-waf" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>graph LR
+    A[HTTP Request] --&gt; B[Request Parser]
+    B --&gt; C[Pattern Matching]
+    C --&gt; D[ML Threat Analysis]
+    D --&gt; E{Security Decision}
+    E --&gt;|Allow| F[Backend Server]
+    E --&gt;|Block| G[Security Response]
+    E --&gt;|Suspicious| H[Enhanced Monitoring]
+</code></pre></div>
+<p><strong>Features:</strong>
+- SQL injection detection
+- XSS protection
+- CSRF prevention
+- File upload security
+- API security validation</p>
+<p><strong>Pattern Matching:</strong>
+- Regular expression rules
+- Signature-based detection
+- Behavioral analysis
+- Custom rule engine</p>
+<h3 id="3-machine-learning-security">3. Machine Learning Security<a class="headerlink" href="#3-machine-learning-security" title="Permanent link">&para;</a></h3>
+<h4 id="threat-detection-engine">Threat Detection Engine<a class="headerlink" href="#threat-detection-engine" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>graph TD
+    A[Traffic Analysis] --&gt; B[Feature Extraction]
+    B --&gt; C[ML Model Processing]
+    C --&gt; D[Threat Scoring]
+    D --&gt; E{Threshold Check}
+    E --&gt;|High Risk| F[Immediate Block]
+    E --&gt;|Medium Risk| G[Enhanced Monitoring]
+    E --&gt;|Low Risk| H[Normal Processing]
+    F --&gt; I[Alert Generation]
+    G --&gt; I
+</code></pre></div>
+<p><strong>Capabilities:</strong>
+- Real-time threat scoring
+- Anomaly detection
+- Behavioral analysis
+- Adaptive learning
+- Model validation and updates</p>
+<p><strong>Security Algorithms:</strong>
+- Random Forest for classification
+- Isolation Forest for anomaly detection
+- Neural networks for pattern recognition
+- Ensemble methods for accuracy</p>
+<h3 id="4-data-security-layer">4. Data Security Layer<a class="headerlink" href="#4-data-security-layer" title="Permanent link">&para;</a></h3>
+<h4 id="information-protection">Information Protection<a class="headerlink" href="#information-protection" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>graph TB
+    A[Sensitive Data] --&gt; B[Classification]
+    B --&gt; C[Encryption at Rest]
+    B --&gt; D[Encryption in Transit]
+    C --&gt; E[Access Control]
+    D --&gt; F[TLS 1.3]
+    E --&gt; G[Audit Logging]
+    F --&gt; G
+</code></pre></div>
+<p><strong>Data Classification:</strong>
+- Public data
+- Internal data
+- Confidential data
+- Restricted data</p>
+<p><strong>Protection Mechanisms:</strong>
+- AES-256 encryption
+- Key management system
+- Data loss prevention (DLP)
+- PII detection and redaction</p>
+<h2 id="security-components">Security Components<a class="headerlink" href="#security-components" title="Permanent link">&para;</a></h2>
+<h3 id="authentication-and-authorization">Authentication and Authorization<a class="headerlink" href="#authentication-and-authorization" title="Permanent link">&para;</a></h3>
+<h4 id="multi-factor-authentication">Multi-Factor Authentication<a class="headerlink" href="#multi-factor-authentication" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">AuthenticationService</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">primaryAuth</span><span class="w">   </span><span class="nx">PrimaryAuthenticator</span>
+<span class="w">    </span><span class="nx">secondaryAuth</span><span class="w"> </span><span class="nx">SecondaryAuthenticator</span>
+<span class="w">    </span><span class="nx">sessionMgr</span><span class="w">    </span><span class="nx">SessionManager</span>
+<span class="w">    </span><span class="nx">auditLogger</span><span class="w">   </span><span class="nx">AuditLogger</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="o">*</span><span class="nx">AuthenticationService</span><span class="p">)</span><span class="w"> </span><span class="nx">Authenticate</span><span class="p">(</span><span class="nx">credentials</span><span class="w"> </span><span class="o">*</span><span class="nx">Credentials</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">Session</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Primary authentication (username/password)</span>
+<span class="w">    </span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">primaryAuth</span><span class="p">.</span><span class="nx">Validate</span><span class="p">(</span><span class="nx">credentials</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">a</span><span class="p">.</span><span class="nx">auditLogger</span><span class="p">.</span><span class="nx">LogFailedAttempt</span><span class="p">(</span><span class="nx">credentials</span><span class="p">.</span><span class="nx">Username</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;primary_auth_failed&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Secondary authentication (MFA)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">RequiresMFA</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">err</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">secondaryAuth</span><span class="p">.</span><span class="nx">Validate</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">credentials</span><span class="p">.</span><span class="nx">MFAToken</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">a</span><span class="p">.</span><span class="nx">auditLogger</span><span class="p">.</span><span class="nx">LogFailedAttempt</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">Username</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mfa_failed&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Create secure session</span>
+<span class="w">    </span><span class="nx">session</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">a</span><span class="p">.</span><span class="nx">sessionMgr</span><span class="p">.</span><span class="nx">CreateSession</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">a</span><span class="p">.</span><span class="nx">auditLogger</span><span class="p">.</span><span class="nx">LogSuccessfulLogin</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">Username</span><span class="p">,</span><span class="w"> </span><span class="nx">session</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">session</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="role-based-access-control-rbac">Role-Based Access Control (RBAC)<a class="headerlink" href="#role-based-access-control-rbac" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">Permission</span><span class="w"> </span><span class="kt">string</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="nx">PermissionViewDashboard</span><span class="w">   </span><span class="nx">Permission</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;dashboard:view&quot;</span>
+<span class="w">    </span><span class="nx">PermissionManageRules</span><span class="w">     </span><span class="nx">Permission</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;rules:manage&quot;</span>
+<span class="w">    </span><span class="nx">PermissionViewLogs</span><span class="w">        </span><span class="nx">Permission</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;logs:view&quot;</span>
+<span class="w">    </span><span class="nx">PermissionManageUsers</span><span class="w">     </span><span class="nx">Permission</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;users:manage&quot;</span>
+<span class="w">    </span><span class="nx">PermissionSystemAdmin</span><span class="w">     </span><span class="nx">Permission</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;system:admin&quot;</span>
+<span class="p">)</span>
+
+<span class="kd">type</span><span class="w"> </span><span class="nx">Role</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Name</span><span class="w">        </span><span class="kt">string</span><span class="w">       </span><span class="s">`json:&quot;name&quot;`</span>
+<span class="w">    </span><span class="nx">Permissions</span><span class="w"> </span><span class="p">[]</span><span class="nx">Permission</span><span class="w"> </span><span class="s">`json:&quot;permissions&quot;`</span>
+<span class="w">    </span><span class="nx">Description</span><span class="w"> </span><span class="kt">string</span><span class="w">       </span><span class="s">`json:&quot;description&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">Role</span><span class="p">)</span><span class="w"> </span><span class="nx">HasPermission</span><span class="p">(</span><span class="nx">perm</span><span class="w"> </span><span class="nx">Permission</span><span class="p">)</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">p</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">r</span><span class="p">.</span><span class="nx">Permissions</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">p</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">perm</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">p</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">PermissionSystemAdmin</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="secure-communication">Secure Communication<a class="headerlink" href="#secure-communication" title="Permanent link">&para;</a></h3>
+<h4 id="tls-configuration">TLS Configuration<a class="headerlink" href="#tls-configuration" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">tls</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">min_version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.3&quot;</span>
+<span class="w">  </span><span class="nt">max_version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.3&quot;</span>
+<span class="w">  </span><span class="nt">cipher_suites</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;TLS_AES_256_GCM_SHA384&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;TLS_CHACHA20_POLY1305_SHA256&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;TLS_AES_128_GCM_SHA256&quot;</span>
+<span class="w">  </span><span class="nt">curves</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;X25519&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;P-384&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;P-256&quot;</span>
+<span class="w">  </span><span class="nt">cert_file</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/etc/ssl/certs/nginx-defender.crt&quot;</span>
+<span class="w">  </span><span class="nt">key_file</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/etc/ssl/private/nginx-defender.key&quot;</span>
+<span class="w">  </span><span class="nt">ca_file</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/etc/ssl/certs/ca-bundle.crt&quot;</span>
+<span class="w">  </span><span class="nt">verify_client</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">session_timeout</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;5m&quot;</span>
+</code></pre></div>
+<h4 id="certificate-management">Certificate Management<a class="headerlink" href="#certificate-management" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">CertificateManager</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">certStore</span><span class="w">    </span><span class="nx">CertificateStore</span>
+<span class="w">    </span><span class="nx">validator</span><span class="w">    </span><span class="nx">CertificateValidator</span>
+<span class="w">    </span><span class="nx">rotationMgr</span><span class="w">  </span><span class="nx">CertificateRotationManager</span>
+<span class="w">    </span><span class="nx">alertManager</span><span class="w"> </span><span class="nx">AlertManager</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">cm</span><span class="w"> </span><span class="o">*</span><span class="nx">CertificateManager</span><span class="p">)</span><span class="w"> </span><span class="nx">ValidateCertificate</span><span class="p">(</span><span class="nx">cert</span><span class="w"> </span><span class="o">*</span><span class="nx">x509</span><span class="p">.</span><span class="nx">Certificate</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Check expiration</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">After</span><span class="p">(</span><span class="nx">cert</span><span class="p">.</span><span class="nx">NotAfter</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;certificate expired at %v&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">cert</span><span class="p">.</span><span class="nx">NotAfter</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Check not valid yet</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">Before</span><span class="p">(</span><span class="nx">cert</span><span class="p">.</span><span class="nx">NotBefore</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;certificate not valid until %v&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">cert</span><span class="p">.</span><span class="nx">NotBefore</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Check certificate chain</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cm</span><span class="p">.</span><span class="nx">validator</span><span class="p">.</span><span class="nx">ValidateChain</span><span class="p">(</span><span class="nx">cert</span><span class="p">);</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;certificate chain validation failed: %w&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Check revocation status</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">cm</span><span class="p">.</span><span class="nx">validator</span><span class="p">.</span><span class="nx">CheckRevocation</span><span class="p">(</span><span class="nx">cert</span><span class="p">);</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;certificate revocation check failed: %w&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Alert if expiring soon</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">Add</span><span class="p">(</span><span class="mi">30</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">24</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Hour</span><span class="p">).</span><span class="nx">After</span><span class="p">(</span><span class="nx">cert</span><span class="p">.</span><span class="nx">NotAfter</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">cm</span><span class="p">.</span><span class="nx">alertManager</span><span class="p">.</span><span class="nx">SendAlert</span><span class="p">(</span><span class="s">&quot;certificate_expiring_soon&quot;</span><span class="p">,</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}{</span>
+<span class="w">            </span><span class="s">&quot;subject&quot;</span><span class="p">:</span><span class="w"> </span><span class="nx">cert</span><span class="p">.</span><span class="nx">Subject</span><span class="p">.</span><span class="nx">String</span><span class="p">(),</span>
+<span class="w">            </span><span class="s">&quot;expiry&quot;</span><span class="p">:</span><span class="w">  </span><span class="nx">cert</span><span class="p">.</span><span class="nx">NotAfter</span><span class="p">,</span>
+<span class="w">        </span><span class="p">})</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="input-validation-and-sanitization">Input Validation and Sanitization<a class="headerlink" href="#input-validation-and-sanitization" title="Permanent link">&para;</a></h3>
+<h4 id="request-validation">Request Validation<a class="headerlink" href="#request-validation" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">RequestValidator</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">patterns</span><span class="w">    </span><span class="o">*</span><span class="nx">PatternMatcher</span>
+<span class="w">    </span><span class="nx">sanitizer</span><span class="w">   </span><span class="o">*</span><span class="nx">InputSanitizer</span>
+<span class="w">    </span><span class="nx">rateLimit</span><span class="w">   </span><span class="o">*</span><span class="nx">RateLimiter</span>
+<span class="w">    </span><span class="nx">geoBlocker</span><span class="w">  </span><span class="o">*</span><span class="nx">GeoBlocker</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">rv</span><span class="w"> </span><span class="o">*</span><span class="nx">RequestValidator</span><span class="p">)</span><span class="w"> </span><span class="nx">ValidateRequest</span><span class="p">(</span><span class="nx">req</span><span class="w"> </span><span class="o">*</span><span class="nx">http</span><span class="p">.</span><span class="nx">Request</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">ValidationResult</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">result</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">ValidationResult</span><span class="p">{</span>
+<span class="w">        </span><span class="nx">Allowed</span><span class="p">:</span><span class="w">    </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">Confidence</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">Reasons</span><span class="p">:</span><span class="w">    </span><span class="p">[]</span><span class="kt">string</span><span class="p">{},</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Geographic validation</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">blocked</span><span class="p">,</span><span class="w"> </span><span class="nx">reason</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rv</span><span class="p">.</span><span class="nx">geoBlocker</span><span class="p">.</span><span class="nx">IsBlocked</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">RemoteAddr</span><span class="p">);</span><span class="w"> </span><span class="nx">blocked</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Allowed</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Reasons</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">Reasons</span><span class="p">,</span><span class="w"> </span><span class="nx">reason</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Rate limiting</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">exceeded</span><span class="p">,</span><span class="w"> </span><span class="nx">limit</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rv</span><span class="p">.</span><span class="nx">rateLimit</span><span class="p">.</span><span class="nx">CheckLimit</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">RemoteAddr</span><span class="p">);</span><span class="w"> </span><span class="nx">exceeded</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Allowed</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Reasons</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">Reasons</span><span class="p">,</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Sprintf</span><span class="p">(</span><span class="s">&quot;rate limit exceeded: %v&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">limit</span><span class="p">))</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Pattern matching</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">threat</span><span class="p">,</span><span class="w"> </span><span class="nx">confidence</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rv</span><span class="p">.</span><span class="nx">patterns</span><span class="p">.</span><span class="nx">AnalyzeRequest</span><span class="p">(</span><span class="nx">req</span><span class="p">);</span><span class="w"> </span><span class="nx">threat</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Allowed</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Confidence</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">confidence</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Reasons</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">Reasons</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;malicious pattern detected&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Input sanitization</span>
+<span class="w">    </span><span class="nx">sanitized</span><span class="p">,</span><span class="w"> </span><span class="nx">modified</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">rv</span><span class="p">.</span><span class="nx">sanitizer</span><span class="p">.</span><span class="nx">SanitizeRequest</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">modified</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">Modified</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">        </span><span class="nx">result</span><span class="p">.</span><span class="nx">SanitizedRequest</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">sanitized</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">result</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="audit-logging-and-monitoring">Audit Logging and Monitoring<a class="headerlink" href="#audit-logging-and-monitoring" title="Permanent link">&para;</a></h3>
+<h4 id="security-event-logging">Security Event Logging<a class="headerlink" href="#security-event-logging" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">SecurityEvent</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Timestamp</span><span class="w">   </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="w">              </span><span class="s">`json:&quot;timestamp&quot;`</span>
+<span class="w">    </span><span class="nx">EventType</span><span class="w">   </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;event_type&quot;`</span>
+<span class="w">    </span><span class="nx">Severity</span><span class="w">    </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;severity&quot;`</span>
+<span class="w">    </span><span class="nx">Source</span><span class="w">      </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;source&quot;`</span>
+<span class="w">    </span><span class="nx">Target</span><span class="w">      </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;target&quot;`</span>
+<span class="w">    </span><span class="nx">Action</span><span class="w">      </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;action&quot;`</span>
+<span class="w">    </span><span class="nx">Result</span><span class="w">      </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;result&quot;`</span>
+<span class="w">    </span><span class="nx">Details</span><span class="w">     </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kd">interface</span><span class="p">{}</span><span class="w"> </span><span class="s">`json:&quot;details&quot;`</span>
+<span class="w">    </span><span class="nx">UserAgent</span><span class="w">   </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;user_agent,omitempty&quot;`</span>
+<span class="w">    </span><span class="nx">RequestID</span><span class="w">   </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;request_id,omitempty&quot;`</span>
+<span class="w">    </span><span class="nx">SessionID</span><span class="w">   </span><span class="kt">string</span><span class="w">                 </span><span class="s">`json:&quot;session_id,omitempty&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">type</span><span class="w"> </span><span class="nx">AuditLogger</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">writer</span><span class="w">      </span><span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span>
+<span class="w">    </span><span class="nx">encoder</span><span class="w">     </span><span class="o">*</span><span class="nx">json</span><span class="p">.</span><span class="nx">Encoder</span>
+<span class="w">    </span><span class="nx">buffer</span><span class="w">      </span><span class="kd">chan</span><span class="w"> </span><span class="nx">SecurityEvent</span>
+<span class="w">    </span><span class="nx">asyncWriter</span><span class="w"> </span><span class="kt">bool</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">al</span><span class="w"> </span><span class="o">*</span><span class="nx">AuditLogger</span><span class="p">)</span><span class="w"> </span><span class="nx">LogSecurityEvent</span><span class="p">(</span><span class="nx">event</span><span class="w"> </span><span class="nx">SecurityEvent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">event</span><span class="p">.</span><span class="nx">Timestamp</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Now</span><span class="p">().</span><span class="nx">UTC</span><span class="p">()</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">al</span><span class="p">.</span><span class="nx">asyncWriter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">select</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="nx">al</span><span class="p">.</span><span class="nx">buffer</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nx">event</span><span class="p">:</span>
+<span class="w">            </span><span class="c1">// Event queued successfully</span>
+<span class="w">        </span><span class="k">default</span><span class="p">:</span>
+<span class="w">            </span><span class="c1">// Buffer full, log synchronously to prevent loss</span>
+<span class="w">            </span><span class="nx">al</span><span class="p">.</span><span class="nx">writeEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">al</span><span class="p">.</span><span class="nx">writeEvent</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">al</span><span class="w"> </span><span class="o">*</span><span class="nx">AuditLogger</span><span class="p">)</span><span class="w"> </span><span class="nx">writeEvent</span><span class="p">(</span><span class="nx">event</span><span class="w"> </span><span class="nx">SecurityEvent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">al</span><span class="p">.</span><span class="nx">encoder</span><span class="p">.</span><span class="nx">Encode</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">log</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;Failed to write audit event: %v&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="threat-intelligence-integration">Threat Intelligence Integration<a class="headerlink" href="#threat-intelligence-integration" title="Permanent link">&para;</a></h3>
+<h4 id="external-threat-feeds">External Threat Feeds<a class="headerlink" href="#external-threat-feeds" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">ThreatIntelligence</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">feeds</span><span class="w">      </span><span class="p">[]</span><span class="nx">ThreatFeed</span>
+<span class="w">    </span><span class="nx">cache</span><span class="w">      </span><span class="nx">ThreatCache</span>
+<span class="w">    </span><span class="nx">updater</span><span class="w">    </span><span class="nx">FeedUpdater</span>
+<span class="w">    </span><span class="nx">validator</span><span class="w">  </span><span class="nx">FeedValidator</span>
+<span class="p">}</span>
+
+<span class="kd">type</span><span class="w"> </span><span class="nx">ThreatIndicator</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">Type</span><span class="w">        </span><span class="kt">string</span><span class="w">    </span><span class="s">`json:&quot;type&quot;`</span><span class="w">        </span><span class="c1">// ip, domain, hash, etc.</span>
+<span class="w">    </span><span class="nx">Value</span><span class="w">       </span><span class="kt">string</span><span class="w">    </span><span class="s">`json:&quot;value&quot;`</span><span class="w">       </span><span class="c1">// actual indicator value</span>
+<span class="w">    </span><span class="nx">Confidence</span><span class="w">  </span><span class="kt">float64</span><span class="w">   </span><span class="s">`json:&quot;confidence&quot;`</span><span class="w">  </span><span class="c1">// 0.0 - 1.0</span>
+<span class="w">    </span><span class="nx">Severity</span><span class="w">    </span><span class="kt">string</span><span class="w">    </span><span class="s">`json:&quot;severity&quot;`</span><span class="w">    </span><span class="c1">// low, medium, high, critical</span>
+<span class="w">    </span><span class="nx">Source</span><span class="w">      </span><span class="kt">string</span><span class="w">    </span><span class="s">`json:&quot;source&quot;`</span><span class="w">      </span><span class="c1">// feed source</span>
+<span class="w">    </span><span class="nx">FirstSeen</span><span class="w">   </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="w"> </span><span class="s">`json:&quot;first_seen&quot;`</span>
+<span class="w">    </span><span class="nx">LastSeen</span><span class="w">    </span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span><span class="w"> </span><span class="s">`json:&quot;last_seen&quot;`</span>
+<span class="w">    </span><span class="nx">Tags</span><span class="w">        </span><span class="p">[]</span><span class="kt">string</span><span class="w">  </span><span class="s">`json:&quot;tags&quot;`</span>
+<span class="w">    </span><span class="nx">Description</span><span class="w"> </span><span class="kt">string</span><span class="w">    </span><span class="s">`json:&quot;description&quot;`</span>
+<span class="p">}</span>
+
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">ti</span><span class="w"> </span><span class="o">*</span><span class="nx">ThreatIntelligence</span><span class="p">)</span><span class="w"> </span><span class="nx">CheckThreat</span><span class="p">(</span><span class="nx">indicator</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">indicatorType</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">ThreatIndicator</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Check local cache first</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">threat</span><span class="p">,</span><span class="w"> </span><span class="nx">found</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ti</span><span class="p">.</span><span class="nx">cache</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="nx">indicator</span><span class="p">);</span><span class="w"> </span><span class="nx">found</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">threat</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Query threat feeds</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">feed</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">ti</span><span class="p">.</span><span class="nx">feeds</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nx">threat</span><span class="p">,</span><span class="w"> </span><span class="nx">found</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">feed</span><span class="p">.</span><span class="nx">Query</span><span class="p">(</span><span class="nx">indicator</span><span class="p">,</span><span class="w"> </span><span class="nx">indicatorType</span><span class="p">);</span><span class="w"> </span><span class="nx">found</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Validate and cache result</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="nx">ti</span><span class="p">.</span><span class="nx">validator</span><span class="p">.</span><span class="nx">Validate</span><span class="p">(</span><span class="nx">threat</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nx">ti</span><span class="p">.</span><span class="nx">cache</span><span class="p">.</span><span class="nx">Set</span><span class="p">(</span><span class="nx">indicator</span><span class="p">,</span><span class="w"> </span><span class="nx">threat</span><span class="p">)</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="nx">threat</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="security-deployment-patterns">Security Deployment Patterns<a class="headerlink" href="#security-deployment-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="high-availability-security">High Availability Security<a class="headerlink" href="#high-availability-security" title="Permanent link">&para;</a></h3>
+<h4 id="multi-node-deployment">Multi-Node Deployment<a class="headerlink" href="#multi-node-deployment" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx-defender</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RollingUpdate</span>
+<span class="w">    </span><span class="nt">rollingUpdate</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="nt">maxSurge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">securityContext</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">runAsNonRoot</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">runAsUser</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">65534</span>
+<span class="w">        </span><span class="nt">fsGroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">65534</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx-defender</span>
+<span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx-defender:latest</span>
+<span class="w">        </span><span class="nt">securityContext</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">allowPrivilegeEscalation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">          </span><span class="nt">readOnlyRootFilesystem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">          </span><span class="nt">capabilities</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">drop</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ALL</span>
+<span class="w">            </span><span class="nt">add</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NET_ADMIN</span>
+<span class="w">        </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">limits</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1Gi&quot;</span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;500m&quot;</span>
+<span class="w">          </span><span class="nt">requests</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;512Mi&quot;</span>
+<span class="w">            </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;250m&quot;</span>
+</code></pre></div>
+<h3 id="zero-trust-architecture">Zero-Trust Architecture<a class="headerlink" href="#zero-trust-architecture" title="Permanent link">&para;</a></h3>
+<h4 id="service-mesh-integration">Service Mesh Integration<a class="headerlink" href="#service-mesh-integration" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">security.istio.io/v1beta1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AuthorizationPolicy</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx-defender-authz</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx-defender</span>
+<span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">principals</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;cluster.local/ns/monitoring/sa/prometheus&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">to</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">operation</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">methods</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;GET&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/metrics&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">principals</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;cluster.local/ns/nginx-defender/sa/dashboard&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">to</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">operation</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">methods</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;GET&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;POST&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/api/*&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<h2 id="performance-and-security-trade-offs">Performance and Security Trade-offs<a class="headerlink" href="#performance-and-security-trade-offs" title="Permanent link">&para;</a></h2>
+<h3 id="optimization-strategies">Optimization Strategies<a class="headerlink" href="#optimization-strategies" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Caching Security Decisions</strong></li>
+<li>LRU cache for firewall rules</li>
+<li>Bloom filters for known threats</li>
+<li>
+<p>Result caching with TTL</p>
+</li>
+<li>
+<p><strong>Asynchronous Processing</strong></p>
+</li>
+<li>Non-blocking threat analysis</li>
+<li>Background model updates</li>
+<li>
+<p>Async audit logging</p>
+</li>
+<li>
+<p><strong>Resource Management</strong></p>
+</li>
+<li>Connection pooling</li>
+<li>Memory-efficient data structures</li>
+<li>CPU-bound vs IO-bound optimization</li>
+</ol>
+<h3 id="security-metrics">Security Metrics<a class="headerlink" href="#security-metrics" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code># Threat detection rate
+nginx_defender_threats_detected_total{type=&quot;malware&quot;} 157
+nginx_defender_threats_detected_total{type=&quot;sql_injection&quot;} 23
+nginx_defender_threats_detected_total{type=&quot;xss&quot;} 89
+
+# Response times
+nginx_defender_request_duration_seconds{method=&quot;POST&quot;,status=&quot;200&quot;} 0.045
+nginx_defender_ml_analysis_duration_seconds{model=&quot;threat_detection&quot;} 0.012
+
+# Security effectiveness
+nginx_defender_blocked_requests_total{reason=&quot;rate_limit&quot;} 1234
+nginx_defender_false_positive_rate{threshold=&quot;0.8&quot;} 0.02
+</code></pre></div>
+<p>This security architecture provides comprehensive protection while maintaining high performance and scalability for enterprise deployments.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

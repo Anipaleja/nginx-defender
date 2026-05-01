@@ -19,6 +19,7 @@ import (
 	"github.com/Anipaleja/nginx-defender/internal/firewall"
 	"github.com/Anipaleja/nginx-defender/internal/metrics"
 	"github.com/Anipaleja/nginx-defender/internal/notification"
+	"github.com/Anipaleja/nginx-defender/internal/response"
 	"github.com/Anipaleja/nginx-defender/internal/server"
 	"github.com/Anipaleja/nginx-defender/pkg/logparser"
 	"github.com/nxadm/tail"
@@ -437,6 +438,7 @@ func (app *Application) processLogEntry(entry *logparser.LogEntry) {
 
 	if len(result.ThreatTypes) > 0 {
 		app.handleThreatDetection(result)
+		app.metricsCollector.RecordDecisionLatency(result.RecommendedAction, time.Since(start))
 	}
 }
 
@@ -457,14 +459,25 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 
 	// Record threat metrics
 	threatLevel := app.getThreatLevelString(result.ThreatLevel)
+	country := strings.TrimSpace(result.Details["country"])
 	for _, threatType := range result.ThreatTypes {
 		app.metricsCollector.RecordThreat(
 			threatType,
 			threatLevel,
 			result.RecommendedAction,
 			result.Score,
-			"", // Country would be determined
+			country,
 		)
+	}
+
+	primaryThreatType := "unknown"
+	if len(result.ThreatTypes) > 0 {
+		primaryThreatType = result.ThreatTypes[0]
+	}
+
+	decision := response.Plan(result)
+	if decision.Action != "" {
+		result.RecommendedAction = decision.Action
 	}
 
 	if mode == "shadow" || mode == "monitor" {
@@ -495,10 +508,11 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 			result.IP,
 			firewall.ActionBlock,
 			duration,
-			fmt.Sprintf("Threat detected: %v", result.ThreatTypes),
+			fmt.Sprintf("threat_type:%s", primaryThreatType),
 			map[string]string{
 				"score":        fmt.Sprintf("%.2f", result.Score),
 				"threat_types": fmt.Sprintf("%v", result.ThreatTypes),
+				"country":      country,
 			},
 		)
 
@@ -507,10 +521,11 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 		} else {
 			// Record blocked IP
 			app.metricsCollector.RecordIPBlocked(
-				fmt.Sprintf("threat:%v", result.ThreatTypes),
+				fmt.Sprintf("threat_type:%s", primaryThreatType),
 				"BLOCK",
-				"", // Country
+				country,
 			)
+			app.metricsCollector.UpdateFirewallRules(float64(len(app.firewallManager.GetRules())))
 
 			// Send notification
 			app.notificationMgr.SendIPBlocked(
@@ -528,17 +543,40 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 			result.IP,
 			firewall.ActionTarpit,
 			duration,
-			fmt.Sprintf("AI scraper detected: %v", result.ThreatTypes),
+			fmt.Sprintf("threat_type:%s", primaryThreatType),
 			nil,
 		)
 
 		if err != nil {
 			app.logger.WithError(err).Errorf("Failed to tarpit IP %s", result.IP)
+		} else {
+			app.metricsCollector.RecordIPBlocked(
+				fmt.Sprintf("threat_type:%s", primaryThreatType),
+				"TARPIT",
+				country,
+			)
+			app.metricsCollector.UpdateFirewallRules(float64(len(app.firewallManager.GetRules())))
 		}
 
 	case "RATE_LIMIT":
-		// Implement rate limiting logic
-		app.logger.Infof("Rate limiting recommended for IP %s", result.IP)
+		duration := app.calculateBlockDuration(result.IP, detector.ThreatLevelMedium)
+		err := app.firewallManager.BlockIP(
+			result.IP,
+			firewall.ActionRateLimit,
+			duration,
+			fmt.Sprintf("threat_type:%s", primaryThreatType),
+			nil,
+		)
+		if err != nil {
+			app.logger.WithError(err).Errorf("Failed to apply rate limit for IP %s", result.IP)
+		} else {
+			app.metricsCollector.RecordIPBlocked(
+				fmt.Sprintf("threat_type:%s", primaryThreatType),
+				"RATE_LIMIT",
+				country,
+			)
+			app.metricsCollector.UpdateFirewallRules(float64(len(app.firewallManager.GetRules())))
+		}
 	}
 
 	// Broadcast update to web clients
@@ -546,9 +584,11 @@ func (app *Application) handleThreatDetection(result *detector.DetectionResult) 
 		"ip":           result.IP,
 		"threat_types": result.ThreatTypes,
 		"score":        result.Score,
+		"confidence":   result.Confidence,
 		"action":       result.RecommendedAction,
 		"mode":         mode,
 		"enforced":     true,
+		"escalated":    decision.Escalate,
 		"timestamp":    result.Timestamp,
 	})
 }
