@@ -14,7 +14,7 @@
 ![Stars - Purple](https://img.shields.io/github/stars/Anipaleja/nginx-defender?color=9b30ff&style=flat)
 ![NGINX](https://img.shields.io/badge/nginx-1.25+-32CD32?logo=nginx&logoColor=white)
 
-**Enterprise-Grade Web Application Firewall with Advanced Threat Intelligence**
+**Web Application Firewall with Threat Intelligence**
 
 </div>
 
@@ -50,7 +50,33 @@
 
 ## Overview
 
-**nginx-defender** is a high-performance, enterprise-grade Web Application Firewall (WAF) and threat detection system engineered for modern web infrastructure. Built with Go and designed for scalability, it provides real-time threat mitigation, machine learning-based anomaly detection, and comprehensive security analytics.
+**nginx-defender** is a high-performance, Web Application Firewall (WAF) and threat detection system engineered for modern web infrastructure. Built with Go and designed for scalability, it provides real time threat mitigation, machine learning-based anomaly detection, and comprehensive security analytics.
+
+### Detection Pipeline
+
+- Streaming anomaly detection with incremental model persistence
+- Behavioral profiling with burst, scraping, probing, and credential-stuffing signals
+- Confidence-driven adaptive mitigation (monitor, rate-limit, tarpit, block)
+- Deception endpoint detection fed back into the ML signal stream
+- Extensible detection plugins through dynamic module loading
+
+### ML and Adaptive Security Deep Dive
+
+The detection path now combines:
+
+1. Signature and threat-intelligence signals
+2. Per-IP behavioral profile scoring
+3. Streaming online anomaly model output
+4. Adaptive response planning based on confidence
+
+This enables deterministic blocking for known high-risk payloads while still adapting to new attacker behavior with a continuously updated model.
+
+### Reproducible Benchmarking
+
+Use the benchmark harness to compare runtime and deployment readiness against Fail2Ban:
+
+- script: scripts/benchmark-compare.sh
+- output: docs/benchmark-results.md
 
 ### Key Differentiators
 
@@ -227,7 +253,7 @@ type Rule struct {
 - **Real-time Threat Map**: Geographic visualization of attacks
 - **Performance Metrics**: Request processing and response times
 - **Rule Management**: Interactive firewall rule configuration
-- **Log Analysis**: Advanced filtering and search capabilities
+- **Log Analysis**: Filtering and search capabilities
 - **Alert Management**: Notification configuration and history
 
 #### Prometheus Metrics
@@ -1169,7 +1195,8 @@ gosec ./...
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE.md) file for details.
+Closed source forks are not permitted.
 
 ### Third-Party Licenses
 
@@ -1189,6 +1216,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) f
 </details>
 
 ---
+
+<a href="https://www.star-history.com/?repos=anipaleja%2Fnginx-defender&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=anipaleja/nginx-defender&type=date&legend=top-left" />
+ </picture>
+</a>
 
 <div align="center">
 

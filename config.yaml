@@ -543,13 +543,13 @@ web_interface:
     method: "session" # session, jwt, basic
     session_timeout: 3600
     default_username: "admin"
-    default_password: "change_me_please"
+    default_password: "ReplaceMe_Str0ng!2026"
     password_hash_algo: "bcrypt"
     users:
       - username: "admin"
-        password: "change_me_please"
+        password: "ReplaceMe_Str0ng!2026"
       - username: "operator"
-        password: "secure_password_123"
+        password: "Operator_Str0ng!2026"
     
   # Features
   features:
@@ -573,7 +573,7 @@ web_interface:
     version: "v1"
     rate_limit: 1000 # requests per hour
     cors_enabled: true
-    cors_origins: ["*"]
+    cors_origins: ["http://localhost:8080"]
     
   # Static files
   static:

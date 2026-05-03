@@ -3,9 +3,12 @@ package config
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
+	"unicode"
 
 	"gopkg.in/yaml.v3"
 )
@@ -60,19 +63,35 @@ type LogConfig struct {
 }
 
 type DetectionConfig struct {
+	Mode               string                   `yaml:"mode"`
 	RateLimiting       RateLimitingConfig       `yaml:"rate_limiting"`
 	BruteForce         BruteForceConfig         `yaml:"brute_force"`
 	DDosProtection     DDosProtectionConfig     `yaml:"ddos_protection"`
 	Geographic         GeographicConfig         `yaml:"geographic"`
 	UserAgentBlocking  UserAgentBlockingConfig  `yaml:"user_agent_blocking"`
 	SuspiciousPatterns SuspiciousPatternsConfig `yaml:"suspicious_patterns"`
+	Proxy              ProxyConfig              `yaml:"proxy"`
 }
 
 type RateLimitingConfig struct {
-	Enabled       bool `yaml:"enabled"`
-	Threshold     int  `yaml:"threshold"`
-	WindowSeconds int  `yaml:"window_seconds"`
-	BlockDuration int  `yaml:"block_duration"`
+	Enabled       bool                 `yaml:"enabled"`
+	Threshold     int                  `yaml:"threshold"`
+	WindowSeconds int                  `yaml:"window_seconds"`
+	BlockDuration int                  `yaml:"block_duration"`
+	Routes        []RouteRateLimitRule `yaml:"routes"`
+}
+
+type RouteRateLimitRule struct {
+	PathPrefix    string `yaml:"path_prefix"`
+	Threshold     int    `yaml:"threshold"`
+	WindowSeconds int    `yaml:"window_seconds"`
+	BlockDuration int    `yaml:"block_duration"`
+}
+
+type ProxyConfig struct {
+	Enabled         bool     `yaml:"enabled"`
+	TrustedProxies  []string `yaml:"trusted_proxies"`
+	ClientIPHeaders []string `yaml:"client_ip_headers"`
 }
 
 type BruteForceConfig struct {
@@ -345,15 +364,21 @@ func Load(path string) (*Config, error) {
 			MaxAge:     30,
 		},
 		Detection: DetectionConfig{
+			Mode: "block",
 			RateLimiting: RateLimitingConfig{
 				Enabled:       true,
 				Threshold:     100,
 				WindowSeconds: 60,
 				BlockDuration: 3600,
 			},
+			Proxy: ProxyConfig{
+				Enabled:         false,
+				TrustedProxies:  []string{},
+				ClientIPHeaders: []string{"CF-Connecting-IP", "X-Forwarded-For", "X-Real-IP"},
+			},
 		},
 		Firewall: FirewallConfig{
-			Backend:     "iptables",
+			Backend:     "nftables",
 			Chain:       "INPUT",
 			JumpTarget:  "DROP",
 			IPv6Support: true,
@@ -368,7 +393,10 @@ func Load(path string) (*Config, error) {
 	}
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return cfg, nil // Return default config if file doesn't exist
+		if err := cfg.Validate(); err != nil {
+			return nil, fmt.Errorf("invalid default configuration: %w", err)
+		}
+		return cfg, nil
 	}
 
 	data, err := ioutil.ReadFile(path)
@@ -389,6 +417,22 @@ func Load(path string) (*Config, error) {
 
 // Validate validates the configuration
 func (c *Config) Validate() error {
+	if c.Detection.Mode == "" {
+		c.Detection.Mode = "block"
+	}
+
+	allowedModes := []string{"block", "shadow", "monitor", "ml", "hybrid"}
+	modeValid := false
+	for _, mode := range allowedModes {
+		if c.Detection.Mode == mode {
+			modeValid = true
+			break
+		}
+	}
+	if !modeValid {
+		return fmt.Errorf("detection mode must be one of %v, got %s", allowedModes, c.Detection.Mode)
+	}
+
 	if c.Server.Port < 1 || c.Server.Port > 65535 {
 		return fmt.Errorf("invalid server port: %d", c.Server.Port)
 	}
@@ -405,6 +449,108 @@ func (c *Config) Validate() error {
 		}
 		if c.Detection.RateLimiting.WindowSeconds <= 0 {
 			return fmt.Errorf("rate limiting window must be positive")
+		}
+		for _, route := range c.Detection.RateLimiting.Routes {
+			if route.PathPrefix == "" {
+				return fmt.Errorf("rate limiting route path_prefix cannot be empty")
+			}
+			if route.Threshold <= 0 {
+				return fmt.Errorf("rate limiting route threshold must be positive for %s", route.PathPrefix)
+			}
+			if route.WindowSeconds <= 0 {
+				return fmt.Errorf("rate limiting route window_seconds must be positive for %s", route.PathPrefix)
+			}
+		}
+	}
+
+	if c.Detection.Proxy.Enabled {
+		for _, proxy := range c.Detection.Proxy.TrustedProxies {
+			if proxy == "" {
+				return fmt.Errorf("trusted proxy entry cannot be empty")
+			}
+			if strings.Contains(proxy, "/") {
+				if _, _, err := net.ParseCIDR(proxy); err != nil {
+					return fmt.Errorf("invalid trusted proxy CIDR %s: %w", proxy, err)
+				}
+				continue
+			}
+			if net.ParseIP(proxy) == nil {
+				return fmt.Errorf("invalid trusted proxy IP %s", proxy)
+			}
+		}
+	}
+
+	if c.WebInterface.Auth.Enabled {
+		if c.WebInterface.Auth.Method == "" {
+			c.WebInterface.Auth.Method = "session"
+		}
+
+		allowedMethods := []string{"session", "jwt", "basic"}
+		methodValid := false
+		for _, method := range allowedMethods {
+			if c.WebInterface.Auth.Method == method {
+				methodValid = true
+				break
+			}
+		}
+		if !methodValid {
+			return fmt.Errorf("auth method must be one of %v, got %s", allowedMethods, c.WebInterface.Auth.Method)
+		}
+
+		if c.WebInterface.Auth.PasswordHashAlgo == "" {
+			c.WebInterface.Auth.PasswordHashAlgo = "bcrypt"
+		}
+
+		allowedHashing := []string{"bcrypt", "plaintext"}
+		hashValid := false
+		for _, algo := range allowedHashing {
+			if c.WebInterface.Auth.PasswordHashAlgo == algo {
+				hashValid = true
+				break
+			}
+		}
+		if !hashValid {
+			return fmt.Errorf("password_hash_algo must be one of %v, got %s", allowedHashing, c.WebInterface.Auth.PasswordHashAlgo)
+		}
+
+		if c.WebInterface.Auth.SessionTimeout <= 0 {
+			return fmt.Errorf("session_timeout must be positive")
+		}
+
+		if c.WebInterface.Auth.DefaultUsername != "" || c.WebInterface.Auth.DefaultPassword != "" {
+			if isKnownDefaultCredential(c.WebInterface.Auth.DefaultUsername, c.WebInterface.Auth.DefaultPassword) {
+				return fmt.Errorf("web auth default credentials are not allowed")
+			}
+			if !isBcryptHash(c.WebInterface.Auth.DefaultPassword) && !hasStrongPassword(c.WebInterface.Auth.DefaultPassword) {
+				return fmt.Errorf("web auth default_password does not meet password complexity requirements")
+			}
+		}
+
+		if len(c.WebInterface.Auth.Users) == 0 && (c.WebInterface.Auth.DefaultUsername == "" || c.WebInterface.Auth.DefaultPassword == "") {
+			return fmt.Errorf("auth is enabled but no users are configured")
+		}
+
+		for _, user := range c.WebInterface.Auth.Users {
+			if user.Username == "" {
+				return fmt.Errorf("configured auth username cannot be empty")
+			}
+			if user.Password == "" {
+				return fmt.Errorf("password cannot be empty for user %s", user.Username)
+			}
+			if isKnownDefaultCredential(user.Username, user.Password) {
+				return fmt.Errorf("unsafe default credentials configured for user %s", user.Username)
+			}
+			if !isBcryptHash(user.Password) && !hasStrongPassword(user.Password) {
+				return fmt.Errorf("password does not meet complexity requirements for user %s", user.Username)
+			}
+		}
+
+		if c.WebInterface.API.CorsEnabled {
+			for _, origin := range c.WebInterface.API.CorsOrigins {
+				if origin == "*" {
+					return fmt.Errorf("wildcard CORS origin is not allowed when authentication is enabled")
+				}
+			}
 		}
 	}
 
@@ -450,6 +596,63 @@ func (c *Config) Validate() error {
 	}
 
 	return nil
+}
+
+func isKnownDefaultCredential(username, password string) bool {
+	user := strings.ToLower(strings.TrimSpace(username))
+	pass := strings.ToLower(strings.TrimSpace(password))
+
+	if pass == "" {
+		return false
+	}
+
+	knownPasswords := map[string]struct{}{
+		"change_me_please": {},
+		"admin123":         {},
+		"admin":            {},
+		"password":         {},
+		"123456":           {},
+		"default":          {},
+	}
+
+	if _, exists := knownPasswords[pass]; exists {
+		return true
+	}
+
+	if user == "admin" && (pass == "admin" || pass == "admin123") {
+		return true
+	}
+
+	return false
+}
+
+func hasStrongPassword(password string) bool {
+	if len(password) < 12 {
+		return false
+	}
+
+	var hasUpper, hasLower, hasDigit, hasSpecial bool
+	for _, ch := range password {
+		switch {
+		case unicode.IsUpper(ch):
+			hasUpper = true
+		case unicode.IsLower(ch):
+			hasLower = true
+		case unicode.IsDigit(ch):
+			hasDigit = true
+		default:
+			hasSpecial = true
+		}
+	}
+
+	return hasUpper && hasLower && hasDigit && hasSpecial
+}
+
+func isBcryptHash(value string) bool {
+	if len(value) < 4 {
+		return false
+	}
+	return value[0] == '$' && value[1] == '2' && (value[2] == 'a' || value[2] == 'b' || value[2] == 'y') && value[3] == '$'
 }
 
 // Save saves the configuration to the specified file

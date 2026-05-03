@@ -3,9 +3,13 @@ package ranges
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"net"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -51,6 +55,9 @@ func (rm *RangeManager) loadEmbeddedRanges() {
 
 	for _, file := range files {
 		if err := rm.loadRangeFile(file); err != nil {
+			if errors.Is(err, fs.ErrNotExist) {
+				continue
+			}
 			log.Printf("Warning: Failed to load range file %s: %v", file, err)
 		}
 	}
@@ -58,19 +65,20 @@ func (rm *RangeManager) loadEmbeddedRanges() {
 
 // loadRangeFile loads a specific range file
 func (rm *RangeManager) loadRangeFile(filename string) error {
-	data, err := rangeData.ReadFile("data/" + filename)
+	key := strings.TrimSuffix(filename, ".json")
+
+	data, err := rm.readRangeData(filename)
 	if err != nil {
 		return fmt.Errorf("failed to read %s: %w", filename, err)
 	}
 
-	var ranges []IPRange
-	if err := json.Unmarshal(data, &ranges); err != nil {
+	ranges, err := decodeRangeData(data, filename, key)
+	if err != nil {
 		return fmt.Errorf("failed to unmarshal %s: %w", filename, err)
 	}
 
-	key := strings.TrimSuffix(filename, ".json")
 	rm.ranges[key] = ranges
-	
+
 	// Pre-compile CIDR ranges for fast lookup
 	var networks []*net.IPNet
 	for _, r := range ranges {
@@ -86,10 +94,145 @@ func (rm *RangeManager) loadRangeFile(filename string) error {
 	return nil
 }
 
+func decodeRangeData(data []byte, filename, defaultService string) ([]IPRange, error) {
+	var directRanges []IPRange
+	if err := json.Unmarshal(data, &directRanges); err == nil {
+		return directRanges, nil
+	}
+
+	var wrapped struct {
+		Name        string            `json:"name"`
+		Description string            `json:"description"`
+		Service     string            `json:"service"`
+		Country     string            `json:"country"`
+		Tags        []string          `json:"tags"`
+		Metadata    map[string]string `json:"metadata"`
+		LastUpdated string            `json:"last_updated"`
+		Ranges      []json.RawMessage `json:"ranges"`
+	}
+
+	if err := json.Unmarshal(data, &wrapped); err != nil {
+		return nil, err
+	}
+
+	service := strings.TrimSpace(wrapped.Service)
+	if service == "" {
+		service = defaultService
+	}
+
+	metadataTemplate := map[string]string{}
+	for k, v := range wrapped.Metadata {
+		metadataTemplate[k] = v
+	}
+	if wrapped.LastUpdated != "" {
+		metadataTemplate["last_updated"] = wrapped.LastUpdated
+	}
+
+	result := make([]IPRange, 0, len(wrapped.Ranges))
+	for idx, raw := range wrapped.Ranges {
+		var cidr string
+		if err := json.Unmarshal(raw, &cidr); err == nil {
+			entry := IPRange{
+				CIDR:        cidr,
+				Name:        wrapped.Name,
+				Description: wrapped.Description,
+				Service:     service,
+				Country:     wrapped.Country,
+				Tags:        append([]string(nil), wrapped.Tags...),
+				Metadata:    cloneMetadata(metadataTemplate),
+			}
+			result = append(result, entry)
+			continue
+		}
+
+		var entry IPRange
+		if err := json.Unmarshal(raw, &entry); err != nil {
+			return nil, fmt.Errorf("invalid range entry %d in %s: %w", idx, filename, err)
+		}
+		if strings.TrimSpace(entry.Service) == "" {
+			entry.Service = service
+		}
+		if entry.Metadata == nil {
+			entry.Metadata = cloneMetadata(metadataTemplate)
+		}
+		result = append(result, entry)
+	}
+
+	return result, nil
+}
+
+func cloneMetadata(input map[string]string) map[string]string {
+	if len(input) == 0 {
+		return nil
+	}
+	cloned := make(map[string]string, len(input))
+	for k, v := range input {
+		cloned[k] = v
+	}
+	return cloned
+}
+
+func (rm *RangeManager) readRangeData(filename string) ([]byte, error) {
+	data, err := rangeData.ReadFile("data/" + filename)
+	if err == nil {
+		return data, nil
+	}
+
+	var joinedErrs []error
+	joinedErrs = append(joinedErrs, err)
+
+	for _, dir := range discoverRangeDataDirs() {
+		filePath := filepath.Join(dir, filename)
+		data, readErr := os.ReadFile(filePath)
+		if readErr == nil {
+			return data, nil
+		}
+		joinedErrs = append(joinedErrs, readErr)
+	}
+
+	return nil, errors.Join(joinedErrs...)
+}
+
+func discoverRangeDataDirs() []string {
+	candidates := []string{}
+
+	if env := strings.TrimSpace(os.Getenv("NGINX_DEFENDER_RANGE_DATA_DIR")); env != "" {
+		for _, dir := range filepath.SplitList(env) {
+			dir = strings.TrimSpace(dir)
+			if dir != "" {
+				candidates = append(candidates, dir)
+			}
+		}
+	}
+
+	if wd, err := os.Getwd(); err == nil {
+		candidates = append(candidates, filepath.Join(wd, "data"))
+	}
+
+	if exePath, err := os.Executable(); err == nil {
+		candidates = append(candidates, filepath.Join(filepath.Dir(exePath), "data"))
+	}
+
+	candidates = append(candidates, "/etc/nginx-defender/data")
+
+	seen := make(map[string]struct{}, len(candidates))
+	unique := make([]string, 0, len(candidates))
+	for _, dir := range candidates {
+		cleaned := filepath.Clean(dir)
+		if _, exists := seen[cleaned]; exists {
+			continue
+		}
+		seen[cleaned] = struct{}{}
+		unique = append(unique, cleaned)
+	}
+
+	return unique
+}
+
 // AddCustomRange adds a custom IP range
 func (rm *RangeManager) AddCustomRange(category string, ranges []IPRange) error {
 	rm.ranges[category] = ranges
-	
+
 	var networks []*net.IPNet
 	for _, r := range ranges {
 		_, network, err := net.ParseCIDR(r.CIDR)
@@ -99,7 +242,7 @@ func (rm *RangeManager) AddCustomRange(category string, ranges []IPRange) error 
 		networks = append(networks, network)
 	}
 	rm.compiled[category] = networks
-	
+
 	return nil
 }
 
@@ -149,11 +292,11 @@ var (
 	DefaultThreatCategories = []string{
 		"tor", "vpn", "botnet", "malware", "threat", "scanner",
 	}
-	
+
 	DefaultAICategories = []string{
 		"openai", "github", "deepseek", "anthropic", "aws", "azure", "gcp",
 	}
-	
+
 	DefaultCloudCategories = []string{
 		"aws", "azure", "gcp", "cloudflare", "datacenter",
 	}
