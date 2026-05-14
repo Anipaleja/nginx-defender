@@ -33,6 +33,7 @@
   - [Monitoring & Analytics](#monitoring--analytics)
   - [Notification System](#notification-system)
 - [Technical Specifications](#technical-specifications)
+- [Quick Start](#quick-start)
 - [Installation](#installation)
   - [Binary Installation](#binary-installation)
   - [Docker Deployment](#docker-deployment)
@@ -363,6 +364,60 @@ software:
                    │   Rules     │
                    └─────────────┘
 ```
+
+---
+
+## Quick Start
+
+Use this for a fast, predictable setup. It assumes Nginx is already running and writing access logs.
+
+1. **Pick a config baseline**
+  ```bash
+  cp config.yaml ./config.local.yaml
+  # or: config-demo.yaml (safe defaults) / config-advanced.yaml (full features)
+  ```
+
+2. **Point log sources to your Nginx logs**
+  Update `logs.sources` in your config so the paths match your host:
+  ```yaml
+  logs:
+    sources:
+     - path: "/var/log/nginx/access.log"
+      format: "combined"
+      follow: true
+     - path: "/var/log/nginx/error.log"
+      format: "error"
+      follow: true
+  ```
+
+3. **Choose firewall mode**
+  - For real enforcement (requires root): `iptables`, `nftables`, or `pf`.
+  - For safe evaluation: set `firewall.backend: "mock"` or export `NGINX_DEFENDER_DRY_RUN=true`.
+
+4. **Run it (pick one)**
+  **Local binary**
+  ```bash
+  sudo ./nginx-defender -config ./config.local.yaml
+  ```
+
+  **Docker Compose (uses docker-compose.yml)**
+  ```bash
+  cp config.yaml ./config.yaml
+  docker compose up -d
+  ```
+  If you changed log paths, also update the `volumes` mount paths in `docker-compose.yml`.
+
+5. **Verify**
+  ```bash
+  curl http://localhost:8080/health
+  curl http://localhost:9090/metrics
+  ```
+
+6. **See activity**
+  ```bash
+  tail -f /var/log/nginx/access.log
+  ```
+  You should see detections in the nginx-defender logs as traffic hits your Nginx instance.
 
 ---
 
