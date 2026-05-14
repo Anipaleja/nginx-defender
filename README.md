@@ -372,52 +372,60 @@ software:
 Use this for a fast, predictable setup. It assumes Nginx is already running and writing access logs.
 
 1. **Pick a config baseline**
-  ```bash
-  cp config.yaml ./config.local.yaml
-  # or: config-demo.yaml (safe defaults) / config-advanced.yaml (full features)
-  ```
+   ```bash
+   cp config.yaml ./config.local.yaml
+   # or: config-demo.yaml (safe defaults) / config-advanced.yaml (full features)
+   ```
 
-2. **Point log sources to your Nginx logs**
-  Update `logs.sources` in your config so the paths match your host:
-  ```yaml
-  logs:
-    sources:
-     - path: "/var/log/nginx/access.log"
-      format: "combined"
-      follow: true
-     - path: "/var/log/nginx/error.log"
-      format: "error"
-      follow: true
-  ```
+2. **Point log sources to your Nginx logs (platform defaults)**
+   - **Linux**: `/var/log/nginx/access.log`, `/var/log/nginx/error.log`
+   - **macOS (Homebrew)**: `/opt/homebrew/var/log/nginx/access.log` (Apple Silicon) or `/usr/local/var/log/nginx/access.log` (Intel)
+   - **FreeBSD**: `/var/log/nginx/access.log`, `/var/log/nginx/error.log`
+
+  macOS Homebrew services note: if Nginx is started via `brew services`, the logs live under `$(brew --prefix)/var/log/nginx/`.
+
+   Minimal known-good snippet for common Nginx log paths (Linux/FreeBSD):
+   ```yaml
+   logs:
+     sources:
+       - path: "/var/log/nginx/access.log"
+         format: "combined"
+         follow: true
+       - path: "/var/log/nginx/error.log"
+         format: "error"
+         follow: true
+   ```
+   On macOS, replace the paths with your Homebrew prefix.
 
 3. **Choose firewall mode**
-  - For real enforcement (requires root): `iptables`, `nftables`, or `pf`.
-  - For safe evaluation: set `firewall.backend: "mock"` or export `NGINX_DEFENDER_DRY_RUN=true`.
+   - **Linux**: `iptables` or `nftables`
+   - **macOS/FreeBSD**: `pf`
+   - For safe evaluation: set `firewall.backend: "mock"` or export `NGINX_DEFENDER_DRY_RUN=true`.
 
 4. **Run it (pick one)**
-  **Local binary**
-  ```bash
-  sudo ./nginx-defender -config ./config.local.yaml
-  ```
+   **Local binary**
+   ```bash
+   sudo ./nginx-defender -config ./config.local.yaml
+   ```
 
-  **Docker Compose (uses docker-compose.yml)**
-  ```bash
-  cp config.yaml ./config.yaml
-  docker compose up -d
-  ```
-  If you changed log paths, also update the `volumes` mount paths in `docker-compose.yml`.
+   **Docker Compose (uses docker-compose.yml)**
+   ```bash
+   cp config.yaml ./config.yaml
+   docker compose up -d
+   ```
+   If you changed log paths, also update the `volumes` mount paths in `docker-compose.yml`.
 
 5. **Verify**
-  ```bash
-  curl http://localhost:8080/health
-  curl http://localhost:9090/metrics
-  ```
+   ```bash
+   curl http://localhost:8080/health
+   curl http://localhost:9090/metrics
+   ```
 
 6. **See activity**
-  ```bash
-  tail -f /var/log/nginx/access.log
-  ```
-  You should see detections in the nginx-defender logs as traffic hits your Nginx instance.
+   ```bash
+   tail -f /var/log/nginx/access.log
+   ```
+   You should see detections in the nginx-defender logs as traffic hits your Nginx instance.
 
 ---
 
