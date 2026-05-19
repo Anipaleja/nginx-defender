@@ -18,6 +18,7 @@ class Dashboard {
         this.initWebSocket();
         this.initCharts();
         this.initEventListeners();
+        this.syncNavigationFromHash();
         this.startPeriodicUpdates();
         console.log('Dashboard initialized successfully');
     }
@@ -236,10 +237,20 @@ class Dashboard {
         // Tab navigation
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
+                const targetLink = e.target.closest('.nav-link');
+                const href = targetLink?.getAttribute('href') || '';
+
+                if (!href.startsWith('#')) {
+                    return;
+                }
+
                 e.preventDefault();
-                const target = e.target.getAttribute('href').substring(1);
-                this.switchTab(target);
+                this.switchTab(href.substring(1));
             });
+        });
+
+        window.addEventListener('hashchange', () => {
+            this.syncNavigationFromHash();
         });
 
         const searchInput = document.getElementById('search-input');
@@ -757,6 +768,36 @@ class Dashboard {
     refreshData() {
         this.loadInitialData();
         this.showNotification('Dashboard data refreshed', 'success');
+    }
+
+    switchTab(sectionId) {
+        const section = document.getElementById(sectionId);
+
+        if (!section) {
+            return;
+        }
+
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        this.setActiveNavLink(sectionId);
+        history.replaceState(null, '', `#${sectionId}`);
+
+        const navbarCollapse = document.getElementById('navbarNav');
+        if (navbarCollapse && window.bootstrap?.Collapse) {
+            const collapseInstance = bootstrap.Collapse.getOrCreateInstance(navbarCollapse, { toggle: false });
+            collapseInstance.hide();
+        }
+    }
+
+    setActiveNavLink(sectionId) {
+        document.querySelectorAll('.nav-link').forEach((link) => {
+            const target = link.getAttribute('href')?.substring(1);
+            link.classList.toggle('active', target === sectionId);
+        });
+    }
+
+    syncNavigationFromHash() {
+        const sectionId = window.location.hash.replace('#', '') || 'dashboard';
+        this.setActiveNavLink(sectionId);
     }
 }
 
