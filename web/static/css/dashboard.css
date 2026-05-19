@@ -1,38 +1,40 @@
 /* nginx-defender Dashboard Styles */
 
 :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
-    --warning-color: #ffc107;
-    --info-color: #17a2b8;
-    --dark-color: #343a40;
-    --light-color: #f8f9fa;
+    --primary-color: #1d4ed8;
+    --secondary-color: #64748b;
+    --success-color: #059669;
+    --danger-color: #dc2626;
+    --warning-color: #d97706;
+    --info-color: #0284c7;
+    --dark-color: #0f172a;
+    --light-color: #f8fafc;
+    --surface-color: #ffffff;
+    --border-color: #dbe3ef;
 }
 
 body {
-    background-color: #f5f7fa;
+    background-color: #f8fafc;
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--dark-color);
 }
 
 .dashboard-header {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .dashboard-title {
-    color: #0f172a;
+    color: var(--dark-color);
     font-size: 1.85rem;
     font-weight: 650;
     letter-spacing: -0.03em;
 }
 
 .dashboard-eyebrow {
-    color: #64748b;
+    color: var(--secondary-color);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.14em;
@@ -41,14 +43,14 @@ body {
 
 .dashboard-subtitle {
     max-width: 54rem;
-    color: #64748b;
+    color: var(--secondary-color);
 }
 
 .dashboard-actions .btn,
 .dashboard-toolbar .btn,
 .dashboard-search .input-group-text,
 .dashboard-search .form-control {
-    border-radius: 0.6rem;
+    border-radius: 0.5rem;
 }
 
 .dashboard-search {
@@ -57,20 +59,19 @@ body {
 
 .dashboard-search .input-group-text {
     background-color: #fff;
-    border-color: #d1d5db;
-    color: #64748b;
+    border-color: var(--border-color);
+    color: var(--secondary-color);
 }
 
 .dashboard-search .form-control {
     border-left: 0;
-    border-color: #d1d5db;
+    border-color: var(--border-color);
 }
 
 .metric-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--surface-color);
 }
 
 .metric-card .card-body {
@@ -84,19 +85,19 @@ body {
 }
 
 .metric-card-primary {
-    border-left: 4px solid var(--primary-color);
+    border-top: 3px solid var(--primary-color);
 }
 
 .metric-card-danger {
-    border-left: 4px solid var(--danger-color);
+    border-top: 3px solid var(--danger-color);
 }
 
 .metric-card-warning {
-    border-left: 4px solid var(--warning-color);
+    border-top: 3px solid var(--warning-color);
 }
 
 .metric-card-success {
-    border-left: 4px solid var(--success-color);
+    border-top: 3px solid var(--success-color);
 }
 
 .dashboard-empty-row td {
@@ -110,10 +111,10 @@ body {
     justify-content: center;
     text-align: center;
     min-height: 160px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-color);
     border-radius: 0.85rem;
-    background: #fff;
-    color: #475569;
+    background: var(--surface-color);
+    color: var(--secondary-color);
     padding: 1rem 1.25rem;
 }
 
@@ -123,49 +124,31 @@ body {
 
 .dashboard-empty-state i {
     font-size: 1.75rem;
-    color: #64748b;
+    color: var(--primary-color);
 }
 
 .navbar-brand {
     font-weight: bold;
     font-size: 1.5rem;
+    color: var(--dark-color) !important;
 }
 
 .card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    transition: box-shadow 0.15s ease-in-out;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: none;
+    transition: border-color 0.15s ease-in-out;
+    background: var(--surface-color);
 }
 
 .card:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-color: #c7d2e0;
 }
 
 .card-header {
-    background-color: rgba(0, 0, 0, 0.03);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: #f8fafc;
+    border-bottom: 1px solid var(--border-color);
     font-weight: 600;
-}
-
-/* Status Cards */
-.card.bg-primary,
-.card.bg-danger,
-.card.bg-warning,
-.card.bg-success {
-    background: linear-gradient(135deg, var(--primary-color), #0056b3) !important;
-}
-
-.card.bg-danger {
-    background: linear-gradient(135deg, var(--danger-color), #c82333) !important;
-}
-
-.card.bg-warning {
-    background: linear-gradient(135deg, var(--warning-color), #e0a800) !important;
-}
-
-.card.bg-success {
-    background: linear-gradient(135deg, var(--success-color), #1e7e34) !important;
 }
 
 /* Progress Circles */
@@ -175,11 +158,12 @@ body {
     height: 120px;
     margin: 0 auto;
     border-radius: 50%;
-    background: conic-gradient(from 0deg, var(--primary-color) 0%, var(--primary-color) 0%, #e9ecef 0%, #e9ecef 100%);
+    background: #e5eefc;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: background 0.3s ease;
+    border: 1px solid #dbe3ef;
 }
 
 .progress-circle span {
@@ -196,16 +180,17 @@ body {
     height: 90px;
     border-radius: 50%;
     background-color: white;
+    border: 1px solid #dbe3ef;
 }
 
 /* Threat Feed */
 .threat-feed {
     height: 300px;
     overflow-y: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     padding: 10px;
-    background-color: #f8f9fa;
+    background-color: #ffffff;
 }
 
 .threat-item {
@@ -328,12 +313,7 @@ canvas {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.6),
-        transparent
-    );
+    background: rgba(255, 255, 255, 0.35);
     animation: loading 1.5s infinite;
 }
 
@@ -379,20 +359,34 @@ canvas {
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
     :root {
-        --dark-color: #f8f9fa;
-        --light-color: #343a40;
+        --dark-color: #e5eefc;
+        --light-color: #0f172a;
+        --surface-color: #111827;
+        --border-color: #243244;
+    }
+
+    body {
+        background-color: #0b1220;
+        color: #e5eefc;
+    }
+
+    .dashboard-header,
+    .metric-card,
+    .dashboard-empty-state,
+    .card,
+    .threat-feed {
+        background: #111827;
+        border-color: #243244;
     }
 
     .dashboard-empty-state {
-        background: #1f2937;
-        border-color: rgba(255, 255, 255, 0.12);
-        color: #f8f9fa;
+        color: #cbd5e1;
     }
 
     .dashboard-search .input-group-text,
     .dashboard-search .form-control {
         background-color: #111827;
-        border-color: #374151;
+        border-color: #243244;
         color: #f8f9fa;
     }
 
@@ -400,29 +394,14 @@ canvas {
         color: #adb5bd;
     }
     
-    body {
-        background-color: #1a1a1a;
-        color: #f8f9fa;
-    }
-    
-    .card {
-        background-color: #2d2d2d;
-        color: #f8f9fa;
-    }
-    
     .card-header {
-        background-color: rgba(255, 255, 255, 0.05);
-        border-bottom-color: rgba(255, 255, 255, 0.125);
+        background-color: #0f172a;
+        border-bottom-color: #243244;
     }
-    
-    .threat-feed {
-        background-color: #2d2d2d;
-        border-color: #495057;
-    }
-    
+
     .threat-item {
-        background-color: #3d3d3d;
-        color: #f8f9fa;
+        background-color: #0f172a;
+        color: #e5eefc;
     }
 }
 
