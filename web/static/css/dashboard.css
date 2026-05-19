@@ -142,6 +142,12 @@ section[id],
     color: var(--dark-color) !important;
 }
 
+.dashboard-brand-logo {
+    display: block;
+    height: 2.1rem;
+    width: auto;
+}
+
 .navbar {
     box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
 }

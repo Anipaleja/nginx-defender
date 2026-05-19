@@ -106,6 +106,7 @@ func (s *Server) SetComponents(engine *detector.Engine, firewall *firewall.Manag
 func (s *Server) setupRoutes() {
 	// Static files
 	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static/"))))
+	s.router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./web/assets/"))))
 
 	// Authentication routes (always available)
 	s.router.HandleFunc("/login", s.loginPageHandler).Methods("GET")
