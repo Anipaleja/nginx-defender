@@ -728,13 +728,16 @@ class Dashboard {
 
     updateConnectionStatus(connected) {
         const statusElement = document.querySelector('.navbar-text');
+
+        // If the status element was removed (clean header), do nothing silently.
+        if (!statusElement) return;
+
         const icon = statusElement.querySelector('i');
-        
         if (connected) {
-            icon.className = 'fas fa-circle text-success';
+            if (icon) icon.className = 'fas fa-circle text-success';
             statusElement.innerHTML = '<i class="fas fa-circle text-success"></i> System Online';
         } else {
-            icon.className = 'fas fa-circle text-danger';
+            if (icon) icon.className = 'fas fa-circle text-danger';
             statusElement.innerHTML = '<i class="fas fa-circle text-danger"></i> System Offline';
         }
     }
