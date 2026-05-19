@@ -6,7 +6,7 @@
     <title>nginx-defender - Security Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="/static/css/dashboard.css" rel="stylesheet">
+    <link href="/static/css/dashboard.css?v=cleaner-ui-2" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -47,10 +47,33 @@
     </nav>
 
     <div class="container-fluid mt-4">
+        <section id="dashboard" class="dashboard-header mb-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+                <div>
+                    <p class="dashboard-eyebrow mb-2">Dashboard</p>
+                    <h1 class="dashboard-title mb-2">Security overview</h1>
+                    <p class="dashboard-subtitle mb-0">
+                        View the latest blocked IPs, active threats, and system health from one place.
+                    </p>
+                </div>
+                <div class="dashboard-actions d-flex flex-wrap gap-2">
+                    <button class="btn btn-outline-secondary" type="button" onclick="dashboard.refreshData()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                    <a class="btn btn-outline-secondary" href="#threats">
+                        Threats
+                    </a>
+                    <a class="btn btn-outline-secondary" href="#firewall">
+                        Blocklist
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <!-- Status Cards -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card bg-primary text-white">
+                <div class="card metric-card metric-card-primary">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
@@ -65,7 +88,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card bg-danger text-white">
+                <div class="card metric-card metric-card-danger">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
@@ -80,7 +103,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card bg-warning text-white">
+                <div class="card metric-card metric-card-warning">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
@@ -95,7 +118,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card bg-success text-white">
+                <div class="card metric-card metric-card-success">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
@@ -112,7 +135,7 @@
         </div>
 
         <!-- Charts Row -->
-        <div class="row mb-4">
+        <div class="row mb-4" id="threats">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
@@ -136,14 +159,21 @@
         </div>
 
         <!-- Recent Activity -->
-        <div class="row mb-4">
+        <div class="row mb-4" id="firewall">
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                         <h5>Recent Blocked IPs</h5>
-                        <button class="btn btn-sm btn-outline-primary" onclick="refreshBlockedIPs()">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
+                        <div class="d-flex flex-wrap align-items-center gap-2 dashboard-toolbar">
+                            <div class="input-group input-group-sm dashboard-search">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="search" id="search-input" class="form-control" placeholder="Search IPs, countries, or threats" aria-label="Search dashboard data">
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary" type="button" id="clear-search">Clear</button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="refreshBlockedIPs()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -158,7 +188,15 @@
                                     </tr>
                                 </thead>
                                 <tbody id="blocked-ips-table">
-                                    <!-- Dynamic content -->
+                                    <tr class="dashboard-empty-row">
+                                        <td colspan="5">
+                                            <div class="dashboard-empty-state">
+                                                <i class="fas fa-search mb-2"></i>
+                                                <h6 class="mb-1">Type a search term to narrow the blocklist</h6>
+                                                <p class="mb-0 text-muted">Try an IP address, country name, or threat type to find relevant events faster.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -173,7 +211,11 @@
                     </div>
                     <div class="card-body">
                         <div id="threat-feed" class="threat-feed">
-                            <!-- Real-time threat updates -->
+                            <div class="dashboard-empty-state">
+                                <i class="fas fa-shield-virus mb-2"></i>
+                                <h6 class="mb-1">Waiting for live detections</h6>
+                                <p class="mb-0 text-muted">Threats will appear here as they are detected. Use this feed for a quick operational view.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -181,7 +223,7 @@
         </div>
 
         <!-- System Performance -->
-        <div class="row mb-4">
+        <div class="row mb-4" id="settings">
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
@@ -258,6 +300,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/dashboard.js?v=cleaner-ui-2"></script>
 </body>
 </html>

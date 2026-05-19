@@ -7,7 +7,8 @@ class Dashboard {
         this.data = {
             blockedIPs: [],
             threats: [],
-            metrics: {}
+            metrics: {},
+            searchQuery: ''
         };
         this.init();
     }
@@ -91,8 +92,11 @@ class Dashboard {
 
             this.updateDashboard();
         } catch (error) {
-            console.error('Error loading initial data:', error);
-            this.showNotification('Failed to load dashboard data', 'error');
+            console.warn('Dashboard data unavailable, rendering empty state');
+            this.data.blockedIPs = [];
+            this.data.threats = [];
+            this.data.metrics = {};
+            this.updateDashboard();
         }
     }
 
@@ -238,6 +242,27 @@ class Dashboard {
             });
         });
 
+        const searchInput = document.getElementById('search-input');
+        const clearSearchButton = document.getElementById('clear-search');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.data.searchQuery = e.target.value.trim().toLowerCase();
+                this.updateBlockedIPsTable();
+                this.updateThreatFeed();
+            });
+        }
+
+        if (clearSearchButton && searchInput) {
+            clearSearchButton.addEventListener('click', () => {
+                searchInput.value = '';
+                this.data.searchQuery = '';
+                this.updateBlockedIPsTable();
+                this.updateThreatFeed();
+                searchInput.focus();
+            });
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.metaKey) {
@@ -287,7 +312,22 @@ class Dashboard {
         const tbody = document.getElementById('blocked-ips-table');
         tbody.innerHTML = '';
 
-        const recentIPs = this.data.blockedIPs.slice(0, 10);
+        const recentIPs = this.getFilteredBlockedIPs().slice(0, 10);
+
+        if (recentIPs.length === 0) {
+            tbody.innerHTML = `
+                <tr class="dashboard-empty-row">
+                    <td colspan="5">
+                        <div class="dashboard-empty-state compact">
+                            <i class="fas fa-filter mb-2"></i>
+                            <h6 class="mb-1">No matches for the current search</h6>
+                            <p class="mb-0 text-muted">Clear the search box to view the latest blocked IPs.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
         
         recentIPs.forEach(ip => {
             const row = document.createElement('tr');
@@ -327,9 +367,21 @@ class Dashboard {
         const feed = document.getElementById('threat-feed');
         
         // Keep only recent threats (last 50)
-        const recentThreats = this.data.threats.slice(-50);
+        const recentThreats = this.getFilteredThreats().slice(-50);
         
         feed.innerHTML = '';
+
+        if (recentThreats.length === 0) {
+            feed.innerHTML = `
+                <div class="dashboard-empty-state compact">
+                    <i class="fas fa-shield-virus mb-2"></i>
+                    <h6 class="mb-1">No live threats match this filter</h6>
+                    <p class="mb-0 text-muted">Try a broader search or clear the filter to return to the full feed.</p>
+                </div>
+            `;
+            return;
+        }
+
         recentThreats.reverse().forEach(threat => {
             this.addThreatToFeed(threat, false);
         });
@@ -524,6 +576,49 @@ class Dashboard {
         return counts;
     }
 
+    getFilteredBlockedIPs() {
+        if (!this.data.searchQuery) {
+            return this.data.blockedIPs;
+        }
+
+        return this.data.blockedIPs.filter((ip) => {
+            const searchableText = [
+                ip.address,
+                ip.country,
+                ip.country_code,
+                ip.threat_type,
+                ip.is_tor ? 'tor' : '',
+                ip.is_vpn ? 'vpn' : ''
+            ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            return searchableText.includes(this.data.searchQuery);
+        });
+    }
+
+    getFilteredThreats() {
+        if (!this.data.searchQuery) {
+            return this.data.threats;
+        }
+
+        return this.data.threats.filter((threat) => {
+            const searchableText = [
+                threat.type,
+                threat.source_ip,
+                threat.country,
+                threat.severity,
+                threat.details
+            ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            return searchableText.includes(this.data.searchQuery);
+        });
+    }
+
     getThreatSeverityColor(severity) {
         switch (severity?.toLowerCase()) {
             case 'critical': return 'danger';
@@ -643,7 +738,7 @@ class Dashboard {
                 this.updateSystemMetrics();
                 this.updateStatusCards();
             } catch (error) {
-                console.error('Error updating metrics:', error);
+                console.warn('Metrics endpoint unavailable');
             }
         }, 30000);
 
@@ -654,7 +749,7 @@ class Dashboard {
                 this.data.blockedIPs = blockedIPs.data || [];
                 this.updateBlockedIPsTable();
             } catch (error) {
-                console.error('Error updating blocked IPs:', error);
+                console.warn('Blocked IPs endpoint unavailable');
             }
         }, 60000);
     }
