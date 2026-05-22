@@ -293,7 +293,9 @@ func parseTimestamp(timeStr string) (time.Time, error) {
 func isBot(userAgent string) bool {
 	botPatterns := []string{
 		"bot", "crawler", "spider", "scraper", "scan", "monitoring",
+		"headless", "playwright", "puppeteer", "selenium", "phantomjs",
 		"wget", "curl", "python", "go-http", "java/", "perl/",
+		"python-requests", "httpx", "aiohttp", "scrapy", "okhttp", "axios", "libwww-perl",
 	}
 
 	lowerUA := strings.ToLower(userAgent)

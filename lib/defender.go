@@ -69,6 +69,8 @@ type Defender struct {
 	// Log monitoring
 	logMonitors  map[string]*LogMonitor
 	monitorMutex sync.RWMutex
+	blockedIPs   map[string]time.Time
+	blockMutex   sync.RWMutex
 
 	// Lifecycle management
 	ctx        context.Context
@@ -275,6 +277,7 @@ func New(cfg *Config) (*Defender, error) {
 		webServer:        webServer,
 		honeypotSystem:   honeypotSystem,
 		logMonitors:      make(map[string]*LogMonitor),
+		blockedIPs:       make(map[string]time.Time),
 		ctx:              ctx,
 		cancel:           cancel,
 	}, nil
@@ -379,17 +382,18 @@ func (d *Defender) MonitorLogFile(filePath string, format LogFormat) error {
 
 // ShouldBlock checks if an IP address should be blocked
 func (d *Defender) ShouldBlock(ip string) bool {
-	if !d.started {
-		return false
-	}
-
-	// Simplified threat analysis for library usage
 	if net.ParseIP(ip) == nil {
 		return false
 	}
 
-	// In a real implementation, this would use the detection engine
-	// For now, return false for a basic library implementation
+	if d.isBlocked(ip) {
+		return true
+	}
+
+	if !d.started {
+		return false
+	}
+
 	return false
 }
 
@@ -417,6 +421,8 @@ func (d *Defender) BlockIP(ip string, duration time.Duration, reason string) err
 	if net.ParseIP(ip) == nil {
 		return fmt.Errorf("invalid IP address: %s", ip)
 	}
+
+	d.blockIP(ip, duration)
 
 	// Trigger block event
 	if d.onBlockDecision != nil {
@@ -447,9 +453,47 @@ func (d *Defender) UnblockIP(ip string) error {
 		return fmt.Errorf("invalid IP address: %s", ip)
 	}
 
+	d.blockMutex.Lock()
+	delete(d.blockedIPs, ip)
+	d.blockMutex.Unlock()
+
 	d.logger.WithField("ip", ip).Info("IP unblocked via library")
 
 	return nil
+}
+
+func (d *Defender) blockIP(ip string, duration time.Duration) {
+	d.blockMutex.Lock()
+	defer d.blockMutex.Unlock()
+
+	if duration <= 0 {
+		d.blockedIPs[ip] = time.Time{}
+		return
+	}
+
+	d.blockedIPs[ip] = time.Now().Add(duration)
+}
+
+func (d *Defender) isBlocked(ip string) bool {
+	d.blockMutex.RLock()
+	expiresAt, exists := d.blockedIPs[ip]
+	d.blockMutex.RUnlock()
+	if !exists {
+		return false
+	}
+
+	if expiresAt.IsZero() {
+		return true
+	}
+
+	if time.Now().After(expiresAt) {
+		d.blockMutex.Lock()
+		delete(d.blockedIPs, ip)
+		d.blockMutex.Unlock()
+		return false
+	}
+
+	return true
 }
 
 // OnThreatDetected sets a callback for when threats are detected

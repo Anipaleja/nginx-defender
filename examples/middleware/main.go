@@ -13,27 +13,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// DefenderHTTPMiddleware creates middleware for standard HTTP applications
-func DefenderHTTPMiddleware(def *defender.Defender) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			clientIP := getClientIP(r)
-
-			// Check if IP should be blocked
-			if def.ShouldBlock(clientIP) {
-				http.Error(w, "Access Denied - Blocked by nginx-defender", http.StatusForbidden)
-				return
-			}
-
-			// Add security headers
-			w.Header().Set("X-Protected-By", "nginx-defender")
-			w.Header().Set("X-Threat-Score", fmt.Sprintf("%d", def.GetThreatScore(clientIP)))
-
-			next.ServeHTTP(w, r)
-		})
-	}
-}
-
 func main() {
 	fmt.Println("nginx-defender Middleware Examples")
 	fmt.Println("======================================")
@@ -88,7 +67,7 @@ func runGorillaExample(def *defender.Defender) {
 	r := mux.NewRouter()
 
 	// Apply middleware
-	r.Use(DefenderHTTPMiddleware(def))
+	r.Use(def.HTTPMiddleware())
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `<!DOCTYPE html>
@@ -135,7 +114,7 @@ func runStandardHTTPExample(def *defender.Defender) {
 	mux := http.NewServeMux()
 
 	// Apply middleware manually for standard HTTP
-	protectedHandler := DefenderHTTPMiddleware(def)
+	protectedHandler := def.HTTPMiddleware()
 
 	mux.Handle("/", protectedHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `<!DOCTYPE html>

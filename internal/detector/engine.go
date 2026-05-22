@@ -409,6 +409,7 @@ func (e *Engine) checkUserAgent(entry *logparser.LogEntry, result *DetectionResu
 	}
 
 	userAgent := entry.UserAgent
+	lowerUA := strings.ToLower(userAgent)
 
 	// Check blocked patterns
 	for _, pattern := range e.config.Detection.UserAgentBlocking.BlockedPatterns {
@@ -420,16 +421,32 @@ func (e *Engine) checkUserAgent(entry *logparser.LogEntry, result *DetectionResu
 		}
 	}
 
+	if entry.IsBot {
+		result.ThreatTypes = append(result.ThreatTypes, "bot_client")
+		result.Score += 18.0
+		result.Details["bot_client"] = "true"
+	}
+
+	if automationLabel := classifyAutomationClient(lowerUA); automationLabel != "" {
+		result.ThreatTypes = append(result.ThreatTypes, automationLabel)
+		result.Score += 40.0
+		result.Details["automation_client"] = automationLabel
+	}
+
 	// Check suspicious user agent characteristics
 	if e.isSuspiciousUserAgent(userAgent) {
 		result.ThreatTypes = append(result.ThreatTypes, "suspicious_user_agent")
-		result.Score += 15.0
+		result.Score += 12.0
 		result.Details["suspicious_ua"] = userAgent
 
-		lowerUA := strings.ToLower(userAgent)
 		if strings.Contains(lowerUA, "bot") || strings.Contains(lowerUA, "crawler") || strings.Contains(lowerUA, "spider") || strings.Contains(lowerUA, "scraper") {
 			result.ThreatTypes = append(result.ThreatTypes, "bot_attack")
-			result.Score += 20.0
+			result.Score += 18.0
+		}
+
+		if entry.Referer == "" && entry.Path != "/" {
+			result.Score += 5.0
+			result.Details["missing_referer"] = "true"
 		}
 	}
 }
@@ -638,9 +655,38 @@ func (e *Engine) determineAction(result *DetectionResult) {
 		switch threatType {
 		case "threat_intel", "malware", "sql_injection", "xss", "rce", "cmd_injection", "path_traversal", "sensitive_probe":
 			result.RecommendedAction = "BLOCK_IMMEDIATE"
-		case "ai_scraper", "bot_attack":
-			result.RecommendedAction = "TARPIT"
+		case "ai_scraper", "bot_attack", "bot_client", "automation_client", "headless_browser", "playwright", "puppeteer", "selenium", "phantomjs":
+			result.RecommendedAction = "BLOCK"
+		case "suspicious_user_agent":
+			if result.Score >= 45.0 {
+				result.RecommendedAction = "BLOCK"
+			} else if result.RecommendedAction == "MONITOR" {
+				result.RecommendedAction = "TARPIT"
+			}
 		}
+	}
+}
+
+func classifyAutomationClient(lowerUA string) string {
+	switch {
+	case lowerUA == "":
+		return ""
+	case strings.Contains(lowerUA, "playwright"):
+		return "playwright"
+	case strings.Contains(lowerUA, "puppeteer"):
+		return "puppeteer"
+	case strings.Contains(lowerUA, "selenium"):
+		return "selenium"
+	case strings.Contains(lowerUA, "phantomjs"):
+		return "phantomjs"
+	case strings.Contains(lowerUA, "headless"):
+		return "headless_browser"
+	case strings.Contains(lowerUA, "python-requests"), strings.Contains(lowerUA, "httpx"), strings.Contains(lowerUA, "aiohttp"), strings.Contains(lowerUA, "scrapy"):
+		return "python_client"
+	case strings.Contains(lowerUA, "go-http-client"), strings.Contains(lowerUA, "curl"), strings.Contains(lowerUA, "wget"), strings.Contains(lowerUA, "okhttp"), strings.Contains(lowerUA, "axios"), strings.Contains(lowerUA, "libwww-perl"), strings.Contains(lowerUA, "java/"):
+		return "automation_client"
+	default:
+		return ""
 	}
 }
 
