@@ -69,21 +69,23 @@ class NginxDefender:
         self._session = requests.Session()
         self._check_cache: Dict[str, Dict[str, Any]] = {}
         self._check_cache_ttl = 1.0
+        self._lock = threading.RLock()
 
     def _check_ip(self, ip: str) -> Dict[str, Any]:
-        if self._session is None:
-            self._session = requests.Session()
+        with self._lock:
+            if self._session is None:
+                self._session = requests.Session()
 
-        cache_entry = self._check_cache.get(ip)
-        now = time.monotonic()
-        if cache_entry and now - cache_entry["timestamp"] < self._check_cache_ttl:
-            return cache_entry["result"]
+            cache_entry = self._check_cache.get(ip)
+            now = time.monotonic()
+            if cache_entry and now - cache_entry["timestamp"] < self._check_cache_ttl:
+                return cache_entry["result"]
 
-        response = self._session.post(f"{self.base_url}/api/check", json={"ip": ip}, timeout=5)
-        response.raise_for_status()
-        result = response.json()
-        self._check_cache[ip] = {"timestamp": now, "result": result}
-        return result
+            response = self._session.post(f"{self.base_url}/api/check", json={"ip": ip}, timeout=5)
+            response.raise_for_status()
+            result = response.json()
+            self._check_cache[ip] = {"timestamp": now, "result": result}
+            return result
 
     def check_ip(self, ip: str) -> Dict[str, Any]:
         """Fetch the current threat assessment for an IP address."""
@@ -95,9 +97,10 @@ class NginxDefender:
     def start(self) -> bool:
         """Start the nginx-defender service."""
         try:
-            if self._session is None:
-                self._session = requests.Session()
-            self._check_cache.clear()
+            with self._lock:
+                if self._session is None:
+                    self._session = requests.Session()
+                self._check_cache.clear()
 
             # Start the Go binary as a subprocess
             cmd = ["./nginx-defender-service", "--api-mode", "--port", str(self.config['web_ui_port'])]
@@ -120,13 +123,20 @@ class NginxDefender:
     
     def stop(self) -> None:
         """Stop the nginx-defender service."""
-        if self._process:
-            self._process.terminate()
-            self._process.wait()
-            self._process = None
-        self._session.close()
-        self._session = None
-        self.is_running = False
+        with self._lock:
+            if self._process:
+                self._process.terminate()
+                self._process.wait()
+                self._process = None
+            if self._session is not None:
+                self._session.close()
+                self._session = None
+            self._check_cache.clear()
+            self.is_running = False
+
+    def close(self) -> None:
+        """Release resources held by the wrapper."""
+        self.stop()
     
     def should_block(self, ip: str) -> bool:
         """Check if an IP should be blocked."""
@@ -182,11 +192,13 @@ class NginxDefender:
     
     def on_threat_detected(self, callback: Callable[[ThreatEvent], None]) -> None:
         """Register callback for threat detection events."""
-        self._threat_callbacks.append(callback)
+        with self._lock:
+            self._threat_callbacks.append(callback)
     
     def on_block_decision(self, callback: Callable[[BlockEvent], None]) -> None:
         """Register callback for block decision events."""
-        self._block_callbacks.append(callback)
+        with self._lock:
+            self._block_callbacks.append(callback)
     
     def __enter__(self):
         self.start()

@@ -38,12 +38,34 @@ class NginxDefender extends EventEmitter {
         this.process = null;
         this._checkCache = new Map();
         this._checkCacheTTL = 1000;
+        this._createHttpClient();
+    }
+
+    _createHttpClient() {
+        this._httpAgent = new http.Agent({ keepAlive: true });
+        this._httpsAgent = new https.Agent({ keepAlive: true });
         this.httpClient = axios.create({
             baseURL: this.baseURL,
             timeout: 5000,
-            httpAgent: new http.Agent({ keepAlive: true }),
-            httpsAgent: new https.Agent({ keepAlive: true })
+            httpAgent: this._httpAgent,
+            httpsAgent: this._httpsAgent
         });
+    }
+
+    _disposeHttpClient() {
+        this._checkCache.clear();
+
+        if (this._httpAgent) {
+            this._httpAgent.destroy();
+            this._httpAgent = null;
+        }
+
+        if (this._httpsAgent) {
+            this._httpsAgent.destroy();
+            this._httpsAgent = null;
+        }
+
+        this.httpClient = null;
     }
 
     _getCachedCheck(ip) {
@@ -97,6 +119,10 @@ class NginxDefender extends EventEmitter {
      */
     async start() {
         try {
+            if (!this.httpClient) {
+                this._createHttpClient();
+            }
+
             // Start the Go binary as a child process
             this.process = spawn('./nginx-defender-service', [
                 '--api-mode',
@@ -132,8 +158,16 @@ class NginxDefender extends EventEmitter {
             this.process.kill();
             this.process = null;
         }
+        this._disposeHttpClient();
         this.isRunning = false;
         this.emit('stopped');
+    }
+
+    /**
+     * Close the defender and release any cached HTTP resources.
+     */
+    async close() {
+        await this.stop();
     }
     
     /**

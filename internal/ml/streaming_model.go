@@ -11,14 +11,14 @@ import (
 
 // FeatureVector captures normalized request behavior features used by the online model.
 type FeatureVector struct {
-	RequestFrequency  float64 `json:"request_frequency"`
-	EndpointEntropy   float64 `json:"endpoint_entropy"`
-	UserAgentRisk     float64 `json:"user_agent_risk"`
-	ErrorRate         float64 `json:"error_rate"`
-	BurstScore        float64 `json:"burst_score"`
+	RequestFrequency   float64 `json:"request_frequency"`
+	EndpointEntropy    float64 `json:"endpoint_entropy"`
+	UserAgentRisk      float64 `json:"user_agent_risk"`
+	ErrorRate          float64 `json:"error_rate"`
+	BurstScore         float64 `json:"burst_score"`
 	CredentialStuffing float64 `json:"credential_stuffing"`
-	ScanScore         float64 `json:"scan_score"`
-	HoneypotScore     float64 `json:"honeypot_score"`
+	ScanScore          float64 `json:"scan_score"`
+	HoneypotScore      float64 `json:"honeypot_score"`
 }
 
 // EvaluationMetrics contains model quality metrics.
@@ -56,8 +56,8 @@ func NewOnlineAnomalyModel(threshold float64) *OnlineAnomalyModel {
 	}
 
 	return &OnlineAnomalyModel{
-		means: map[string]float64{},
-		vars:  map[string]float64{},
+		means:  map[string]float64{},
+		vars:   map[string]float64{},
 		counts: map[string]float64{},
 		weights: map[string]float64{
 			"request_frequency":   0.19,
@@ -138,17 +138,40 @@ func (m *OnlineAnomalyModel) PredictAndLearn(v FeatureVector) Prediction {
 	return Prediction{AnomalyScore: anomaly, Confidence: conf, IsAnomalous: isAnomalous}
 }
 
+// BatchPredict scores a slice of feature vectors without mutating the model state.
+func (m *OnlineAnomalyModel) BatchPredict(vectors []FeatureVector) []Prediction {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	predictions := make([]Prediction, 0, len(vectors))
+	for _, vector := range vectors {
+		predictions = append(predictions, m.predictLocked(flatten(vector)))
+	}
+	return predictions
+}
+
+// Reset clears learned statistics while preserving the configured weights.
+func (m *OnlineAnomalyModel) Reset() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.means = map[string]float64{}
+	m.vars = map[string]float64{}
+	m.counts = map[string]float64{}
+	m.updatedAt = time.Now()
+}
+
 func (m *OnlineAnomalyModel) Save(path string) error {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	payload := map[string]interface{}{
-		"means":     m.means,
-		"vars":      m.vars,
-		"counts":    m.counts,
-		"weights":   m.weights,
-		"threshold": m.threshold,
-		"decay":     m.decay,
+		"means":      m.means,
+		"vars":       m.vars,
+		"counts":     m.counts,
+		"weights":    m.weights,
+		"threshold":  m.threshold,
+		"decay":      m.decay,
 		"updated_at": m.updatedAt,
 	}
 	data, err := json.MarshalIndent(payload, "", "  ")
@@ -199,15 +222,57 @@ func (m *OnlineAnomalyModel) Load(path string) error {
 
 func flatten(v FeatureVector) map[string]float64 {
 	return map[string]float64{
-		"request_frequency":   v.RequestFrequency,
-		"endpoint_entropy":    v.EndpointEntropy,
-		"user_agent_risk":     v.UserAgentRisk,
-		"error_rate":          v.ErrorRate,
-		"burst_score":         v.BurstScore,
-		"credential_stuffing": v.CredentialStuffing,
-		"scan_score":          v.ScanScore,
-		"honeypot_score":      v.HoneypotScore,
+		"request_frequency":   sanitizeScore(v.RequestFrequency),
+		"endpoint_entropy":    sanitizeScore(v.EndpointEntropy),
+		"user_agent_risk":     sanitizeScore(v.UserAgentRisk),
+		"error_rate":          sanitizeScore(v.ErrorRate),
+		"burst_score":         sanitizeScore(v.BurstScore),
+		"credential_stuffing": sanitizeScore(v.CredentialStuffing),
+		"scan_score":          sanitizeScore(v.ScanScore),
+		"honeypot_score":      sanitizeScore(v.HoneypotScore),
 	}
+}
+
+func (m *OnlineAnomalyModel) predictLocked(features map[string]float64) Prediction {
+	if len(features) == 0 || len(m.means) == 0 {
+		return Prediction{}
+	}
+
+	var weighted float64
+	var totalWeight float64
+	for key, value := range features {
+		mean := m.means[key]
+		variance := m.vars[key]
+		if variance < 1e-6 {
+			variance = 1e-6
+		}
+
+		z := math.Abs(value-mean) / math.Sqrt(variance)
+		score := math.Tanh(z / 4.0)
+		w := m.weights[key]
+		weighted += score * w
+		totalWeight += w
+	}
+
+	if totalWeight == 0 {
+		totalWeight = 1
+	}
+
+	anomaly := weighted / totalWeight
+	return Prediction{AnomalyScore: anomaly, Confidence: math.Min(1.0, anomaly+0.15), IsAnomalous: anomaly >= m.threshold}
+}
+
+func sanitizeScore(value float64) float64 {
+	if math.IsNaN(value) || math.IsInf(value, 0) {
+		return 0
+	}
+	if value < 0 {
+		return 0
+	}
+	if value > 1 {
+		return 1
+	}
+	return value
 }
 
 func ComputeMetrics(expected, predicted []bool) EvaluationMetrics {
