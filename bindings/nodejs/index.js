@@ -1,6 +1,8 @@
 const axios = require('axios');
 const { spawn } = require('child_process');
 const EventEmitter = require('events');
+const http = require('http');
+const https = require('https');
 
 /**
  * nginx-defender Node.js wrapper
@@ -34,6 +36,59 @@ class NginxDefender extends EventEmitter {
         this.baseURL = `http://localhost:${this.config.webUIPort}`;
         this.isRunning = false;
         this.process = null;
+        this._checkCache = new Map();
+        this._checkCacheTTL = 1000;
+        this.httpClient = axios.create({
+            baseURL: this.baseURL,
+            timeout: 5000,
+            httpAgent: new http.Agent({ keepAlive: true }),
+            httpsAgent: new https.Agent({ keepAlive: true })
+        });
+    }
+
+    _getCachedCheck(ip) {
+        const cacheEntry = this._checkCache.get(ip);
+        if (!cacheEntry) {
+            return null;
+        }
+
+        if (Date.now() - cacheEntry.timestamp > this._checkCacheTTL) {
+            this._checkCache.delete(ip);
+            return null;
+        }
+
+        return cacheEntry.result;
+    }
+
+    _storeCheck(ip, result) {
+        this._checkCache.set(ip, {
+            timestamp: Date.now(),
+            result
+        });
+        return result;
+    }
+
+    async _checkIP(ip) {
+        const cached = this._getCachedCheck(ip);
+        if (cached) {
+            return cached;
+        }
+
+        const response = await this.httpClient.post('/api/check', { ip });
+        return this._storeCheck(ip, response.data || {});
+    }
+
+    /**
+     * Fetch a single threat assessment for an IP address.
+     * @param {string} ip - IP address to check
+     * @returns {Promise<Object>} Threat assessment payload
+     */
+    async checkIP(ip) {
+        try {
+            return await this._checkIP(ip);
+        } catch (error) {
+            return {};
+        }
     }
     
     /**
@@ -51,7 +106,7 @@ class NginxDefender extends EventEmitter {
             // Wait for service to be ready
             for (let i = 0; i < 30; i++) {
                 try {
-                    const response = await axios.get(`${this.baseURL}/health`, { timeout: 1000 });
+                    const response = await this.httpClient.get('/health', { timeout: 1000 });
                     if (response.status === 200) {
                         this.isRunning = true;
                         this.emit('started');
@@ -88,8 +143,8 @@ class NginxDefender extends EventEmitter {
      */
     async shouldBlock(ip) {
         try {
-            const response = await axios.post(`${this.baseURL}/api/check`, { ip }, { timeout: 5000 });
-            return response.data.should_block || false;
+            const result = await this._checkIP(ip);
+            return result.should_block || false;
         } catch (error) {
             return false;
         }
@@ -102,8 +157,8 @@ class NginxDefender extends EventEmitter {
      */
     async getThreatScore(ip) {
         try {
-            const response = await axios.post(`${this.baseURL}/api/check`, { ip }, { timeout: 5000 });
-            return response.data.threat_score || 0;
+            const result = await this._checkIP(ip);
+            return result.threat_score || 0;
         } catch (error) {
             return 0;
         }
@@ -118,11 +173,11 @@ class NginxDefender extends EventEmitter {
      */
     async blockIP(ip, durationMinutes = 60, reason = 'Manual block') {
         try {
-            const response = await axios.post(`${this.baseURL}/api/block`, {
+            const response = await this.httpClient.post('/api/block', {
                 ip,
                 duration: `${durationMinutes}m`,
                 reason
-            }, { timeout: 5000 });
+            });
             
             if (response.status === 200) {
                 this.emit('ipBlocked', { ip, duration: durationMinutes, reason });
@@ -141,7 +196,7 @@ class NginxDefender extends EventEmitter {
      */
     async unblockIP(ip) {
         try {
-            const response = await axios.post(`${this.baseURL}/api/unblock`, { ip }, { timeout: 5000 });
+            const response = await this.httpClient.post('/api/unblock', { ip });
             if (response.status === 200) {
                 this.emit('ipUnblocked', { ip });
                 return true;
@@ -160,10 +215,10 @@ class NginxDefender extends EventEmitter {
      */
     async monitorLogFile(path, format = 'combined') {
         try {
-            const response = await axios.post(`${this.baseURL}/api/monitor`, {
+            const response = await this.httpClient.post('/api/monitor', {
                 path,
                 format
-            }, { timeout: 5000 });
+            });
             return response.status === 200;
         } catch (error) {
             return false;
@@ -176,7 +231,7 @@ class NginxDefender extends EventEmitter {
      */
     async getMetrics() {
         try {
-            const response = await axios.get(`${this.baseURL}/api/metrics`, { timeout: 5000 });
+            const response = await this.httpClient.get('/api/metrics');
             return response.data || {};
         } catch (error) {
             return {};
@@ -194,7 +249,9 @@ function expressMiddleware(defender) {
         const clientIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'];
         
         try {
-            if (await defender.shouldBlock(clientIP)) {
+            const check = await defender.checkIP(clientIP);
+
+            if (check.should_block) {
                 return res.status(403).json({
                     error: 'Access denied',
                     message: 'Your IP has been blocked by our security system',
@@ -203,7 +260,7 @@ function expressMiddleware(defender) {
             }
             
             // Add threat score to request
-            req.threatScore = await defender.getThreatScore(clientIP);
+            req.threatScore = check.threat_score || 0;
             res.set('X-Protected-By', 'nginx-defender');
             
             next();
@@ -223,7 +280,9 @@ function koaMiddleware(defender) {
         const clientIP = ctx.ip;
         
         try {
-            if (await defender.shouldBlock(clientIP)) {
+            const check = await defender.checkIP(clientIP);
+
+            if (check.should_block) {
                 ctx.status = 403;
                 ctx.body = {
                     error: 'Access denied',
@@ -234,7 +293,7 @@ function koaMiddleware(defender) {
             }
             
             // Add threat score to context
-            ctx.threatScore = await defender.getThreatScore(clientIP);
+            ctx.threatScore = check.threat_score || 0;
             ctx.set('X-Protected-By', 'nginx-defender');
             
             await next();

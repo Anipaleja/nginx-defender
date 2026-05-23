@@ -2,8 +2,9 @@ package honeypot
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
+	"strconv"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/Anipaleja/nginx-defender/internal/types"
@@ -35,6 +36,9 @@ type HoneypotSystem struct {
 
 	// System statistics
 	stats *types.HoneypotStats
+
+	mu        sync.Mutex
+	idCounter uint64
 }
 
 // Basic types for compilation
@@ -66,14 +70,21 @@ type DeceptionContentRequests struct{}
 
 // SecondHoneypotSystem creates a new honeypot system
 func SecondHoneypotSystem(config *HoneypotConfig, logger *logrus.Logger) (*HoneypotSystem, error) {
+	if config == nil {
+		config = &HoneypotConfig{}
+	}
+
 	system := &HoneypotSystem{
 		logger:          logger,
-		activeHoneypots: make(map[string]*types.Honeypot),
-		activeTraps:     make(map[string]*types.Trap),
-		activeDecoys:    make(map[string]*types.Decoy),
-		activeSessions:  make(map[string]*types.AttackSession),
-		interactions:    []*types.HoneypotInteraction{},
-		stats:           &types.HoneypotStats{},
+		activeHoneypots: make(map[string]*types.Honeypot, 16),
+		activeTraps:     make(map[string]*types.Trap, 8),
+		activeDecoys:    make(map[string]*types.Decoy, 8),
+		activeSessions:  make(map[string]*types.AttackSession, 16),
+		interactions:    make([]*types.HoneypotInteraction, 0, 32),
+		stats: &types.HoneypotStats{
+			AttackTypes:    make(map[string]int),
+			GeographicData: make(map[string]int),
+		},
 	}
 
 	// Initialize components with placeholder constructors
@@ -112,18 +123,28 @@ func SecondHoneypotSystem(config *HoneypotConfig, logger *logrus.Logger) (*Honey
 
 // DeployHoneypotSys creates and deploys a new honeypot
 func (h *HoneypotSystem) DeployHoneypotSys(ctx context.Context, request *HoneypotRequests) (*types.Honeypot, error) {
-	honeypotID := generateUniqueIDs()
+	if request == nil {
+		return nil, context.Canceled
+	}
+
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	honeypotID := generateUniqueID()
 
 	honeypot := &types.Honeypot{
 		ID:            honeypotID,
 		Name:          request.Name,
 		Type:          request.Type,
 		Status:        "deploying",
-		Configuration: make(map[string]interface{}),
+		Configuration: make(map[string]interface{}, 4),
 		LastActivity:  time.Now(),
 	}
 
+	h.mu.Lock()
 	h.activeHoneypots[honeypotID] = honeypot
+	h.mu.Unlock()
 	honeypot.Status = "active"
 
 	return honeypot, nil
@@ -131,13 +152,31 @@ func (h *HoneypotSystem) DeployHoneypotSys(ctx context.Context, request *Honeypo
 
 // ProcessInteraction processes an interaction with a honeypot
 func (h *HoneypotSystem) ProcessInteractions(ctx context.Context, interaction *types.HoneypotInteraction) (*InteractionResponses, error) {
+	if interaction == nil {
+		return nil, context.Canceled
+	}
+
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	startedAt := time.Now()
+
+	h.mu.Lock()
+	h.interactions = append(h.interactions, interaction)
+	if h.stats != nil {
+		h.stats.TotalInteractions++
+		h.stats.LastUpdated = startedAt
+	}
+	h.mu.Unlock()
+
 	response := &InteractionResponses{
 		InteractionID:  interaction.ID,
 		StatusCode:     200,
-		Headers:        make(map[string]string),
+		Headers:        make(map[string]string, 2),
 		Body:           "honeypot response",
-		ProcessingTime: time.Since(time.Now()),
-		Metadata:       make(map[string]interface{}),
+		ProcessingTime: time.Since(startedAt),
+		Metadata:       map[string]interface{}{"interaction_id": interaction.ID},
 	}
 
 	return response, nil
@@ -149,9 +188,12 @@ func (h *HoneypotSystem) GenDeceptionContent(ctx context.Context, request *Decep
 }
 
 // generateUniqueIDs creates a unique identifier
-func generateUniqueIDs() string {
-	return hex.EncodeToString(sha256.New().Sum([]byte(time.Now().String())))[:16]
+func generateUniqueID() string {
+	sequence := atomic.AddUint64(&globalHoneypotCounter, 1)
+	return strconv.FormatInt(time.Now().UnixNano(), 36) + strconv.FormatUint(sequence, 36)
 }
+
+var globalHoneypotCounter uint64
 
 // Constructor functions
 func DeceptionEngines(config *DeceptionConfig, logger *logrus.Logger) (*types.DeceptionEngine, error) {

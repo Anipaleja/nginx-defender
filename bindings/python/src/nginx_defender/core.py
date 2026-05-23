@@ -10,7 +10,7 @@ import json
 import subprocess
 import time
 import threading
-from typing import Dict, List, Optional, Callable
+from typing import Any, Callable, Dict, List, Optional
 from dataclasses import dataclass
 
 
@@ -108,11 +108,40 @@ class NginxDefender:
         self._threat_callbacks = []
         self._block_callbacks = []
         self._process = None
+        self._session = requests.Session()
+        self._check_cache: Dict[str, Dict[str, Any]] = {}
+        self._check_cache_ttl = 1.0
+
+    def _check_ip(self, ip: str) -> Dict[str, Any]:
+        if self._session is None:
+            self._session = requests.Session()
+
+        cache_entry = self._check_cache.get(ip)
+        now = time.monotonic()
+        if cache_entry and now - cache_entry["timestamp"] < self._check_cache_ttl:
+            return cache_entry["result"]
+
+        response = self._session.post(f"{self.base_url}/api/check", json={"ip": ip}, timeout=5)
+        response.raise_for_status()
+        result = response.json()
+        self._check_cache[ip] = {"timestamp": now, "result": result}
+        return result
+
+    def check_ip(self, ip: str) -> Dict[str, Any]:
+        """Fetch the current threat assessment for an IP address."""
+        try:
+            return self._check_ip(ip)
+        except requests.RequestException:
+            return {}
         
     def start(self) -> bool:
         """Start the nginx-defender service."""
         import shutil
         import logging
+
+        if self._session is None:
+            self._session = requests.Session()
+        self._check_cache.clear()
         
         # Get configurable binary path
         binary_path = self.config.get('binary_path')
@@ -168,7 +197,7 @@ class NginxDefender:
             # Wait for service to be ready
             for _ in range(30):  # 30 second timeout
                 try:
-                    response = requests.get(f"{self.base_url}/health", timeout=1)
+                    response = self._session.get(f"{self.base_url}/health", timeout=1)
                     if response.status_code == 200:
                         self.is_running = True
                         return True
@@ -199,31 +228,20 @@ class NginxDefender:
         if self._process:
             self._process.terminate()
             self._process.wait()
+            self._process = None
+        self._session.close()
+        self._session = None
         self.is_running = False
     
     def should_block(self, ip: str) -> bool:
         """Check if an IP should be blocked."""
-        try:
-            response = requests.post(f"{self.base_url}/api/check", 
-                                   json={"ip": ip}, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                return data.get("should_block", False)
-        except requests.RequestException:
-            pass
-        return False
+        data = self.check_ip(ip)
+        return bool(data.get("should_block", False))
     
     def get_threat_score(self, ip: str) -> int:
         """Get threat score for an IP."""
-        try:
-            response = requests.post(f"{self.base_url}/api/check", 
-                                   json={"ip": ip}, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                return data.get("threat_score", 0)
-        except requests.RequestException:
-            pass
-        return 0
+        data = self.check_ip(ip)
+        return int(data.get("threat_score", 0))
     
     def block_ip(self, ip: str, duration_minutes: int = 60, reason: str = "Manual block") -> bool:
         """Block an IP address."""
@@ -434,8 +452,9 @@ if __name__ == "__main__":
         test_ips = ["192.168.1.100", "10.0.0.1", "203.0.113.1"]
         
         for ip in test_ips:
-            score = defender.get_threat_score(ip)
-            blocked = defender.should_block(ip)
+            check = defender.check_ip(ip)
+            score = check.get("threat_score", 0)
+            blocked = check.get("should_block", False)
             print(f"IP {ip}: Score={score}, Blocked={blocked}")
         
         # Block a suspicious IP
