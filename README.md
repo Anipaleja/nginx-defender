@@ -14,7 +14,7 @@
 ![Stars - Purple](https://img.shields.io/github/stars/Anipaleja/nginx-defender?color=9b30ff&style=flat)
 ![NGINX](https://img.shields.io/badge/nginx-1.25+-32CD32?logo=nginx&logoColor=white)
 
-**Web Application Firewall with Threat Intelligence**
+**Web Application Firewall with Threat Intelligence** • [Documentation](https://defender.apaleja.tech)
 
 </div>
 
