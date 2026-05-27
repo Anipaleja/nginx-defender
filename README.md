@@ -26,6 +26,7 @@
 <summary>Click to expand</summary>
 
 - [Overview](#overview)
+- [Documentation](https://defender.apaleja.tech)
 - [Architecture](#architecture)
 - [Core Features](#core-features)
   - [Threat Detection Engine](#threat-detection-engine)
