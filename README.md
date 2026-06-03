@@ -66,7 +66,7 @@
 
 The detection path now combines:
 
-1. Signature and threat-intelligence signals
+1. Signature and threat intelligence signals
 2. Per-IP behavioral profile scoring
 3. Streaming online anomaly model output
 4. Adaptive response planning based on confidence
@@ -77,8 +77,8 @@ This enables deterministic blocking for known high-risk payloads while still ada
 
 Use the benchmark harness to compare runtime and deployment readiness against Fail2Ban:
 
-- script: scripts/benchmark-compare.sh
-- output: docs/benchmark-results.md
+- script: `scripts/benchmark-compare.sh`
+- output: `docs/benchmark-results.md`
 
 ### Key Differentiators
 
