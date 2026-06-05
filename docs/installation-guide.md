@@ -4,6 +4,16 @@ nginx-defender can be integrated into your security infrastructure in multiple w
 
 ## Installation Options
 
+### One-line Installer + Setup Wizard
+**Best for**: Standalone service installs on Linux/macOS/FreeBSD
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Anipaleja/nginx-defender/main/scripts/install.sh | sh
+nginx-defender setup
+```
+
+The installer downloads the latest release when available and falls back to `go install` if needed.
+
 ### 1. Go Library (Native Integration)
 **Best for**: Go applications, microservices, high-performance scenarios
 

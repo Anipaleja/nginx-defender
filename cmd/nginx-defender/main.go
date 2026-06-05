@@ -72,6 +72,15 @@ type offenderState struct {
 }
 
 func main() {
+	if len(os.Args) > 1 {
+		command := strings.ToLower(strings.TrimSpace(os.Args[1]))
+		switch command {
+		case "setup", "init":
+			exitCode := runSetup(os.Args[2:])
+			os.Exit(exitCode)
+		}
+	}
+
 	var (
 		configPath   = flag.String("config", "config.yaml", "Path to configuration file")
 		versionFlag  = flag.Bool("version", false, "Show version information")

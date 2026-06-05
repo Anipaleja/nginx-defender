@@ -372,6 +372,13 @@ software:
 
 Use this for a fast, predictable setup. It assumes Nginx is already running and writing access logs.
 
+0. **One-line install + guided setup**
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/Anipaleja/nginx-defender/main/scripts/install.sh | sh
+  nginx-defender setup
+  ```
+  Use `-config` to write the config elsewhere, and `-force` to overwrite an existing file.
+
 1. **Pick a config baseline**
    ```bash
    cp config.yaml ./config.local.yaml
@@ -433,6 +440,15 @@ Use this for a fast, predictable setup. It assumes Nginx is already running and 
 ## Installation
 
 ### Binary Installation
+
+#### One-line installer (Linux/macOS/FreeBSD)
+```bash
+curl -fsSL https://raw.githubusercontent.com/Anipaleja/nginx-defender/main/scripts/install.sh | sh
+```
+Then generate a config:
+```bash
+nginx-defender setup
+```
 
 #### Linux (x86_64)
 ```bash
