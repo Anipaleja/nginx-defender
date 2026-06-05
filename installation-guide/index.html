@@ -323,6 +323,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#one-line-installer-setup-wizard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One-line Installer + Setup Wizard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#1-go-library-native-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1085,6 +1096,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#one-line-installer-setup-wizard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One-line Installer + Setup Wizard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#1-go-library-native-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1450,6 +1472,12 @@
 <h1 id="nginx-defender-complete-installation-guide">nginx-defender: Complete Installation Guide<a class="headerlink" href="#nginx-defender-complete-installation-guide" title="Permanent link">&para;</a></h1>
 <p>nginx-defender can be integrated into your security infrastructure in multiple ways. Here's how to install and use it across different ecosystems:</p>
 <h2 id="installation-options">Installation Options<a class="headerlink" href="#installation-options" title="Permanent link">&para;</a></h2>
+<h3 id="one-line-installer-setup-wizard">One-line Installer + Setup Wizard<a class="headerlink" href="#one-line-installer-setup-wizard" title="Permanent link">&para;</a></h3>
+<p><strong>Best for</strong>: Standalone service installs on Linux/macOS/FreeBSD</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Anipaleja/nginx-defender/main/scripts/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+nginx-defender<span class="w"> </span>setup
+</code></pre></div>
+<p>The installer downloads the latest release when available and falls back to <code>go install</code> if needed.</p>
 <h3 id="1-go-library-native-integration">1. Go Library (Native Integration)<a class="headerlink" href="#1-go-library-native-integration" title="Permanent link">&para;</a></h3>
 <p><strong>Best for</strong>: Go applications, microservices, high-performance scenarios</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Install the library</span>
