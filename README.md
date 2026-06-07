@@ -19,7 +19,8 @@
 ![YC](https://img.shields.io/badge/Y%20Combinator%20-black?style=for-the-badge&logo=YCombinator)
 ![Google Deepmind](https://img.shields.io/badge/Google%20DeepMind-black?style=for-the-badge&logo=Deepmind)
 ![Cisco](https://img.shields.io/badge/Cisco-black?style=for-the-badge&logo=cisco)
-![](https://img.shields.io/badge/Anthropic-black?style=for-the-badge&logo=Anthropic)
+![Vercel](https://img.shields.io/badge/Vercel-black?style=for-the-badge&logo=Vercel)
+![Anthropic](https://img.shields.io/badge/Anthropic-black?style=for-the-badge&logo=Anthropic)
 
 **Web Application Firewall with Threat Intelligence** • [Documentation](https://defender.apaleja.tech)
 
