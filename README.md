@@ -14,7 +14,7 @@
 ![Stars - Purple](https://img.shields.io/github/stars/Anipaleja/nginx-defender?color=9b30ff&style=flat)
 ![NGINX](https://img.shields.io/badge/nginx-1.25+-32CD32?logo=nginx&logoColor=white)
 
-**With Support From:**
+**With Support and Validation From:**
 
 ![YC](https://img.shields.io/badge/Y%20Combinator%20-black?style=for-the-badge&logo=YCombinator)
 ![Google Deepmind](https://img.shields.io/badge/Google%20DeepMind-black?style=for-the-badge&logo=Deepmind)
