@@ -39,7 +39,13 @@ func TestAnalyzeHTTPRequestFlagsAutomationClients(t *testing.T) {
 }
 
 func TestHTTPMiddlewareBlocksBotRequests(t *testing.T) {
-	def, err := New(DevelopmentConfig())
+	// httptest.NewRequest sets RemoteAddr to "192.0.2.1:1234". Configure that
+	// subnet as a trusted proxy so XFF is honoured and the real client IP
+	// (203.0.113.1) is extracted and blocked.
+	cfg := DevelopmentConfig()
+	cfg.TrustedProxyCIDRs = []string{"192.0.2.0/24"}
+
+	def, err := New(cfg)
 	if err != nil {
 		t.Fatalf("failed to create defender: %v", err)
 	}

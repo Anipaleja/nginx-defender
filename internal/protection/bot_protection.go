@@ -107,6 +107,7 @@ type AdvancedBotProtection struct {
 	config             *BotProtectionConfig
 	stats              *BotProtectionStats
 	mutex              sync.RWMutex
+	statsMu            sync.Mutex // separate lock for stats updates
 }
 
 // Constructor functions
@@ -731,6 +732,9 @@ func (bp *AdvancedBotProtection) DetectBot(ctx context.Context, request *BotDete
 	result.IsBot = result.RiskScore > 0.5
 	result.ProcessingTime = time.Since(startTime)
 
+	// Update stats outside the read lock to avoid lock inversion
+	go bp.updateStats(result)
+
 	return result, nil
 }
 
@@ -949,9 +953,6 @@ func (bp *AdvancedBotProtection) determineBotStatus(confidence, riskScore float6
 	if result.BehaviorAnalysis != nil && result.BehaviorAnalysis.HumanLikelihood < 0.3 {
 		moderateIndicators++
 	}
-	if result.ReputationAnalysis != nil && 0.2 < 0.3 { // Placeholder condition
-		moderateIndicators++
-	}
 
 	// If multiple moderate indicators, classify as bot
 	if moderateIndicators >= 3 {
@@ -1033,8 +1034,11 @@ func (bp *AdvancedBotProtection) calculateFingerprintConfidence(analysis *Finger
 	return math.Min(1.0, confidence)
 }
 
-// updateStats updates bot protection statistics
+// updateStats updates bot protection statistics (goroutine-safe via statsMu)
 func (bp *AdvancedBotProtection) updateStats(result *BotDetectionResult) {
+	bp.statsMu.Lock()
+	defer bp.statsMu.Unlock()
+
 	bp.stats.TotalRequests++
 
 	if result.IsBot {
@@ -1042,11 +1046,11 @@ func (bp *AdvancedBotProtection) updateStats(result *BotDetectionResult) {
 		bp.stats.LastBotDetection = time.Now()
 	}
 
-	// Update average confidence
+	// Update average confidence using exponentially weighted moving average
 	if bp.stats.TotalRequests == 1 {
 		bp.stats.AverageConfidence = result.Confidence
 	} else {
-		alpha := 0.1 // Exponentially weighted moving average
+		const alpha = 0.1
 		bp.stats.AverageConfidence =
 			bp.stats.AverageConfidence*(1-alpha) + result.Confidence*alpha
 	}
@@ -1055,7 +1059,7 @@ func (bp *AdvancedBotProtection) updateStats(result *BotDetectionResult) {
 	if bp.stats.TotalRequests == 1 {
 		bp.stats.AverageProcessingTime = result.ProcessingTime
 	} else {
-		alpha := 0.1
+		const alpha = 0.1
 		bp.stats.AverageProcessingTime = time.Duration(
 			float64(bp.stats.AverageProcessingTime)*(1-alpha) +
 				float64(result.ProcessingTime)*alpha,
@@ -1076,10 +1080,9 @@ type BotProtectionStats struct {
 
 // GetStats returns current bot protection statistics
 func (bp *AdvancedBotProtection) GetStats() *BotProtectionStats {
-	bp.mutex.RLock()
-	defer bp.mutex.RUnlock()
+	bp.statsMu.Lock()
+	defer bp.statsMu.Unlock()
 
-	// Create a copy to avoid race conditions
 	stats := *bp.stats
 	return &stats
 }

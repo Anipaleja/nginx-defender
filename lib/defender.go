@@ -38,9 +38,11 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"sync"
 	"time"
 
+	"github.com/Anipaleja/nginx-defender/internal/aidefense"
 	"github.com/Anipaleja/nginx-defender/internal/config"
 	"github.com/Anipaleja/nginx-defender/internal/detector"
 	"github.com/Anipaleja/nginx-defender/internal/firewall"
@@ -71,6 +73,12 @@ type Defender struct {
 	monitorMutex sync.RWMutex
 	blockedIPs   map[string]time.Time
 	blockMutex   sync.RWMutex
+
+	// Parsed trusted proxy networks (from Config.TrustedProxyCIDRs)
+	trustedProxyNets []*net.IPNet
+
+	// AI scraper canary trap
+	scraperTrap *aidefense.ScraperTrap
 
 	// Lifecycle management
 	ctx        context.Context
@@ -152,6 +160,11 @@ type Config struct {
 	DefaultBlockTime time.Duration
 	WhitelistedIPs   []string
 	BlacklistedIPs   []string
+
+	// TrustedProxyCIDRs lists CIDR ranges for reverse proxies (nginx, Cloudflare,
+	// load balancers) whose X-Forwarded-For headers should be trusted.
+	// Leave nil to use RemoteAddr only (safe default; prevents XFF spoofing).
+	TrustedProxyCIDRs []string
 
 	// GeoIP settings
 	GeoIPDatabase    string
@@ -267,6 +280,17 @@ func New(cfg *Config) (*Defender, error) {
 		honeypotSystem = &honeypot.HoneypotSystem{}
 	}
 
+	// Parse trusted proxy CIDRs
+	var trustedNets []*net.IPNet
+	for _, cidr := range cfg.TrustedProxyCIDRs {
+		_, network, err := net.ParseCIDR(cidr)
+		if err != nil {
+			logger.WithError(err).Warnf("Invalid trusted proxy CIDR %s", cidr)
+			continue
+		}
+		trustedNets = append(trustedNets, network)
+	}
+
 	return &Defender{
 		config:           internalConfig,
 		logger:           logger,
@@ -278,6 +302,8 @@ func New(cfg *Config) (*Defender, error) {
 		honeypotSystem:   honeypotSystem,
 		logMonitors:      make(map[string]*LogMonitor),
 		blockedIPs:       make(map[string]time.Time),
+		trustedProxyNets: trustedNets,
+		scraperTrap:      aidefense.NewScraperTrap(),
 		ctx:              ctx,
 		cancel:           cancel,
 	}, nil
@@ -526,6 +552,36 @@ func (d *Defender) IsStarted() bool {
 // Version returns the library version
 func Version() string {
 	return "2.0.0"
+}
+
+// RobotsTxtHandler returns an http.HandlerFunc that serves a robots.txt
+// containing Disallow entries for every known AI scraper user-agent and all
+// registered canary paths. Mount it at GET /robots.txt in your router.
+//
+// Example (gorilla/mux):
+//
+//	r.HandleFunc("/robots.txt", def.RobotsTxtHandler())
+func (d *Defender) RobotsTxtHandler() http.HandlerFunc {
+	return d.scraperTrap.RobotsTxtHandler()
+}
+
+// ScraperDefenseMiddleware returns middleware that:
+//  1. Blocks IPs that have previously accessed a canary path.
+//  2. Traps requests to canary paths and records the offending IP.
+//  3. Blocks requests from known AI scraper user-agents (GPTBot, ClaudeBot,
+//     PerplexityBot, CCBot, Bytespider, etc.).
+//
+// Stack this as the outermost middleware layer so scrapers never touch your
+// application handlers.
+//
+// Example (standard library):
+//
+//	http.Handle("/", def.ScraperDefenseMiddleware()(myHandler))
+func (d *Defender) ScraperDefenseMiddleware() func(http.Handler) http.Handler {
+	nets := d.trustedProxyNets
+	return d.scraperTrap.Middleware(func(r *http.Request) string {
+		return extractClientIPTrusted(r, nets)
+	})
 }
 
 // start begins monitoring for a LogMonitor

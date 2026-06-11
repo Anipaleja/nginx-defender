@@ -946,9 +946,16 @@ func (e *Engine) resolveClientIP(entry *logparser.LogEntry) string {
 			if xff == "" {
 				xff = getHeaderValue(entry.Headers, "X-Forwarded-For")
 			}
-			for _, candidate := range strings.Split(xff, ",") {
-				parsed := normalizeIP(candidate)
-				if parsed != "" {
+			// Iterate right-to-left: each proxy appends itself, so the rightmost
+			// non-trusted IP is the actual client. Taking leftmost is spoofable
+			// because an attacker can prepend arbitrary IPs to the XFF header.
+			parts := strings.Split(xff, ",")
+			for i := len(parts) - 1; i >= 0; i-- {
+				parsed := normalizeIP(parts[i])
+				if parsed == "" {
+					continue
+				}
+				if !e.isTrustedProxy(parsed) {
 					return parsed
 				}
 			}

@@ -80,7 +80,7 @@ func (d *Defender) HTTPMiddleware() func(http.Handler) http.Handler {
 				return
 			}
 
-			clientIP := extractClientIPFromRequest(r)
+			clientIP := extractClientIPTrusted(r, d.trustedProxyNets)
 			if clientIP != "" && d.ShouldBlock(clientIP) {
 				http.Error(w, "Access Denied - Blocked by nginx-defender", http.StatusForbidden)
 				return
@@ -106,27 +106,81 @@ func (d *Defender) HTTPMiddleware() func(http.Handler) http.Handler {
 	}
 }
 
+// extractClientIPFromRequest returns the best-guess client IP.
+// X-Forwarded-For is ONLY consulted when trustedNets is non-nil and the
+// direct connection (RemoteAddr) belongs to one of those networks; otherwise
+// RemoteAddr is used to prevent IP-spoofing via forged XFF headers.
 func extractClientIPFromRequest(r *http.Request) string {
+	return extractClientIPTrusted(r, nil)
+}
+
+func extractClientIPTrusted(r *http.Request, trustedNets []*net.IPNet) string {
 	if r == nil {
 		return ""
 	}
 
+	// Always start from the TCP-level address — it cannot be forged.
+	remoteHost := r.RemoteAddr
+	if host, _, err := net.SplitHostPort(remoteHost); err == nil {
+		remoteHost = host
+	}
+	remoteHost = strings.TrimSpace(remoteHost)
+
+	if len(trustedNets) == 0 {
+		// No trusted proxy configuration: trust RemoteAddr only.
+		return remoteHost
+	}
+
+	remoteIP := net.ParseIP(remoteHost)
+	if remoteIP == nil {
+		return remoteHost
+	}
+
+	directIsTrusted := false
+	for _, network := range trustedNets {
+		if network.Contains(remoteIP) {
+			directIsTrusted = true
+			break
+		}
+	}
+
+	if !directIsTrusted {
+		return remoteHost
+	}
+
+	// Direct connection is a trusted proxy; walk XFF right-to-left and return
+	// the first IP that does not belong to a trusted network.
 	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
 		parts := strings.Split(xff, ",")
-		if len(parts) > 0 {
-			return strings.TrimSpace(parts[0])
+		for i := len(parts) - 1; i >= 0; i-- {
+			candidate := strings.TrimSpace(parts[i])
+			if candidate == "" {
+				continue
+			}
+			ip := net.ParseIP(candidate)
+			if ip == nil {
+				continue
+			}
+			trusted := false
+			for _, network := range trustedNets {
+				if network.Contains(ip) {
+					trusted = true
+					break
+				}
+			}
+			if !trusted {
+				return candidate
+			}
 		}
 	}
 
 	if xri := strings.TrimSpace(r.Header.Get("X-Real-IP")); xri != "" {
-		return xri
+		if net.ParseIP(xri) != nil {
+			return xri
+		}
 	}
 
-	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
-		return host
-	}
-
-	return strings.TrimSpace(r.RemoteAddr)
+	return remoteHost
 }
 
 func classifyAutomationUserAgent(lowerUA string) string {
