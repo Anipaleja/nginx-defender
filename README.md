@@ -1,3 +1,5 @@
+
+
 <div align="center">
 <img width="769" height="124" alt="image" src="https://github.com/user-attachments/assets/9560154d-686e-4fd1-b112-bc87b68f0d53" />
 </div>
@@ -541,8 +543,8 @@ services:
       - ./config.yaml:/app/config.yaml:ro
       - ./data:/app/data
     environment:
-      - LOG_LEVEL=info
-      - DRY_RUN=false
+      - NGINX_DEFENDER_LOG_LEVEL=info
+      - NGINX_DEFENDER_DRY_RUN=false
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
