@@ -413,7 +413,14 @@ func (e *Engine) checkUserAgent(entry *logparser.LogEntry, result *DetectionResu
 
 	// Check blocked patterns
 	for _, pattern := range e.config.Detection.UserAgentBlocking.BlockedPatterns {
-		if matched, _ := regexp.MatchString(pattern, userAgent); matched {
+		matched, err := regexp.MatchString(pattern, userAgent)
+		if err != nil {
+			// A malformed config pattern must not silently fail open: log it
+			// so the operator knows this block rule is not being enforced.
+			e.logger.WithError(err).Warnf("Invalid user-agent block pattern %q, skipping", pattern)
+			continue
+		}
+		if matched {
 			result.ThreatTypes = append(result.ThreatTypes, "user_agent_blocked")
 			result.Score += 25.0
 			result.Details["user_agent_violation"] = fmt.Sprintf("Blocked pattern: %s", pattern)

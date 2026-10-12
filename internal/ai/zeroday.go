@@ -579,21 +579,25 @@ func (z *ZeroDayDetector) calculateComplexity(input *InputVector) float64 {
 	return math.Min(1.0, complexity)
 }
 
+// suspiciousURLPatterns are precompiled once at package init. Using
+// MustCompile surfaces a malformed pattern loudly at startup instead of
+// silently discarding the compile error on every request (which would make
+// the offending pattern never match). It also avoids recompiling on each call.
+var suspiciousURLPatterns = []*regexp.Regexp{
+	regexp.MustCompile(`\.\./`),                 // Directory traversal
+	regexp.MustCompile(`%[0-9a-fA-F]{2}`),       // URL encoding
+	regexp.MustCompile(`\bunion\b.*\bselect\b`), // SQL injection patterns
+	regexp.MustCompile(`<script.*?>`),           // XSS patterns
+	regexp.MustCompile(`\$\{.*\}`),              // Expression language injection
+}
+
 // calculateURLComplexity analyzes URL structure complexity
 func (z *ZeroDayDetector) calculateURLComplexity(url string) float64 {
 	complexity := 0.0
 
 	// Check for suspicious patterns
-	suspiciousPatterns := []string{
-		`\.\./`,                 // Directory traversal
-		`%[0-9a-fA-F]{2}`,       // URL encoding
-		`\bunion\b.*\bselect\b`, // SQL injection patterns
-		`<script.*?>`,           // XSS patterns
-		`\$\{.*\}`,              // Expression language injection
-	}
-
-	for _, pattern := range suspiciousPatterns {
-		if matched, _ := regexp.MatchString(pattern, url); matched {
+	for _, pattern := range suspiciousURLPatterns {
+		if pattern.MatchString(url) {
 			complexity += 0.2
 		}
 	}
